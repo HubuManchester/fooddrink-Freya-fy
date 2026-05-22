@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutriLens.Views.DiaryPage"
+             Title="Diary">
+
+    <VerticalStackLayout Padding="20" Spacing="15">
+
+        <Label Text="Food Diary 📅"
+               FontSize="28"
+               FontAttributes="Bold"
+               HorizontalOptions="Center"/>
+
+        <Label Text="Your daily nutrition log"
+               FontSize="16"
+               TextColor="Gray"
+               HorizontalOptions="Center"/>
+
+        <!-- Empty State -->
+        <Frame BackgroundColor="#F5F5F5"
+               CornerRadius="15"
+               Padding="30">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="🍽️"
+                       FontSize="48"
+                       HorizontalOptions="Center"/>
+                <Label Text="No entries yet"
+                       FontSize="18"
+                       HorizontalOptions="Center"
+                       TextColor="Gray"/>
+                <Label Text="Start scanning food to track your nutrition"
+                       FontSize="14"
+                       HorizontalOptions="Center"
+                       TextColor="Gray"/>
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Diary List -->
+        <CollectionView x:Name="DiaryList">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="0,5" CornerRadius="10" Padding="15">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Grid.Column="0">
+                                <Label Text="{Binding FoodName}"
+                                       FontAttributes="Bold"
+                                       FontSize="16"/>
+                                <Label Text="{Binding Date}"
+                                       TextColor="Gray"
+                                       FontSize="14"/>
+                            </VerticalStackLayout>
+                            <Label Grid.Column="1"
+                                   Text="{Binding Calories, StringFormat='{0} kcal'}"
+                                   TextColor="#4CAF50"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </VerticalStackLayout>
+
+</ContentPage>

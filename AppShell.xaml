@@ -1,15 +1,42 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<Shell
-    x:Class="NutriLens.AppShell"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:NutriLens"
-    Shell.FlyoutBehavior="Disabled"
-    Title="NutriLens">
+<?xml version="1.0" encoding="utf-8" ?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:views="clr-namespace:NutriLens.Views"
+       x:Class="NutriLens.AppShell"
+       Shell.NavBarIsVisible="False">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <TabBar>
+
+        <!-- Home Tab -->
+        <ShellContent Title="Home"
+                      Icon="home.png"
+                      Route="HomePage"
+                      ContentTemplate="{DataTemplate views:HomePage}"/>
+
+        <!-- Scanner Tab -->
+        <ShellContent Title="Scanner"
+                      Icon="scanner.png"
+                      Route="ScannerPage"
+                      ContentTemplate="{DataTemplate views:ScannerPage}"/>
+
+        <!-- Diary Tab -->
+        <ShellContent Title="Diary"
+                      Icon="diary.png"
+                      Route="DiaryPage"
+                      ContentTemplate="{DataTemplate views:DiaryPage}"/>
+
+        <!-- Nearby Tab -->
+        <ShellContent Title="Nearby"
+                      Icon="nearby.png"
+                      Route="NearbyPage"
+                      ContentTemplate="{DataTemplate views:NearbyPage}"/>
+
+        <!-- Settings Tab -->
+        <ShellContent Title="Settings"
+                      Icon="settings.png"
+                      Route="SettingsPage"
+                      ContentTemplate="{DataTemplate views:SettingsPage}"/>
+
+    </TabBar>
 
 </Shell>

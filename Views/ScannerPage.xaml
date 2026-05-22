@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutriLens.Views.ScannerPage"
+             Title="Scanner">
+
+    <VerticalStackLayout Padding="20" Spacing="15">
+
+        <Label Text="Food Scanner 📷"
+               FontSize="28"
+               FontAttributes="Bold"
+               HorizontalOptions="Center"/>
+
+        <Label Text="Scan a barcode or take a photo"
+               FontSize="16"
+               TextColor="Gray"
+               HorizontalOptions="Center"/>
+
+        <!-- Scan Buttons -->
+        <Button Text="📷 Take Photo"
+                BackgroundColor="#4CAF50"
+                TextColor="White"
+                CornerRadius="10"
+                FontSize="18"
+                Clicked="OnTakePhotoClicked"/>
+
+        <Button Text="🔍 Scan Barcode"
+                BackgroundColor="#2196F3"
+                TextColor="White"
+                CornerRadius="10"
+                FontSize="18"
+                Clicked="OnScanBarcodeClicked"/>
+
+        <!-- Result Area -->
+        <Frame x:Name="ResultFrame"
+               IsVisible="False"
+               BackgroundColor="#F5F5F5"
+               CornerRadius="15"
+               Padding="20">
+            <VerticalStackLayout Spacing="8">
+                <Label x:Name="FoodNameLabel"
+                       FontSize="22"
+                       FontAttributes="Bold"/>
+                <Label x:Name="CaloriesLabel"
+                       FontSize="18"
+                       TextColor="#4CAF50"/>
+                <Label x:Name="ProteinLabel" FontSize="16"/>
+                <Label x:Name="FatLabel" FontSize="16"/>
+                <Label x:Name="SugarLabel" FontSize="16"/>
+
+                <Button Text="🔊 Read Aloud"
+                        BackgroundColor="#FF9800"
+                        TextColor="White"
+                        CornerRadius="10"
+                        Clicked="OnReadAloudClicked"/>
+
+                <Button Text="💾 Save to Diary"
+                        BackgroundColor="#4CAF50"
+                        TextColor="White"
+                        CornerRadius="10"
+                        Clicked="OnSaveClicked"/>
+            </VerticalStackLayout>
+        </Frame>
+
+        <ActivityIndicator x:Name="LoadingIndicator"
+                           IsRunning="False"
+                           IsVisible="False"
+                           Color="#4CAF50"/>
+
+    </VerticalStackLayout>
+
+</ContentPage>

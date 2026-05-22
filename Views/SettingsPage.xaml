@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutriLens.Views.SettingsPage"
+             Title="Settings">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Label Text="Settings ⚙️"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Appearance -->
+            <Label Text="Appearance"
+                   FontSize="18"
+                   FontAttributes="Bold"/>
+
+            <Frame CornerRadius="15" Padding="15">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0"
+                           Text="Dark Mode"
+                           FontSize="16"
+                           VerticalOptions="Center"/>
+                    <Switch Grid.Column="1"
+                            x:Name="DarkModeSwitch"
+                            Toggled="OnDarkModeToggled"/>
+                </Grid>
+            </Frame>
+
+            <!-- Accessibility -->
+            <Label Text="Accessibility"
+                   FontSize="18"
+                   FontAttributes="Bold"/>
+
+            <Frame CornerRadius="15" Padding="15">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0"
+                           Text="Text-to-Speech"
+                           FontSize="16"
+                           VerticalOptions="Center"/>
+                    <Switch Grid.Column="1"
+                            x:Name="TTSSwitch"
+                            Toggled="OnTTSToggled"/>
+                </Grid>
+            </Frame>
+
+            <Frame CornerRadius="15" Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Font Size"
+                           FontSize="16"/>
+                    <Slider x:Name="FontSizeSlider"
+                            Minimum="12"
+                            Maximum="24"
+                            Value="16"
+                            ValueChanged="OnFontSizeChanged"/>
+                    <Label x:Name="FontSizeLabel"
+                           Text="16"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Allergens -->
+            <Label Text="Allergen Warnings"
+                   FontSize="18"
+                   FontAttributes="Bold"/>
+
+            <Frame CornerRadius="15" Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Peanuts" FontSize="16" VerticalOptions="Center"/>
+                        <Switch Grid.Column="1" x:Name="PeanutSwitch"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Gluten" FontSize="16" VerticalOptions="Center"/>
+                        <Switch Grid.Column="1" x:Name="GlutenSwitch"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Lactose" FontSize="16" VerticalOptions="Center"/>
+                        <Switch Grid.Column="1" x:Name="LactoseSwitch"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

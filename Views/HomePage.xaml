@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutriLens.Views.HomePage"
+             Title="Home">
+
+	<ScrollView>
+		<VerticalStackLayout Padding="20" Spacing="15">
+
+			<!-- Header -->
+			<Label Text="NutriLens 🥗"
+                   FontSize="32"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+			<Label Text="Track your nutrition daily"
+                   FontSize="16"
+                   HorizontalOptions="Center"
+                   TextColor="Gray"/>
+
+			<!-- Today Summary Card -->
+			<Frame BackgroundColor="#E8F5E9"
+                   CornerRadius="15"
+                   Padding="20">
+				<VerticalStackLayout Spacing="10">
+					<Label Text="Today's Summary"
+                           FontSize="18"
+                           FontAttributes="Bold"/>
+					<Label x:Name="CaloriesLabel"
+                           Text="0 / 2000 kcal"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="#4CAF50"/>
+					<ProgressBar x:Name="CaloriesProgress"
+                                 Progress="0"
+                                 ProgressColor="#4CAF50"/>
+				</VerticalStackLayout>
+			</Frame>
+
+			<!-- Quick Actions -->
+			<Label Text="Quick Actions"
+                   FontSize="18"
+                   FontAttributes="Bold"/>
+
+			<Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+				<Button Grid.Column="0"
+                        Text="📷 Scan Food"
+                        BackgroundColor="#4CAF50"
+                        TextColor="White"
+                        CornerRadius="10"
+                        Clicked="OnScanClicked"/>
+				<Button Grid.Column="1"
+                        Text="📅 View Diary"
+                        BackgroundColor="#2196F3"
+                        TextColor="White"
+                        CornerRadius="10"
+                        Clicked="OnDiaryClicked"/>
+			</Grid>
+
+			<!-- Shake Hint -->
+			<Frame BackgroundColor="#FFF3E0"
+                   CornerRadius="15"
+                   Padding="15">
+				<Label Text="🎲 Shake your phone for a random meal suggestion!"
+                       FontSize="14"
+                       HorizontalOptions="Center"/>
+			</Frame>
+
+		</VerticalStackLayout>
+	</ScrollView>
+
+</ContentPage>

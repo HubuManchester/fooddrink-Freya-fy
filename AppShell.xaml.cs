@@ -1,10 +1,12 @@
-﻿namespace NutriLens
+﻿namespace NutriLens;
+
+/// <summary>
+/// App shell - manages navigation and tab bar
+/// </summary>
+public partial class AppShell : Shell
 {
-    public partial class AppShell : Shell
+    public AppShell()
     {
-        public AppShell()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

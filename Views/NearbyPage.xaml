@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutriLens.Views.NearbyPage"
+             Title="Nearby">
+
+    <VerticalStackLayout Padding="20" Spacing="15">
+
+        <Label Text="Nearby Healthy Places 📍"
+               FontSize="28"
+               FontAttributes="Bold"
+               HorizontalOptions="Center"/>
+
+        <Button Text="📍 Find Nearby Restaurants"
+                BackgroundColor="#4CAF50"
+                TextColor="White"
+                CornerRadius="10"
+                FontSize="18"
+                Clicked="OnFindNearbyClicked"/>
+
+        <Label x:Name="LocationLabel"
+               Text="Location not detected yet"
+               FontSize="14"
+               TextColor="Gray"
+               HorizontalOptions="Center"/>
+
+        <CollectionView x:Name="PlacesList">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="0,5" CornerRadius="10" Padding="15">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Name}"
+                                   FontAttributes="Bold"
+                                   FontSize="16"/>
+                            <Label Text="{Binding Address}"
+                                   TextColor="Gray"
+                                   FontSize="14"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </VerticalStackLayout>
+
+</ContentPage>
