@@ -4,86 +4,196 @@
              x:Class="NutriLens.Views.SettingsPage"
              Title="Settings">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
+	<ScrollView>
+		<VerticalStackLayout Padding="20" Spacing="15">
 
-            <Label Text="Settings ⚙️"
+			<Label Text="Settings ⚙️"
                    FontSize="28"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
 
-            <!-- Appearance -->
-            <Label Text="Appearance"
+			<!-- Appearance Section -->
+			<Label Text="Appearance"
                    FontSize="18"
                    FontAttributes="Bold"/>
 
-            <Frame CornerRadius="15" Padding="15">
-                <Grid ColumnDefinitions="*,Auto">
-                    <Label Grid.Column="0"
+			<Frame CornerRadius="15" Padding="15">
+				<Grid ColumnDefinitions="*,Auto">
+					<Label Grid.Column="0"
                            Text="Dark Mode"
                            FontSize="16"
                            VerticalOptions="Center"/>
-                    <Switch Grid.Column="1"
+					<Switch Grid.Column="1"
                             x:Name="DarkModeSwitch"
                             Toggled="OnDarkModeToggled"/>
-                </Grid>
-            </Frame>
+				</Grid>
+			</Frame>
 
-            <!-- Accessibility -->
-            <Label Text="Accessibility"
+			<!-- Accessibility Section -->
+			<Label Text="Accessibility"
                    FontSize="18"
                    FontAttributes="Bold"/>
 
-            <Frame CornerRadius="15" Padding="15">
-                <Grid ColumnDefinitions="*,Auto">
-                    <Label Grid.Column="0"
+			<Frame CornerRadius="15" Padding="15">
+				<Grid ColumnDefinitions="*,Auto">
+					<Label Grid.Column="0"
                            Text="Text-to-Speech"
                            FontSize="16"
                            VerticalOptions="Center"/>
-                    <Switch Grid.Column="1"
+					<Switch Grid.Column="1"
                             x:Name="TTSSwitch"
                             Toggled="OnTTSToggled"/>
-                </Grid>
-            </Frame>
+				</Grid>
+			</Frame>
 
-            <Frame CornerRadius="15" Padding="15">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Font Size"
-                           FontSize="16"/>
-                    <Slider x:Name="FontSizeSlider"
+			<Frame CornerRadius="15" Padding="15">
+				<VerticalStackLayout Spacing="10">
+					<Grid ColumnDefinitions="*,Auto">
+						<Label Grid.Column="0"
+                               Text="Font Size"
+                               FontSize="16"
+                               VerticalOptions="Center"/>
+						<Label Grid.Column="1"
+                               x:Name="FontSizeLabel"
+                               Text="16"
+                               FontSize="16"
+                               TextColor="#4CAF50"
+                               VerticalOptions="Center"/>
+					</Grid>
+					<Slider x:Name="FontSizeSlider"
                             Minimum="12"
                             Maximum="24"
                             Value="16"
                             ValueChanged="OnFontSizeChanged"/>
-                    <Label x:Name="FontSizeLabel"
-                           Text="16"
-                           HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-            </Frame>
+					<Label Text="Small                    Large"
+                           FontSize="12"
+                           TextColor="Gray"/>
+				</VerticalStackLayout>
+			</Frame>
 
-            <!-- Allergens -->
-            <Label Text="Allergen Warnings"
+			<!-- Nutrition Goals Section -->
+			<Label Text="Nutrition Goals"
                    FontSize="18"
                    FontAttributes="Bold"/>
 
-            <Frame CornerRadius="15" Padding="15">
-                <VerticalStackLayout Spacing="10">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Label Grid.Column="0" Text="Peanuts" FontSize="16" VerticalOptions="Center"/>
-                        <Switch Grid.Column="1" x:Name="PeanutSwitch"/>
-                    </Grid>
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Label Grid.Column="0" Text="Gluten" FontSize="16" VerticalOptions="Center"/>
-                        <Switch Grid.Column="1" x:Name="GlutenSwitch"/>
-                    </Grid>
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Label Grid.Column="0" Text="Lactose" FontSize="16" VerticalOptions="Center"/>
-                        <Switch Grid.Column="1" x:Name="LactoseSwitch"/>
-                    </Grid>
-                </VerticalStackLayout>
-            </Frame>
+			<Frame CornerRadius="15" Padding="15">
+				<VerticalStackLayout Spacing="10">
+					<Label Text="Daily Calorie Target (kcal)"
+                           FontSize="16"/>
+					<Entry x:Name="CalorieTargetEntry"
+                           Text="2000"
+                           Keyboard="Numeric"
+                           Placeholder="Enter calorie target"/>
+					<Label Text="Daily Water Target (ml)"
+                           FontSize="16"/>
+					<Entry x:Name="WaterTargetEntry"
+                           Text="2000"
+                           Keyboard="Numeric"
+                           Placeholder="Enter water target"/>
+					<Button Text="💾 Save Goals"
+                            BackgroundColor="#4CAF50"
+                            TextColor="White"
+                            CornerRadius="10"
+                            Clicked="OnSaveGoalsClicked"/>
+				</VerticalStackLayout>
+			</Frame>
 
-        </VerticalStackLayout>
-    </ScrollView>
+			<!-- Allergen Warnings Section -->
+			<Label Text="Allergen Warnings"
+                   FontSize="18"
+                   FontAttributes="Bold"/>
+
+			<Frame CornerRadius="15" Padding="15">
+				<VerticalStackLayout Spacing="12">
+
+					<Grid ColumnDefinitions="*,Auto">
+						<VerticalStackLayout Grid.Column="0">
+							<Label Text="🥜 Peanuts"
+                                   FontSize="16"/>
+							<Label Text="Alert when peanuts detected"
+                                   FontSize="12"
+                                   TextColor="Gray"/>
+						</VerticalStackLayout>
+						<Switch Grid.Column="1"
+                                x:Name="PeanutSwitch"
+                                Toggled="OnAllergenToggled"/>
+					</Grid>
+
+					<BoxView HeightRequest="1"
+                             BackgroundColor="LightGray"/>
+
+					<Grid ColumnDefinitions="*,Auto">
+						<VerticalStackLayout Grid.Column="0">
+							<Label Text="🌾 Gluten"
+                                   FontSize="16"/>
+							<Label Text="Alert when gluten detected"
+                                   FontSize="12"
+                                   TextColor="Gray"/>
+						</VerticalStackLayout>
+						<Switch Grid.Column="1"
+                                x:Name="GlutenSwitch"
+                                Toggled="OnAllergenToggled"/>
+					</Grid>
+
+					<BoxView HeightRequest="1"
+                             BackgroundColor="LightGray"/>
+
+					<Grid ColumnDefinitions="*,Auto">
+						<VerticalStackLayout Grid.Column="0">
+							<Label Text="🥛 Lactose"
+                                   FontSize="16"/>
+							<Label Text="Alert when dairy detected"
+                                   FontSize="12"
+                                   TextColor="Gray"/>
+						</VerticalStackLayout>
+						<Switch Grid.Column="1"
+                                x:Name="LactoseSwitch"
+                                Toggled="OnAllergenToggled"/>
+					</Grid>
+
+				</VerticalStackLayout>
+			</Frame>
+
+			<!-- Water Reminder Section -->
+			<Label Text="Reminders"
+                   FontSize="18"
+                   FontAttributes="Bold"/>
+
+			<Frame CornerRadius="15" Padding="15">
+				<Grid ColumnDefinitions="*,Auto">
+					<VerticalStackLayout Grid.Column="0">
+						<Label Text="💧 Water Reminder"
+                               FontSize="16"/>
+						<Label Text="Vibrate every hour if target not met"
+                               FontSize="12"
+                               TextColor="Gray"/>
+					</VerticalStackLayout>
+					<Switch Grid.Column="1"
+                            x:Name="WaterReminderSwitch"
+                            Toggled="OnWaterReminderToggled"/>
+				</Grid>
+			</Frame>
+
+			<!-- About Section -->
+			<Label Text="About"
+                   FontSize="18"
+                   FontAttributes="Bold"/>
+
+			<Frame CornerRadius="15" Padding="15">
+				<VerticalStackLayout Spacing="5">
+					<Label Text="NutriLens"
+                           FontSize="16"
+                           FontAttributes="Bold"/>
+					<Label Text="Version 1.0"
+                           FontSize="14"
+                           TextColor="Gray"/>
+					<Label Text="Accessibility: Follows WCAG 2.1 Guidelines"
+                           FontSize="12"
+                           TextColor="Gray"/>
+				</VerticalStackLayout>
+			</Frame>
+
+		</VerticalStackLayout>
+	</ScrollView>
 
 </ContentPage>

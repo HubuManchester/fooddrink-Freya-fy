@@ -4,43 +4,97 @@
              x:Class="NutriLens.Views.NearbyPage"
              Title="Nearby">
 
-    <VerticalStackLayout Padding="20" Spacing="15">
+	<ScrollView>
+		<VerticalStackLayout Padding="20" Spacing="15">
 
-        <Label Text="Nearby Healthy Places 📍"
-               FontSize="28"
-               FontAttributes="Bold"
-               HorizontalOptions="Center"/>
+			<Label Text="Nearby Healthy Places 📍"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
 
-        <Button Text="📍 Find Nearby Restaurants"
-                BackgroundColor="#4CAF50"
-                TextColor="White"
-                CornerRadius="10"
-                FontSize="18"
-                Clicked="OnFindNearbyClicked"/>
+			<Label Text="Find healthy restaurants near you"
+                   FontSize="16"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"/>
 
-        <Label x:Name="LocationLabel"
-               Text="Location not detected yet"
-               FontSize="14"
-               TextColor="Gray"
-               HorizontalOptions="Center"/>
+			<!-- Location Card -->
+			<Frame BackgroundColor="#E3F2FD"
+                   CornerRadius="15"
+                   Padding="15">
+				<VerticalStackLayout Spacing="8">
+					<Label Text="📍 Your Location"
+                           FontSize="16"
+                           FontAttributes="Bold"/>
+					<Label x:Name="LocationLabel"
+                           Text="Location not detected yet"
+                           FontSize="14"
+                           TextColor="Gray"/>
+					<Label x:Name="CoordinatesLabel"
+                           Text=""
+                           FontSize="12"
+                           TextColor="Gray"/>
+				</VerticalStackLayout>
+			</Frame>
 
-        <CollectionView x:Name="PlacesList">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame Margin="0,5" CornerRadius="10" Padding="15">
-                        <VerticalStackLayout>
-                            <Label Text="{Binding Name}"
-                                   FontAttributes="Bold"
-                                   FontSize="16"/>
-                            <Label Text="{Binding Address}"
-                                   TextColor="Gray"
-                                   FontSize="14"/>
-                        </VerticalStackLayout>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+			<!-- Find Button -->
+			<Button Text="📍 Find Nearby Healthy Restaurants"
+                    BackgroundColor="#4CAF50"
+                    TextColor="White"
+                    CornerRadius="10"
+                    FontSize="16"
+                    Clicked="OnFindNearbyClicked"/>
 
-    </VerticalStackLayout>
+			<!-- Loading -->
+			<ActivityIndicator x:Name="LoadingIndicator"
+                               IsRunning="False"
+                               IsVisible="False"
+                               Color="#4CAF50"
+                               HorizontalOptions="Center"/>
+
+			<!-- Empty State -->
+			<VerticalStackLayout x:Name="EmptyState"
+                                 Spacing="10">
+				<Label Text="🗺️"
+                       FontSize="48"
+                       HorizontalOptions="Center"/>
+				<Label Text="Tap the button to find nearby places"
+                       FontSize="16"
+                       TextColor="Gray"
+                       HorizontalOptions="Center"/>
+			</VerticalStackLayout>
+
+			<!-- Results List -->
+			<CollectionView x:Name="PlacesList">
+				<CollectionView.ItemTemplate>
+					<DataTemplate>
+						<Frame Margin="0,5"
+                               CornerRadius="10"
+                               Padding="15">
+							<Grid ColumnDefinitions="Auto,*">
+								<Label Grid.Column="0"
+                                       Text="🍃"
+                                       FontSize="24"
+                                       VerticalOptions="Center"
+                                       Margin="0,0,10,0"/>
+								<VerticalStackLayout Grid.Column="1"
+                                                     Spacing="3">
+									<Label Text="{Binding Name}"
+                                           FontAttributes="Bold"
+                                           FontSize="16"/>
+									<Label Text="{Binding Address}"
+                                           TextColor="Gray"
+                                           FontSize="13"/>
+									<Label Text="{Binding Distance}"
+                                           TextColor="#4CAF50"
+                                           FontSize="12"/>
+								</VerticalStackLayout>
+							</Grid>
+						</Frame>
+					</DataTemplate>
+				</CollectionView.ItemTemplate>
+			</CollectionView>
+
+		</VerticalStackLayout>
+	</ScrollView>
 
 </ContentPage>
