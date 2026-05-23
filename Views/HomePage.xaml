@@ -13,27 +13,123 @@
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
 
-			<Label Text="Track your nutrition daily"
+			<Label Text="Your daily nutrition companion"
                    FontSize="16"
                    HorizontalOptions="Center"
                    TextColor="Gray"/>
 
-			<!-- Today Summary Card -->
+			<!-- Health Score Card -->
 			<Frame BackgroundColor="#E8F5E9"
                    CornerRadius="15"
                    Padding="20">
-				<VerticalStackLayout Spacing="10">
-					<Label Text="Today's Summary"
-                           FontSize="18"
+				<VerticalStackLayout Spacing="8">
+					<Label Text="Today's Health Score"
+                           FontSize="16"
                            FontAttributes="Bold"/>
-					<Label x:Name="CaloriesLabel"
-                           Text="0 / 2000 kcal"
-                           FontSize="24"
+					<Label x:Name="HealthScoreLabel"
+                           Text="10 / 10"
+                           FontSize="36"
                            FontAttributes="Bold"
-                           TextColor="#4CAF50"/>
+                           TextColor="#4CAF50"
+                           HorizontalOptions="Center"/>
+					<Label x:Name="HealthAdviceLabel"
+                           Text="Great job! Keep it up 😊"
+                           FontSize="14"
+                           TextColor="Gray"
+                           HorizontalOptions="Center"/>
+				</VerticalStackLayout>
+			</Frame>
+
+			<!-- Calories Card -->
+			<Frame BackgroundColor="#E3F2FD"
+                   CornerRadius="15"
+                   Padding="20">
+				<VerticalStackLayout Spacing="8">
+					<Grid ColumnDefinitions="*,Auto">
+						<Label Grid.Column="0"
+                               Text="Calories"
+                               FontSize="16"
+                               FontAttributes="Bold"/>
+						<Label Grid.Column="1"
+                               x:Name="CaloriesLabel"
+                               Text="0 / 2000 kcal"
+                               FontSize="14"
+                               TextColor="Gray"/>
+					</Grid>
 					<ProgressBar x:Name="CaloriesProgress"
                                  Progress="0"
-                                 ProgressColor="#4CAF50"/>
+                                 ProgressColor="#2196F3"/>
+				</VerticalStackLayout>
+			</Frame>
+
+			<!-- Water Intake Card -->
+			<Frame BackgroundColor="#E1F5FE"
+                   CornerRadius="15"
+                   Padding="20">
+				<VerticalStackLayout Spacing="8">
+					<Grid ColumnDefinitions="*,Auto">
+						<Label Grid.Column="0"
+                               Text="💧 Water Intake"
+                               FontSize="16"
+                               FontAttributes="Bold"/>
+						<Label Grid.Column="1"
+                               x:Name="WaterLabel"
+                               Text="0 / 2000 ml"
+                               FontSize="14"
+                               TextColor="Gray"/>
+					</Grid>
+					<ProgressBar x:Name="WaterProgress"
+                                 Progress="0"
+                                 ProgressColor="#03A9F4"/>
+					<Button Text="+ 250ml"
+                            BackgroundColor="#03A9F4"
+                            TextColor="White"
+                            CornerRadius="10"
+                            Clicked="OnAddWaterClicked"/>
+				</VerticalStackLayout>
+			</Frame>
+
+			<!-- Meals Section -->
+			<Label Text="Today's Meals"
+                   FontSize="18"
+                   FontAttributes="Bold"/>
+
+			<!-- Breakfast -->
+			<Frame CornerRadius="15" Padding="15">
+				<VerticalStackLayout Spacing="5">
+					<Label Text="🌅 Breakfast"
+                           FontSize="16"
+                           FontAttributes="Bold"/>
+					<Label x:Name="BreakfastLabel"
+                           Text="No entries yet"
+                           TextColor="Gray"
+                           FontSize="14"/>
+				</VerticalStackLayout>
+			</Frame>
+
+			<!-- Lunch -->
+			<Frame CornerRadius="15" Padding="15">
+				<VerticalStackLayout Spacing="5">
+					<Label Text="☀️ Lunch"
+                           FontSize="16"
+                           FontAttributes="Bold"/>
+					<Label x:Name="LunchLabel"
+                           Text="No entries yet"
+                           TextColor="Gray"
+                           FontSize="14"/>
+				</VerticalStackLayout>
+			</Frame>
+
+			<!-- Dinner -->
+			<Frame CornerRadius="15" Padding="15">
+				<VerticalStackLayout Spacing="5">
+					<Label Text="🌙 Dinner"
+                           FontSize="16"
+                           FontAttributes="Bold"/>
+					<Label x:Name="DinnerLabel"
+                           Text="No entries yet"
+                           TextColor="Gray"
+                           FontSize="14"/>
 				</VerticalStackLayout>
 			</Frame>
 
