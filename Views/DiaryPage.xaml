@@ -4,62 +4,122 @@
              x:Class="NutriLens.Views.DiaryPage"
              Title="Diary">
 
-    <VerticalStackLayout Padding="20" Spacing="15">
+	<VerticalStackLayout Padding="20" Spacing="15">
 
-        <Label Text="Food Diary 📅"
+		<Label Text="Food Diary 📅"
                FontSize="28"
                FontAttributes="Bold"
                HorizontalOptions="Center"/>
 
-        <Label Text="Your daily nutrition log"
-               FontSize="16"
-               TextColor="Gray"
-               HorizontalOptions="Center"/>
-
-        <!-- Empty State -->
-        <Frame BackgroundColor="#F5F5F5"
+		<!-- Today's Summary -->
+		<Frame BackgroundColor="#E8F5E9"
                CornerRadius="15"
-               Padding="30">
-            <VerticalStackLayout Spacing="10">
-                <Label Text="🍽️"
-                       FontSize="48"
-                       HorizontalOptions="Center"/>
-                <Label Text="No entries yet"
-                       FontSize="18"
-                       HorizontalOptions="Center"
-                       TextColor="Gray"/>
-                <Label Text="Start scanning food to track your nutrition"
-                       FontSize="14"
-                       HorizontalOptions="Center"
-                       TextColor="Gray"/>
-            </VerticalStackLayout>
-        </Frame>
+               Padding="15">
+			<Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+				<VerticalStackLayout Grid.Column="0"
+                                     HorizontalOptions="Center">
+					<Label Text="Calories"
+                           FontSize="12"
+                           TextColor="Gray"
+                           HorizontalOptions="Center"/>
+					<Label x:Name="TotalCaloriesLabel"
+                           Text="0"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="#4CAF50"
+                           HorizontalOptions="Center"/>
+				</VerticalStackLayout>
+				<VerticalStackLayout Grid.Column="1"
+                                     HorizontalOptions="Center">
+					<Label Text="Protein"
+                           FontSize="12"
+                           TextColor="Gray"
+                           HorizontalOptions="Center"/>
+					<Label x:Name="TotalProteinLabel"
+                           Text="0g"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="#2196F3"
+                           HorizontalOptions="Center"/>
+				</VerticalStackLayout>
+				<VerticalStackLayout Grid.Column="2"
+                                     HorizontalOptions="Center">
+					<Label Text="Fat"
+                           FontSize="12"
+                           TextColor="Gray"
+                           HorizontalOptions="Center"/>
+					<Label x:Name="TotalFatLabel"
+                           Text="0g"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="#FF9800"
+                           HorizontalOptions="Center"/>
+				</VerticalStackLayout>
+			</Grid>
+		</Frame>
 
-        <!-- Diary List -->
-        <CollectionView x:Name="DiaryList">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame Margin="0,5" CornerRadius="10" Padding="15">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <VerticalStackLayout Grid.Column="0">
-                                <Label Text="{Binding FoodName}"
+		<!-- Empty State -->
+		<VerticalStackLayout x:Name="EmptyState"
+                             Spacing="10"
+                             IsVisible="True">
+			<Label Text="🍽️"
+                   FontSize="48"
+                   HorizontalOptions="Center"/>
+			<Label Text="No entries yet"
+                   FontSize="18"
+                   HorizontalOptions="Center"
+                   TextColor="Gray"/>
+			<Label Text="Start scanning food to track your nutrition"
+                   FontSize="14"
+                   HorizontalOptions="Center"
+                   TextColor="Gray"/>
+		</VerticalStackLayout>
+
+		<!-- Diary List -->
+		<CollectionView x:Name="DiaryList">
+			<CollectionView.ItemTemplate>
+				<DataTemplate>
+					<SwipeView>
+						<!-- Left swipe to delete -->
+						<SwipeView.RightItems>
+							<SwipeItems>
+								<SwipeItem Text="Delete"
+                                           BackgroundColor="Red"
+                                           Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
+                                                     Path=BindingContext.DeleteCommand}"
+                                           CommandParameter="{Binding .}"/>
+							</SwipeItems>
+						</SwipeView.RightItems>
+
+						<Frame Margin="0,5"
+                               CornerRadius="10"
+                               Padding="15">
+							<Grid ColumnDefinitions="*,Auto">
+								<VerticalStackLayout Grid.Column="0"
+                                                     Spacing="3">
+									<Label Text="{Binding FoodName}"
+                                           FontAttributes="Bold"
+                                           FontSize="16"/>
+									<Label Text="{Binding MealType}"
+                                           TextColor="Gray"
+                                           FontSize="13"/>
+									<Label Text="{Binding Date, StringFormat='{0:HH:mm}'}"
+                                           TextColor="Gray"
+                                           FontSize="12"/>
+								</VerticalStackLayout>
+								<Label Grid.Column="1"
+                                       Text="{Binding Calories, StringFormat='{0:F0} kcal'}"
+                                       TextColor="#4CAF50"
                                        FontAttributes="Bold"
-                                       FontSize="16"/>
-                                <Label Text="{Binding Date}"
-                                       TextColor="Gray"
-                                       FontSize="14"/>
-                            </VerticalStackLayout>
-                            <Label Grid.Column="1"
-                                   Text="{Binding Calories, StringFormat='{0} kcal'}"
-                                   TextColor="#4CAF50"
-                                   FontAttributes="Bold"
-                                   VerticalOptions="Center"/>
-                        </Grid>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                                       FontSize="16"
+                                       VerticalOptions="Center"/>
+							</Grid>
+						</Frame>
+					</SwipeView>
+				</DataTemplate>
+			</CollectionView.ItemTemplate>
+		</CollectionView>
 
-    </VerticalStackLayout>
+	</VerticalStackLayout>
 
 </ContentPage>
