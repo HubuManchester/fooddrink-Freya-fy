@@ -1,4 +1,6 @@
 ﻿using System.Text.Json;
+using NutriLens.Models;
+using NutriLens.Services;
 
 namespace NutriLens.Views;
 
@@ -15,17 +17,39 @@ public partial class ScannerPage : ContentPage
     private double _currentFat = 0;
     private double _currentSugar = 0;
 
-    // HTTP client for API calls
+    // Services
     private readonly HttpClient _httpClient = new HttpClient();
+    private readonly DatabaseService _databaseService;
 
-    // Allergen settings (will connect to database later)
+    public ScannerPage(DatabaseService databaseService)
+    {
+        InitializeComponent();
+        _databaseService = databaseService;
+        LoadAllergenSettings();
+    }
+
+    // Allergen settings loaded from database
     private bool _peanutAlert = false;
     private bool _glutenAlert = false;
     private bool _lactoseAlert = false;
 
-    public ScannerPage()
+    /// <summary>
+    /// Load allergen settings from user preferences
+    /// </summary>
+    private void LoadAllergenSettings()
     {
-        InitializeComponent();
+        _peanutAlert = Preferences.Default.Get("allergen_peanut", false);
+        _glutenAlert = Preferences.Default.Get("allergen_gluten", false);
+        _lactoseAlert = Preferences.Default.Get("allergen_lactose", false);
+    }
+
+    /// <summary>
+    /// Reload allergen settings every time page appears
+    /// </summary>
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        LoadAllergenSettings();
     }
 
     /// <summary>
@@ -93,7 +117,6 @@ public partial class ScannerPage : ContentPage
 
             if (!string.IsNullOrEmpty(foodName))
             {
-                // Get nutrition data
                 await FetchNutritionDataAsync(foodName);
             }
             else
@@ -121,7 +144,6 @@ public partial class ScannerPage : ContentPage
     {
         try
         {
-            // Clarifai API request
             var requestBody = new
             {
                 user_app_id = new
@@ -145,7 +167,6 @@ public partial class ScannerPage : ContentPage
             var content = new StringContent(json,
                 System.Text.Encoding.UTF8, "application/json");
 
-            // Add Clarifai API key header
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add(
                 "Authorization", "Key YOUR_CLARIFAI_API_KEY");
@@ -154,17 +175,11 @@ public partial class ScannerPage : ContentPage
                 "https://api.clarifai.com/v2/models/food-item-recognition/versions/1d5fd481165a4f8bab4b27d44bce8ad5/outputs",
                 content);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                System.Diagnostics.Debug.WriteLine(
-                    $"Clarifai error: {response.StatusCode}");
-                return "";
-            }
+            if (!response.IsSuccessStatusCode) return "";
 
             var responseJson = await response.Content.ReadAsStringAsync();
             var doc = JsonDocument.Parse(responseJson);
 
-            // Extract top food concept
             var concepts = doc.RootElement
                 .GetProperty("outputs")[0]
                 .GetProperty("data")
@@ -181,21 +196,13 @@ public partial class ScannerPage : ContentPage
     }
 
     /// <summary>
-    /// Scan barcode using device camera
-    /// </summary>
-    private async void OnScanBarcodeClicked(object sender, EventArgs e)
-    {
-        await DisplayAlert("Barcode Scanner",
-            "Point camera at barcode to scan.", "OK");
-    }
-
-    /// <summary>
     /// Search nutrition by manually entered barcode
     /// </summary>
     private async void OnManualSearchClicked(object sender, EventArgs e)
     {
-        // Validate input
         string barcode = ManualBarcodeEntry.Text?.Trim() ?? "";
+
+        // Validate input
         if (string.IsNullOrEmpty(barcode))
         {
             await DisplayAlert("Validation Error",
@@ -219,6 +226,15 @@ public partial class ScannerPage : ContentPage
 
         LoadingIndicator.IsVisible = false;
         LoadingIndicator.IsRunning = false;
+    }
+
+    /// <summary>
+    /// Scan barcode using device camera
+    /// </summary>
+    private async void OnScanBarcodeClicked(object sender, EventArgs e)
+    {
+        await DisplayAlert("Barcode Scanner",
+            "Point camera at barcode to scan.", "OK");
     }
 
     /// <summary>
@@ -259,13 +275,11 @@ public partial class ScannerPage : ContentPage
             double protein = nutriments.TryGetProperty("proteins_100g",
                 out var pro) ? pro.GetDouble() : 0;
             double fat = nutriments.TryGetProperty("fat_100g",
-                out var fat2) ? fat2.GetDouble() : 0;
+                out var f) ? f.GetDouble() : 0;
             double sugar = nutriments.TryGetProperty("sugars_100g",
                 out var sug) ? sug.GetDouble() : 0;
 
             DisplayNutrition(name, calories, protein, fat, sugar);
-
-            // Vibrate on success
             Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(300));
         }
         catch (Exception ex)
@@ -316,13 +330,11 @@ public partial class ScannerPage : ContentPage
             double protein = nutriments.TryGetProperty("proteins_100g",
                 out var pro) ? pro.GetDouble() : 0;
             double fat = nutriments.TryGetProperty("fat_100g",
-                out var fat2) ? fat2.GetDouble() : 0;
+                out var f) ? f.GetDouble() : 0;
             double sugar = nutriments.TryGetProperty("sugars_100g",
                 out var sug) ? sug.GetDouble() : 0;
 
             DisplayNutrition(name, calories, protein, fat, sugar);
-
-            // Vibrate on success
             Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(300));
         }
         catch (Exception ex)
@@ -338,29 +350,24 @@ public partial class ScannerPage : ContentPage
     private void DisplayNutrition(string name, double calories,
         double protein, double fat, double sugar)
     {
-        // Save current food data
         _currentFoodName = name;
         _currentCalories = calories;
         _currentProtein = protein;
         _currentFat = fat;
         _currentSugar = sugar;
 
-        // Update UI labels
         FoodNameLabel.Text = name;
         CaloriesLabel.Text = $"{calories:F1} kcal";
         ProteinLabel.Text = $"{protein:F1}g";
         FatLabel.Text = $"{fat:F1}g";
         SugarLabel.Text = $"{sugar:F1}g";
 
-        // Check allergens
         CheckAllergens(name);
-
-        // Show result frame
         ResultFrame.IsVisible = true;
     }
 
     /// <summary>
-    /// Check food name against user allergen settings
+    /// Check food against user allergen settings
     /// </summary>
     private void CheckAllergens(string foodName)
     {
@@ -385,8 +392,6 @@ public partial class ScannerPage : ContentPage
         {
             AllergenLabel.Text = string.Join("\n", warnings);
             AllergenFrame.IsVisible = true;
-
-            // Long vibration for allergen warning
             Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(800));
         }
         else
@@ -417,7 +422,7 @@ public partial class ScannerPage : ContentPage
     }
 
     /// <summary>
-    /// Save food as breakfast entry
+    /// Save food as breakfast entry to database
     /// </summary>
     private async void OnSaveBreakfastClicked(object sender, EventArgs e)
     {
@@ -425,7 +430,7 @@ public partial class ScannerPage : ContentPage
     }
 
     /// <summary>
-    /// Save food as lunch entry
+    /// Save food as lunch entry to database
     /// </summary>
     private async void OnSaveLunchClicked(object sender, EventArgs e)
     {
@@ -433,7 +438,7 @@ public partial class ScannerPage : ContentPage
     }
 
     /// <summary>
-    /// Save food as dinner entry
+    /// Save food as dinner entry to database
     /// </summary>
     private async void OnSaveDinnerClicked(object sender, EventArgs e)
     {
@@ -441,7 +446,7 @@ public partial class ScannerPage : ContentPage
     }
 
     /// <summary>
-    /// Save food entry to diary database
+    /// Save food entry to SQLite diary database
     /// </summary>
     private async Task SaveFoodEntry(string mealType)
     {
@@ -452,10 +457,37 @@ public partial class ScannerPage : ContentPage
             return;
         }
 
-        // Will save to SQLite database in next step
-        await DisplayAlert("Saved! ✅",
-            $"{_currentFoodName} saved to {mealType}.", "OK");
+        try
+        {
+            var entry = new DiaryEntry
+            {
+                FoodName = _currentFoodName,
+                MealType = mealType,
+                Calories = _currentCalories,
+                Protein = _currentProtein,
+                Fat = _currentFat,
+                Sugar = _currentSugar,
+                Date = DateTime.Now
+            };
 
-        Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(200));
+            bool success = await _databaseService.SaveEntryAsync(entry);
+
+            if (success)
+            {
+                await DisplayAlert("Saved! ✅",
+                    $"{_currentFoodName} saved to {mealType}.", "OK");
+                Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(200));
+            }
+            else
+            {
+                await DisplayAlert("Error",
+                    "Failed to save entry. Please try again.", "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error",
+                $"Failed to save: {ex.Message}", "OK");
+        }
     }
 }

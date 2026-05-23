@@ -1,49 +1,52 @@
+using NutriLens.Models;
+using NutriLens.Services;
+
 namespace NutriLens.Views;
 
 /// <summary>
-/// Diary page - displays food entries with swipe to delete
-/// and daily nutrition summary
+/// Diary page - displays food entries loaded from SQLite database
+/// with swipe to delete and daily nutrition summary
 /// </summary>
 public partial class DiaryPage : ContentPage
 {
-    // Temporary list to store diary entries until database is connected
-    private List<DiaryEntryDisplay> _entries = new List<DiaryEntryDisplay>();
+    private readonly DatabaseService _databaseService;
+    private List<DiaryEntry> _entries = new List<DiaryEntry>();
 
-    public DiaryPage()
+    public DiaryPage(DatabaseService databaseService)
     {
         InitializeComponent();
+        _databaseService = databaseService;
     }
 
     /// <summary>
-    /// Reload entries every time page appears
+    /// Reload entries from database every time page appears
     /// </summary>
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
-        LoadEntries();
+        await LoadEntriesAsync();
     }
 
     /// <summary>
-    /// Load diary entries and update summary totals
+    /// Load today's diary entries from database
     /// </summary>
-    private void LoadEntries()
+    private async Task LoadEntriesAsync()
     {
         try
         {
-            // Update list
+            _entries = await _databaseService.GetTodayEntriesAsync();
+
             DiaryList.ItemsSource = null;
             DiaryList.ItemsSource = _entries;
 
-            // Show or hide empty state
             EmptyState.IsVisible = _entries.Count == 0;
 
-            // Calculate totals
             UpdateTotals();
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine(
-                $"Error loading diary entries: {ex.Message}");
+            await DisplayAlert("Error",
+                $"Failed to load diary: {ex.Message}", "OK");
         }
     }
 
@@ -62,58 +65,48 @@ public partial class DiaryPage : ContentPage
     }
 
     /// <summary>
-    /// Add a new food entry to diary (called from ScannerPage)
-    /// </summary>
-    public void AddEntry(string foodName, string mealType,
-        double calories, double protein, double fat, double sugar)
-    {
-        var entry = new DiaryEntryDisplay
-        {
-            FoodName = foodName,
-            MealType = mealType,
-            Calories = calories,
-            Protein = protein,
-            Fat = fat,
-            Sugar = sugar,
-            Date = DateTime.Now
-        };
-
-        _entries.Add(entry);
-        LoadEntries();
-    }
-
-    /// <summary>
     /// Delete entry on left swipe
     /// </summary>
-    public void DeleteEntry(DiaryEntryDisplay entry)
+    public async void DeleteEntry(DiaryEntry entry)
     {
         try
         {
             if (entry == null) return;
-            _entries.Remove(entry);
-            LoadEntries();
 
-            // Vibrate to confirm deletion
-            Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(200));
+            bool confirm = await DisplayAlert("Delete Entry",
+                $"Delete {entry.FoodName}?", "Delete", "Cancel");
+
+            if (!confirm) return;
+
+            bool success = await _databaseService.DeleteEntryAsync(entry.Id);
+
+            if (success)
+            {
+                Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(200));
+                await LoadEntriesAsync();
+            }
+            else
+            {
+                await DisplayAlert("Error",
+                    "Failed to delete entry.", "OK");
+            }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine(
-                $"Error deleting entry: {ex.Message}");
+            await DisplayAlert("Error",
+                $"Failed to delete: {ex.Message}", "OK");
         }
     }
-}
 
-/// <summary>
-/// Model for displaying diary entries in the list
-/// </summary>
-public class DiaryEntryDisplay
-{
-    public string FoodName { get; set; } = "";
-    public string MealType { get; set; } = "";
-    public double Calories { get; set; }
-    public double Protein { get; set; }
-    public double Fat { get; set; }
-    public double Sugar { get; set; }
-    public DateTime Date { get; set; }
+    /// <summary>
+    /// Handle left swipe delete gesture
+    /// </summary>
+    private async void OnDeleteSwipe(object sender, EventArgs e)
+    {
+        if (sender is SwipeItem swipeItem &&
+            swipeItem.BindingContext is DiaryEntry entry)
+        {
+            await Task.Run(() => DeleteEntry(entry));
+        }
+    }
 }
