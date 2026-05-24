@@ -154,6 +154,45 @@
 				</VerticalStackLayout>
 			</Frame>
 
+			<!-- Custom Allergen -->
+			<Frame CornerRadius="15" Padding="15">
+				<VerticalStackLayout Spacing="10">
+					<Label Text="Add Custom Allergen"
+						   FontSize="16"
+						   FontAttributes="Bold"/>
+					<Entry x:Name="CustomAllergenEntry"
+						   Placeholder="e.g. Soy, Shellfish, Eggs"
+						   FontSize="16"/>
+					<Button Text="+ Add Allergen"
+							BackgroundColor="#4CAF50"
+							TextColor="White"
+							CornerRadius="10"
+							Clicked="OnAddCustomAllergenClicked"/>
+					<CollectionView x:Name="CustomAllergenList">
+						<CollectionView.ItemTemplate>
+							<DataTemplate>
+								<Grid ColumnDefinitions="*,Auto"
+									  Padding="0,5">
+									<Label Grid.Column="0"
+										   Text="{Binding .}"
+										   FontSize="16"
+										   VerticalOptions="Center"/>
+									<Button Grid.Column="1"
+											Text="✕"
+											BackgroundColor="Red"
+											TextColor="White"
+											CornerRadius="5"
+											WidthRequest="40"
+											HeightRequest="40"
+											Clicked="OnRemoveAllergenClicked"
+											CommandParameter="{Binding .}"/>
+								</Grid>
+							</DataTemplate>
+						</CollectionView.ItemTemplate>
+					</CollectionView>
+				</VerticalStackLayout>
+			</Frame>
+
 			<!-- Water Reminder Section -->
 			<Label Text="Reminders"
                    FontSize="18"

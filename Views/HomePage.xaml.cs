@@ -22,6 +22,13 @@ public partial class HomePage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
+
+        // Load targets from settings
+        _targetCalories = int.Parse(
+            Preferences.Default.Get("calorie_target", "2000"));
+        _targetWaterMl = int.Parse(
+            Preferences.Default.Get("water_target", "2000"));
+
         UpdateHealthScore();
         UpdateCaloriesDisplay();
         UpdateWaterDisplay();
@@ -113,12 +120,12 @@ public partial class HomePage : ContentPage
     /// <summary>
     /// Add 250ml water and update display
     /// </summary>
-    private void OnAddWaterClicked(object sender, EventArgs e)
+    private async void OnAddWaterClicked(object sender, EventArgs e)
     {
         _currentWaterMl += 250;
         UpdateWaterDisplay();
 
-        // Vibrate to confirm water added
+        // Vibrate to confirm
         try
         {
             Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(100));
@@ -126,6 +133,18 @@ public partial class HomePage : ContentPage
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Vibration error: {ex.Message}");
+        }
+
+        // Show congratulations when target reached
+        if (_currentWaterMl == _targetWaterMl)
+        {
+            await DisplayAlert("🎉 Goal Reached!",
+                "You have reached your daily water intake goal!", "Great!");
+        }
+        else if (_currentWaterMl > _targetWaterMl)
+        {
+            await DisplayAlert("💧 Over Target",
+                $"You have exceeded your daily water goal by {_currentWaterMl - _targetWaterMl}ml", "OK");
         }
     }
 

@@ -21,6 +21,14 @@ public partial class SettingsPage : ContentPage
     /// </summary>
     private void LoadSettings()
     {
+        // Load custom allergens
+        string saved = Preferences.Default.Get("custom_allergens", "");
+        if (!string.IsNullOrEmpty(saved))
+        {
+            _customAllergens = saved.Split(',').ToList();
+            UpdateCustomAllergenList();
+        }
+
         try
         {
             // Load saved preferences
@@ -209,5 +217,62 @@ public partial class SettingsPage : ContentPage
         _waterReminderTimer?.Stop();
         _waterReminderTimer?.Dispose();
         _waterReminderTimer = null;
+    }
+
+    // Custom allergens list
+    private List<string> _customAllergens = new List<string>();
+
+    /// <summary>
+    /// Add custom allergen to list
+    /// </summary>
+    private async void OnAddCustomAllergenClicked(object sender, EventArgs e)
+    {
+        string allergen = CustomAllergenEntry.Text?.Trim() ?? "";
+
+        if (string.IsNullOrEmpty(allergen))
+        {
+            await DisplayAlert("Validation Error",
+                "Please enter an allergen name.", "OK");
+            return;
+        }
+
+        if (_customAllergens.Contains(allergen.ToLower()))
+        {
+            await DisplayAlert("Already Added",
+                $"{allergen} is already in your list.", "OK");
+            return;
+        }
+
+        _customAllergens.Add(allergen);
+        CustomAllergenEntry.Text = "";
+        UpdateCustomAllergenList();
+
+        // Save to preferences
+        Preferences.Default.Set("custom_allergens",
+            string.Join(",", _customAllergens));
+    }
+
+    /// <summary>
+    /// Remove custom allergen from list
+    /// </summary>
+    private void OnRemoveAllergenClicked(object sender, EventArgs e)
+    {
+        if (sender is Button btn &&
+            btn.CommandParameter is string allergen)
+        {
+            _customAllergens.Remove(allergen);
+            UpdateCustomAllergenList();
+            Preferences.Default.Set("custom_allergens",
+                string.Join(",", _customAllergens));
+        }
+    }
+
+    /// <summary>
+    /// Update custom allergen list display
+    /// </summary>
+    private void UpdateCustomAllergenList()
+    {
+        CustomAllergenList.ItemsSource = null;
+        CustomAllergenList.ItemsSource = _customAllergens;
     }
 }
