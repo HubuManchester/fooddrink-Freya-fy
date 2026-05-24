@@ -152,6 +152,21 @@ public partial class NearbyPage : ContentPage
                 $"Error loading nearby places: {ex.Message}");
         }
     }
+
+    /// <summary>
+    /// Show details when a nearby place is tapped
+    /// </summary>
+    private async void OnPlaceTapped(object sender, TappedEventArgs e)
+    {
+        if (e.Parameter is NearbyPlace place)
+        {
+            await DisplayAlert(place.Name,
+                $"Address: {place.Address}\n" +
+                $"Distance: {place.Distance}\n" +
+                $"Type: Healthy Restaurant",
+                "Close");
+        }
+    }
 }
 
 /// <summary>

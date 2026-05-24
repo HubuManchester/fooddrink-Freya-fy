@@ -23,7 +23,7 @@ public static class MauiProgram
         // Register database service as singleton
         builder.Services.AddSingleton<DatabaseService>();
 
-        // Register pages
+        // Register pages with dependency injection
         builder.Services.AddTransient<HomePage>();
         builder.Services.AddTransient<ScannerPage>();
         builder.Services.AddTransient<DiaryPage>();

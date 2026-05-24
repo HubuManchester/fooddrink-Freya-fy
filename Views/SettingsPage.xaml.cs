@@ -2,13 +2,16 @@
 
 /// <summary>
 /// Settings page - manages app preferences, accessibility options,
-/// nutrition goals and allergen warnings
-/// Follows WCAG 2.1 accessibility guidelines
+/// nutrition goals and allergen warnings.
+/// Follows WCAG 2.1 accessibility guidelines.
 /// </summary>
 public partial class SettingsPage : ContentPage
 {
     // Water reminder timer
     private System.Timers.Timer? _waterReminderTimer;
+
+    // Custom allergens list
+    private List<string> _customAllergens = new List<string>();
 
     public SettingsPage()
     {
@@ -17,43 +20,44 @@ public partial class SettingsPage : ContentPage
     }
 
     /// <summary>
-    /// Load saved settings from preferences
+    /// Load all saved settings from preferences on page load
     /// </summary>
     private void LoadSettings()
     {
-        // Load custom allergens
-        string saved = Preferences.Default.Get("custom_allergens", "");
-        if (!string.IsNullOrEmpty(saved))
-        {
-            _customAllergens = saved.Split(',').ToList();
-            UpdateCustomAllergenList();
-        }
-
         try
         {
-            // Load saved preferences
+            // Load dark mode
             DarkModeSwitch.IsToggled =
                 Preferences.Default.Get("dark_mode", false);
+
+            // Load TTS
             TTSSwitch.IsToggled =
                 Preferences.Default.Get("tts_enabled", false);
-            PeanutSwitch.IsToggled =
-                Preferences.Default.Get("allergen_peanut", false);
-            GlutenSwitch.IsToggled =
-                Preferences.Default.Get("allergen_gluten", false);
-            LactoseSwitch.IsToggled =
-                Preferences.Default.Get("allergen_lactose", false);
+
+            // Load water reminder
             WaterReminderSwitch.IsToggled =
                 Preferences.Default.Get("water_reminder", false);
 
+            // Load font size
             double fontSize =
                 Preferences.Default.Get("font_size", 16.0);
             FontSizeSlider.Value = fontSize;
             FontSizeLabel.Text = ((int)fontSize).ToString();
 
+            // Load nutrition goals
             CalorieTargetEntry.Text =
                 Preferences.Default.Get("calorie_target", "2000");
             WaterTargetEntry.Text =
                 Preferences.Default.Get("water_target", "2000");
+
+            // Load custom allergens
+            string saved =
+                Preferences.Default.Get("custom_allergens", "");
+            if (!string.IsNullOrEmpty(saved))
+            {
+                _customAllergens = saved.Split(',').ToList();
+                UpdateCustomAllergenList();
+            }
         }
         catch (Exception ex)
         {
@@ -63,7 +67,8 @@ public partial class SettingsPage : ContentPage
     }
 
     /// <summary>
-    /// Toggle dark mode - follows WCAG 1.4.3 contrast guidelines
+    /// Toggle dark mode
+    /// Follows WCAG 1.4.3 contrast ratio guideline
     /// </summary>
     private void OnDarkModeToggled(object sender, ToggledEventArgs e)
     {
@@ -83,7 +88,7 @@ public partial class SettingsPage : ContentPage
     }
 
     /// <summary>
-    /// Toggle text-to-speech for accessibility
+    /// Toggle text-to-speech
     /// Follows WCAG 1.1.1 non-text content guideline
     /// </summary>
     private void OnTTSToggled(object sender, ToggledEventArgs e)
@@ -100,10 +105,16 @@ public partial class SettingsPage : ContentPage
         int size = (int)e.NewValue;
         FontSizeLabel.Text = size.ToString();
         Preferences.Default.Set("font_size", e.NewValue);
+
+        // Apply font size globally
+        if (Application.Current?.Resources != null)
+        {
+            Application.Current.Resources["GlobalFontSize"] = (double)size;
+        }
     }
 
     /// <summary>
-    /// Save nutrition goals with validation
+    /// Save nutrition goals with full validation
     /// </summary>
     private async void OnSaveGoalsClicked(object sender, EventArgs e)
     {
@@ -123,7 +134,8 @@ public partial class SettingsPage : ContentPage
                 calories < 500 || calories > 10000)
             {
                 await DisplayAlert("Validation Error",
-                    "Calorie target must be between 500 and 10000.", "OK");
+                    "Calorie target must be between 500 and 10000 kcal.",
+                    "OK");
                 Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(200));
                 return;
             }
@@ -152,7 +164,8 @@ public partial class SettingsPage : ContentPage
             Preferences.Default.Set("water_target", waterText);
 
             await DisplayAlert("Saved ✅",
-                "Your nutrition goals have been saved.", "OK");
+                $"Goals saved!\nCalories: {calories} kcal\nWater: {water} ml",
+                "OK");
 
             Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(200));
         }
@@ -164,33 +177,120 @@ public partial class SettingsPage : ContentPage
     }
 
     /// <summary>
-    /// Save allergen preferences when toggled
+    /// Add custom allergen to personal list
     /// </summary>
-    private void OnAllergenToggled(object sender, ToggledEventArgs e)
+    private async void OnAddCustomAllergenClicked(object sender, EventArgs e)
     {
-        Preferences.Default.Set("allergen_peanut",
-            PeanutSwitch.IsToggled);
-        Preferences.Default.Set("allergen_gluten",
-            GlutenSwitch.IsToggled);
-        Preferences.Default.Set("allergen_lactose",
-            LactoseSwitch.IsToggled);
+        try
+        {
+            string allergen = CustomAllergenEntry.Text?.Trim() ?? "";
+
+            // Validate input
+            if (string.IsNullOrEmpty(allergen))
+            {
+                await DisplayAlert("Validation Error",
+                    "Please enter an allergen name.", "OK");
+                return;
+            }
+
+            if (allergen.Length < 2)
+            {
+                await DisplayAlert("Validation Error",
+                    "Allergen name must be at least 2 characters.", "OK");
+                return;
+            }
+
+            // Check for duplicates
+            if (_customAllergens.Any(a =>
+                a.ToLower() == allergen.ToLower()))
+            {
+                await DisplayAlert("Already Added",
+                    $"{allergen} is already in your allergen list.", "OK");
+                return;
+            }
+
+            // Add allergen
+            _customAllergens.Add(allergen);
+            CustomAllergenEntry.Text = "";
+            UpdateCustomAllergenList();
+
+            // Save to preferences
+            Preferences.Default.Set("custom_allergens",
+                string.Join(",", _customAllergens));
+
+            Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(100));
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error",
+                $"Failed to add allergen: {ex.Message}", "OK");
+        }
     }
 
     /// <summary>
-    /// Toggle water reminder - vibrates every hour if target not met
+    /// Remove allergen on left swipe delete
+    /// </summary>
+    private void OnRemoveAllergenClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            // Handle both SwipeItem and SwipeItemView
+            string? allergen = null;
+
+            if (sender is SwipeItemView swipeItemView)
+            {
+                allergen = swipeItemView.BindingContext as string;
+            }
+            else if (sender is SwipeItem swipeItem)
+            {
+                allergen = swipeItem.BindingContext as string;
+            }
+
+            if (allergen == null) return;
+
+            _customAllergens.Remove(allergen);
+            UpdateCustomAllergenList();
+
+            Preferences.Default.Set("custom_allergens",
+                string.Join(",", _customAllergens));
+
+            try
+            {
+                Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(200));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"Vibration error: {ex.Message}");
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine(
+                $"Error removing allergen: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Refresh custom allergen list display
+    /// </summary>
+    private void UpdateCustomAllergenList()
+    {
+        CustomAllergenList.ItemsSource = null;
+        CustomAllergenList.ItemsSource = _customAllergens;
+    }
+
+    /// <summary>
+    /// Toggle hourly water reminder vibration
     /// </summary>
     private void OnWaterReminderToggled(object sender, ToggledEventArgs e)
     {
         Preferences.Default.Set("water_reminder", e.Value);
 
         if (e.Value)
-        {
             StartWaterReminder();
-        }
         else
-        {
             StopWaterReminder();
-        }
     }
 
     /// <summary>
@@ -198,81 +298,33 @@ public partial class SettingsPage : ContentPage
     /// </summary>
     private void StartWaterReminder()
     {
-        _waterReminderTimer = new System.Timers.Timer(3600000); // 1 hour
+        _waterReminderTimer = new System.Timers.Timer(3600000);
         _waterReminderTimer.Elapsed += async (s, e) =>
         {
             await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(500));
+                try
+                {
+                    Vibration.Default.Vibrate(
+                        TimeSpan.FromMilliseconds(500));
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(
+                        $"Vibration error: {ex.Message}");
+                }
             });
         };
         _waterReminderTimer.Start();
     }
 
     /// <summary>
-    /// Stop water reminder timer
+    /// Stop and dispose water reminder timer
     /// </summary>
     private void StopWaterReminder()
     {
         _waterReminderTimer?.Stop();
         _waterReminderTimer?.Dispose();
         _waterReminderTimer = null;
-    }
-
-    // Custom allergens list
-    private List<string> _customAllergens = new List<string>();
-
-    /// <summary>
-    /// Add custom allergen to list
-    /// </summary>
-    private async void OnAddCustomAllergenClicked(object sender, EventArgs e)
-    {
-        string allergen = CustomAllergenEntry.Text?.Trim() ?? "";
-
-        if (string.IsNullOrEmpty(allergen))
-        {
-            await DisplayAlert("Validation Error",
-                "Please enter an allergen name.", "OK");
-            return;
-        }
-
-        if (_customAllergens.Contains(allergen.ToLower()))
-        {
-            await DisplayAlert("Already Added",
-                $"{allergen} is already in your list.", "OK");
-            return;
-        }
-
-        _customAllergens.Add(allergen);
-        CustomAllergenEntry.Text = "";
-        UpdateCustomAllergenList();
-
-        // Save to preferences
-        Preferences.Default.Set("custom_allergens",
-            string.Join(",", _customAllergens));
-    }
-
-    /// <summary>
-    /// Remove custom allergen from list
-    /// </summary>
-    private void OnRemoveAllergenClicked(object sender, EventArgs e)
-    {
-        if (sender is Button btn &&
-            btn.CommandParameter is string allergen)
-        {
-            _customAllergens.Remove(allergen);
-            UpdateCustomAllergenList();
-            Preferences.Default.Set("custom_allergens",
-                string.Join(",", _customAllergens));
-        }
-    }
-
-    /// <summary>
-    /// Update custom allergen list display
-    /// </summary>
-    private void UpdateCustomAllergenList()
-    {
-        CustomAllergenList.ItemsSource = null;
-        CustomAllergenList.ItemsSource = _customAllergens;
     }
 }

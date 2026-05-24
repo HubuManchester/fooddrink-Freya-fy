@@ -1,25 +1,28 @@
-﻿namespace NutriLens.Views;
+﻿using NutriLens.Models;
+using NutriLens.Services;
+
+namespace NutriLens.Views;
 
 /// <summary>
 /// Home page - displays daily summary, health score, water intake and quick actions
 /// </summary>
 public partial class HomePage : ContentPage
 {
-    // Water intake tracking variables
     private int _currentWaterMl = 0;
     private int _targetWaterMl = 2000;
-
-    // Calorie tracking variables
     private int _currentCalories = 0;
     private int _targetCalories = 2000;
 
-    public HomePage()
+    private readonly DatabaseService _databaseService;
+
+    public HomePage(DatabaseService databaseService)
     {
         InitializeComponent();
+        _databaseService = databaseService;
         StartShakeDetection();
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
 
@@ -29,9 +32,44 @@ public partial class HomePage : ContentPage
         _targetWaterMl = int.Parse(
             Preferences.Default.Get("water_target", "2000"));
 
-        UpdateHealthScore();
-        UpdateCaloriesDisplay();
+        await LoadTodayMealsAsync();
         UpdateWaterDisplay();
+    }
+
+    /// <summary>
+    /// Load today's meals from database and update home page
+    /// </summary>
+    private async Task LoadTodayMealsAsync()
+    {
+        try
+        {
+            var entries = await _databaseService.GetTodayEntriesAsync();
+
+            var breakfast = entries.Where(e => e.MealType == "Breakfast").ToList();
+            var lunch = entries.Where(e => e.MealType == "Lunch").ToList();
+            var dinner = entries.Where(e => e.MealType == "Dinner").ToList();
+
+            BreakfastLabel.Text = breakfast.Any()
+                ? string.Join(", ", breakfast.Select(e => e.FoodName))
+                : "No entries yet";
+
+            LunchLabel.Text = lunch.Any()
+                ? string.Join(", ", lunch.Select(e => e.FoodName))
+                : "No entries yet";
+
+            DinnerLabel.Text = dinner.Any()
+                ? string.Join(", ", dinner.Select(e => e.FoodName))
+                : "No entries yet";
+
+            _currentCalories = (int)entries.Sum(e => e.Calories);
+            UpdateCaloriesDisplay();
+            UpdateHealthScore();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine(
+                $"Error loading meals: {ex.Message}");
+        }
     }
 
     /// <summary>
@@ -49,7 +87,8 @@ public partial class HomePage : ContentPage
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Accelerometer error: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine(
+                $"Accelerometer error: {ex.Message}");
         }
     }
 
@@ -69,7 +108,8 @@ public partial class HomePage : ContentPage
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Accelerometer stop error: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine(
+                $"Accelerometer stop error: {ex.Message}");
         }
     }
 
@@ -78,17 +118,16 @@ public partial class HomePage : ContentPage
     /// </summary>
     private async void OnShakeDetected(object? sender, EventArgs e)
     {
-        // Vibrate to confirm shake detected
         try
         {
             Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(300));
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Vibration error: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine(
+                $"Vibration error: {ex.Message}");
         }
 
-        // Show random meal on UI thread
         await MainThread.InvokeOnMainThreadAsync(async () =>
         {
             string meal = GetRandomMeal();
@@ -125,17 +164,16 @@ public partial class HomePage : ContentPage
         _currentWaterMl += 250;
         UpdateWaterDisplay();
 
-        // Vibrate to confirm
         try
         {
             Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(100));
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Vibration error: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine(
+                $"Vibration error: {ex.Message}");
         }
 
-        // Show congratulations when target reached
         if (_currentWaterMl == _targetWaterMl)
         {
             await DisplayAlert("🎉 Goal Reached!",
@@ -144,8 +182,11 @@ public partial class HomePage : ContentPage
         else if (_currentWaterMl > _targetWaterMl)
         {
             await DisplayAlert("💧 Over Target",
-                $"You have exceeded your daily water goal by {_currentWaterMl - _targetWaterMl}ml", "OK");
+                $"You have exceeded your daily water goal by " +
+                $"{_currentWaterMl - _targetWaterMl}ml", "OK");
         }
+
+        UpdateHealthScore();
     }
 
     /// <summary>
@@ -154,7 +195,8 @@ public partial class HomePage : ContentPage
     private void UpdateWaterDisplay()
     {
         WaterLabel.Text = $"{_currentWaterMl} / {_targetWaterMl} ml";
-        double progress = Math.Min((double)_currentWaterMl / _targetWaterMl, 1.0);
+        double progress = Math.Min(
+            (double)_currentWaterMl / _targetWaterMl, 1.0);
         WaterProgress.Progress = progress;
     }
 
@@ -164,7 +206,8 @@ public partial class HomePage : ContentPage
     private void UpdateCaloriesDisplay()
     {
         CaloriesLabel.Text = $"{_currentCalories} / {_targetCalories} kcal";
-        double progress = Math.Min((double)_currentCalories / _targetCalories, 1.0);
+        double progress = Math.Min(
+            (double)_currentCalories / _targetCalories, 1.0);
         CaloriesProgress.Progress = progress;
     }
 
@@ -173,24 +216,30 @@ public partial class HomePage : ContentPage
     /// </summary>
     private void UpdateHealthScore()
     {
+        // No food logged yet
+        if (_currentCalories == 0)
+        {
+            HealthScoreLabel.Text = "- / 10";
+            HealthScoreLabel.TextColor = Colors.Gray;
+            HealthAdviceLabel.Text = "Start scanning food to get your score";
+            return;
+        }
+
         int score = 10;
         string advice = "";
 
-        // Deduct points for calorie overload
         if (_currentCalories > _targetCalories * 1.2)
         {
             score -= 2;
             advice += "Calories too high. ";
         }
 
-        // Deduct points for low water intake
         if (_currentWaterMl < _targetWaterMl * 0.5)
         {
             score -= 2;
             advice += "Drink more water. ";
         }
 
-        // Set score display and color
         HealthScoreLabel.Text = $"{score} / 10";
 
         if (score >= 8)

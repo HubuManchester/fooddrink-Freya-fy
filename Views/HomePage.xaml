@@ -14,46 +14,46 @@
                    HorizontalOptions="Center"/>
 
 			<Label Text="Your daily nutrition companion"
-                   FontSize="16"
+                   FontSize="{DynamicResource GlobalFontSize}"
                    HorizontalOptions="Center"
                    TextColor="Gray"/>
 
 			<!-- Health Score Card -->
-			<Frame BackgroundColor="#E8F5E9"
-                   CornerRadius="15"
-                   Padding="20">
+			<Frame BackgroundColor="{AppThemeBinding Light=#E8F5E9, Dark=#1B5E20}"
+				   CornerRadius="15"
+				   Padding="20">
 				<VerticalStackLayout Spacing="8">
 					<Label Text="Today's Health Score"
-                           FontSize="16"
+                           FontSize="{DynamicResource GlobalFontSize}"
                            FontAttributes="Bold"/>
 					<Label x:Name="HealthScoreLabel"
-                           Text="10 / 10"
+                           Text="- / 10"
                            FontSize="36"
                            FontAttributes="Bold"
-                           TextColor="#4CAF50"
+                           TextColor="Gray"
                            HorizontalOptions="Center"/>
 					<Label x:Name="HealthAdviceLabel"
-                           Text="Great job! Keep it up 😊"
-                           FontSize="14"
+                           Text="Start scanning food to get your score"
+                           FontSize="{DynamicResource GlobalFontSize}"
                            TextColor="Gray"
                            HorizontalOptions="Center"/>
 				</VerticalStackLayout>
 			</Frame>
 
 			<!-- Calories Card -->
-			<Frame BackgroundColor="#E3F2FD"
-                   CornerRadius="15"
-                   Padding="20">
+			<Frame BackgroundColor="{AppThemeBinding Light=#E3F2FD, Dark=#0D47A1}"
+				   CornerRadius="15"
+				   Padding="20">
 				<VerticalStackLayout Spacing="8">
 					<Grid ColumnDefinitions="*,Auto">
 						<Label Grid.Column="0"
-                               Text="Calories"
-                               FontSize="16"
+                               Text="🔥 Calories"
+                               FontSize="{DynamicResource GlobalFontSize}"
                                FontAttributes="Bold"/>
 						<Label Grid.Column="1"
                                x:Name="CaloriesLabel"
                                Text="0 / 2000 kcal"
-                               FontSize="14"
+                               FontSize="{DynamicResource GlobalFontSize}"
                                TextColor="Gray"/>
 					</Grid>
 					<ProgressBar x:Name="CaloriesProgress"
@@ -63,19 +63,19 @@
 			</Frame>
 
 			<!-- Water Intake Card -->
-			<Frame BackgroundColor="#E1F5FE"
-                   CornerRadius="15"
-                   Padding="20">
+			<Frame BackgroundColor="{AppThemeBinding Light=#E1F5FE, Dark=#01579B}"
+				   CornerRadius="15"
+				   Padding="20">
 				<VerticalStackLayout Spacing="8">
 					<Grid ColumnDefinitions="*,Auto">
 						<Label Grid.Column="0"
                                Text="💧 Water Intake"
-                               FontSize="16"
+                               FontSize="{DynamicResource GlobalFontSize}"
                                FontAttributes="Bold"/>
 						<Label Grid.Column="1"
                                x:Name="WaterLabel"
                                Text="0 / 2000 ml"
-                               FontSize="14"
+                               FontSize="{DynamicResource GlobalFontSize}"
                                TextColor="Gray"/>
 					</Grid>
 					<ProgressBar x:Name="WaterProgress"
@@ -89,7 +89,7 @@
 				</VerticalStackLayout>
 			</Frame>
 
-			<!-- Meals Section -->
+			<!-- Today's Meals -->
 			<Label Text="Today's Meals"
                    FontSize="18"
                    FontAttributes="Bold"/>
@@ -98,12 +98,12 @@
 			<Frame CornerRadius="15" Padding="15">
 				<VerticalStackLayout Spacing="5">
 					<Label Text="🌅 Breakfast"
-                           FontSize="16"
+                           FontSize="{DynamicResource GlobalFontSize}"
                            FontAttributes="Bold"/>
 					<Label x:Name="BreakfastLabel"
                            Text="No entries yet"
                            TextColor="Gray"
-                           FontSize="14"/>
+                           FontSize="{DynamicResource GlobalFontSize}"/>
 				</VerticalStackLayout>
 			</Frame>
 
@@ -111,12 +111,12 @@
 			<Frame CornerRadius="15" Padding="15">
 				<VerticalStackLayout Spacing="5">
 					<Label Text="☀️ Lunch"
-                           FontSize="16"
+                           FontSize="{DynamicResource GlobalFontSize}"
                            FontAttributes="Bold"/>
 					<Label x:Name="LunchLabel"
                            Text="No entries yet"
                            TextColor="Gray"
-                           FontSize="14"/>
+                           FontSize="{DynamicResource GlobalFontSize}"/>
 				</VerticalStackLayout>
 			</Frame>
 
@@ -124,12 +124,12 @@
 			<Frame CornerRadius="15" Padding="15">
 				<VerticalStackLayout Spacing="5">
 					<Label Text="🌙 Dinner"
-                           FontSize="16"
+                           FontSize="{DynamicResource GlobalFontSize}"
                            FontAttributes="Bold"/>
 					<Label x:Name="DinnerLabel"
                            Text="No entries yet"
                            TextColor="Gray"
-                           FontSize="14"/>
+                           FontSize="{DynamicResource GlobalFontSize}"/>
 				</VerticalStackLayout>
 			</Frame>
 
@@ -154,11 +154,11 @@
 			</Grid>
 
 			<!-- Shake Hint -->
-			<Frame BackgroundColor="#FFF3E0"
-                   CornerRadius="15"
-                   Padding="15">
+			<Frame BackgroundColor="{AppThemeBinding Light=#FFF3E0, Dark=#E65000}"
+				   CornerRadius="15"
+				   Padding="15">
 				<Label Text="🎲 Shake your phone for a random meal suggestion!"
-                       FontSize="14"
+                       FontSize="{DynamicResource GlobalFontSize}"
                        HorizontalOptions="Center"/>
 			</Frame>
 
