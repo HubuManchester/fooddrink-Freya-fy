@@ -32,20 +32,32 @@
 
             <!-- Photo Panel -->
             <VerticalStackLayout x:Name="PhotoPanel" Spacing="10">
+
+                <!-- Image preview ABOVE button -->
+                <Frame CornerRadius="15"
+           Padding="0"
+           IsClippedToBounds="True"
+           HeightRequest="250"
+           IsVisible="{Binding Source={x:Reference FoodImage}, Path=IsVisible}">
+                    <Image x:Name="FoodImage"
+               HeightRequest="250"
+               IsVisible="False"
+               Aspect="AspectFit"
+               HorizontalOptions="Fill"/>
+                </Frame>
+
                 <Label Text="Take a photo of your food to identify it"
-                       FontSize="{DynamicResource GlobalFontSize}"
-                       TextColor="Gray"
-                       HorizontalOptions="Center"/>
+           FontSize="{DynamicResource GlobalFontSize}"
+           TextColor="Gray"
+           HorizontalOptions="Center"/>
+
                 <Button Text="📷 Take Photo"
-                        BackgroundColor="#4CAF50"
-                        TextColor="White"
-                        CornerRadius="10"
-                        FontSize="18"
-                        Clicked="OnTakePhotoClicked"/>
-                <Image x:Name="FoodImage"
-                       HeightRequest="200"
-                       IsVisible="False"
-                       Aspect="AspectFill"/>
+            BackgroundColor="#4CAF50"
+            TextColor="White"
+            CornerRadius="10"
+            FontSize="18"
+            Clicked="OnTakePhotoClicked"/>
+
             </VerticalStackLayout>
 
             <!-- Barcode Panel -->

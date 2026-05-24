@@ -17,9 +17,18 @@ public partial class ScannerPage : ContentPage
     private double _currentFat = 0;
     private double _currentSugar = 0;
 
+    // API Key
+    private const string QwenApiKey = "sk-a34faf314c1744bd92dc2ddc3559de58";
+
     // Services
     private readonly HttpClient _httpClient = new HttpClient();
     private readonly DatabaseService _databaseService;
+
+    // Allergen settings
+    private bool _peanutAlert = false;
+    private bool _glutenAlert = false;
+    private bool _lactoseAlert = false;
+    private List<string> _customAllergens = new List<string>();
 
     public ScannerPage(DatabaseService databaseService)
     {
@@ -27,11 +36,6 @@ public partial class ScannerPage : ContentPage
         _databaseService = databaseService;
         LoadAllergenSettings();
     }
-
-    // Allergen settings loaded from database
-    private bool _peanutAlert = false;
-    private bool _glutenAlert = false;
-    private bool _lactoseAlert = false;
 
     /// <summary>
     /// Load allergen settings from user preferences
@@ -41,6 +45,11 @@ public partial class ScannerPage : ContentPage
         _peanutAlert = Preferences.Default.Get("allergen_peanut", false);
         _glutenAlert = Preferences.Default.Get("allergen_gluten", false);
         _lactoseAlert = Preferences.Default.Get("allergen_lactose", false);
+
+        // Load custom allergens
+        string saved = Preferences.Default.Get("custom_allergens", "");
+        if (!string.IsNullOrEmpty(saved))
+            _customAllergens = saved.Split(',').ToList();
     }
 
     /// <summary>
@@ -78,7 +87,7 @@ public partial class ScannerPage : ContentPage
     }
 
     /// <summary>
-    /// Take photo using device camera and identify food using Clarifai API
+    /// Take photo using device camera and identify food using Qwen Vision API
     /// </summary>
     private async void OnTakePhotoClicked(object sender, EventArgs e)
     {
@@ -112,17 +121,18 @@ public partial class ScannerPage : ContentPage
             await stream.ReadAsync(bytes, 0, (int)stream.Length);
             string base64Image = Convert.ToBase64String(bytes);
 
-            // Identify food using Clarifai
+            // Identify food using Qwen Vision API
             string foodName = await IdentifyFoodAsync(base64Image);
 
-            if (!string.IsNullOrEmpty(foodName))
+            if (!string.IsNullOrEmpty(foodName) && foodName != "unknown")
             {
                 await FetchNutritionDataAsync(foodName);
             }
             else
             {
                 await DisplayAlert("Not Recognised",
-                    "Could not identify the food. Please try again.", "OK");
+                    "Could not identify the food. Please try again or use barcode scan.",
+                    "OK");
             }
         }
         catch (Exception ex)
@@ -138,7 +148,7 @@ public partial class ScannerPage : ContentPage
     }
 
     /// <summary>
-    /// Identify food from base64 image using Clarifai API
+    /// Identify food from base64 image using Qwen Vision API
     /// </summary>
     private async Task<string> IdentifyFoodAsync(string base64Image)
     {
@@ -146,18 +156,25 @@ public partial class ScannerPage : ContentPage
         {
             var requestBody = new
             {
-                user_app_id = new
+                model = "qwen-vl-plus",
+                input = new
                 {
-                    user_id = "clarifai",
-                    app_id = "main"
-                },
-                inputs = new[]
-                {
-                    new
+                    messages = new[]
                     {
-                        data = new
+                        new
                         {
-                            image = new { base64 = base64Image }
+                            role = "user",
+                            content = new object[]
+                            {
+                                new
+                                {
+                                    image = $"data:image/jpeg;base64,{base64Image}"
+                                },
+                                new
+                                {
+                                    text = "What food is in this image? Reply with only the food name in English, nothing else. If no food is visible, reply with 'unknown'."
+                                }
+                            }
                         }
                     }
                 }
@@ -169,30 +186,50 @@ public partial class ScannerPage : ContentPage
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add(
-                "Authorization", "Key YOUR_CLARIFAI_API_KEY");
+                "Authorization", $"Bearer {QwenApiKey}");
 
             var response = await _httpClient.PostAsync(
-                "https://api.clarifai.com/v2/models/food-item-recognition/versions/1d5fd481165a4f8bab4b27d44bce8ad5/outputs",
+                "https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation",
                 content);
 
-            if (!response.IsSuccessStatusCode) return "";
+            if (!response.IsSuccessStatusCode)
+            {
+                string errorBody = await response.Content.ReadAsStringAsync();
+                System.Diagnostics.Debug.WriteLine(
+                    $"Qwen API error: {response.StatusCode} - {errorBody}");
+                return "";
+            }
 
             var responseJson = await response.Content.ReadAsStringAsync();
+            System.Diagnostics.Debug.WriteLine($"Qwen response: {responseJson}");
+
             var doc = JsonDocument.Parse(responseJson);
 
-            var concepts = doc.RootElement
-                .GetProperty("outputs")[0]
-                .GetProperty("data")
-                .GetProperty("concepts");
+            string foodName = doc.RootElement
+                .GetProperty("output")
+                .GetProperty("choices")[0]
+                .GetProperty("message")
+                .GetProperty("content")[0]
+                .GetProperty("text")
+                .GetString() ?? "";
 
-            return concepts[0].GetProperty("name").GetString() ?? "";
+            return foodName.ToLower().Trim();
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine(
-                $"Clarifai API error: {ex.Message}");
+                $"Qwen API error: {ex.Message}");
             return "";
         }
+    }
+
+    /// <summary>
+    /// Scan barcode using device camera
+    /// </summary>
+    private async void OnScanBarcodeClicked(object sender, EventArgs e)
+    {
+        await DisplayAlert("Barcode Scanner",
+            "Point camera at barcode to scan.", "OK");
     }
 
     /// <summary>
@@ -229,21 +266,14 @@ public partial class ScannerPage : ContentPage
     }
 
     /// <summary>
-    /// Scan barcode using device camera
-    /// </summary>
-    private async void OnScanBarcodeClicked(object sender, EventArgs e)
-    {
-        await DisplayAlert("Barcode Scanner",
-            "Point camera at barcode to scan.", "OK");
-    }
-
-    /// <summary>
     /// Fetch nutrition data by barcode from Open Food Facts API
     /// </summary>
     private async Task FetchNutritionByBarcodeAsync(string barcode)
     {
         try
         {
+            _httpClient.DefaultRequestHeaders.Clear();
+
             var response = await _httpClient.GetAsync(
                 $"https://world.openfoodfacts.org/api/v0/product/{barcode}.json");
 
@@ -296,6 +326,8 @@ public partial class ScannerPage : ContentPage
     {
         try
         {
+            _httpClient.DefaultRequestHeaders.Clear();
+
             var url = $"https://world.openfoodfacts.org/cgi/search.pl?" +
                       $"search_terms={Uri.EscapeDataString(foodName)}" +
                       $"&search_simple=1&action=process&json=1&page_size=1";
@@ -367,7 +399,7 @@ public partial class ScannerPage : ContentPage
     }
 
     /// <summary>
-    /// Check food against user allergen settings
+    /// Check food against all allergen settings including custom ones
     /// </summary>
     private void CheckAllergens(string foodName)
     {
@@ -387,6 +419,13 @@ public partial class ScannerPage : ContentPage
             (nameLower.Contains("milk") || nameLower.Contains("cheese") ||
              nameLower.Contains("dairy") || nameLower.Contains("yogurt")))
             warnings.Add("⚠️ Contains Lactose");
+
+        // Check custom allergens
+        foreach (var allergen in _customAllergens)
+        {
+            if (nameLower.Contains(allergen.ToLower()))
+                warnings.Add($"⚠️ Contains {allergen}");
+        }
 
         if (warnings.Count > 0)
         {
