@@ -168,4 +168,85 @@ public class DatabaseService
             return false;
         }
     }
+
+    // ©¤©¤©¤ Food Item Methods ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+
+    /// <summary>
+    /// Get all food items from database
+    /// </summary>
+    public async Task<List<FoodItem>> GetAllFoodsAsync()
+    {
+        try
+        {
+            await InitAsync();
+            await _database!.CreateTableAsync<FoodItem>();
+            return await _database.Table<FoodItem>()
+                .OrderBy(f => f.Name)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine(
+                $"Get foods error: {ex.Message}");
+            return new List<FoodItem>();
+        }
+    }
+
+    /// <summary>
+    /// Save new food item to database
+    /// </summary>
+    public async Task<bool> SaveFoodAsync(FoodItem food)
+    {
+        try
+        {
+            await InitAsync();
+            await _database!.CreateTableAsync<FoodItem>();
+            await _database.InsertAsync(food);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine(
+                $"Save food error: {ex.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Update existing food item in database
+    /// </summary>
+    public async Task<bool> UpdateFoodAsync(FoodItem food)
+    {
+        try
+        {
+            await InitAsync();
+            await _database!.UpdateAsync(food);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine(
+                $"Update food error: {ex.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Delete food item from database
+    /// </summary>
+    public async Task<bool> DeleteFoodAsync(int id)
+    {
+        try
+        {
+            await InitAsync();
+            await _database!.DeleteAsync<FoodItem>(id);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine(
+                $"Delete food error: {ex.Message}");
+            return false;
+        }
+    }
 }

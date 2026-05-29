@@ -1,4 +1,4 @@
-using NutriLens.Models;
+﻿using NutriLens.Models;
 using NutriLens.Services;
 
 namespace NutriLens.Views;
@@ -107,6 +107,44 @@ public partial class DiaryPage : ContentPage
             swipeItem.BindingContext is DiaryEntry entry)
         {
             await Task.Run(() => DeleteEntry(entry));
+        }
+    }
+
+
+    /// <summary>
+    /// Show manual food entry dialog
+    /// </summary>
+    private async void OnAddEntryClicked(object sender, EventArgs e)
+    {
+        var popup = new AddFoodPopupPage();
+
+        var tcs = new TaskCompletionSource<DiaryEntry?>();
+        popup.Disappearing += (s, args) =>
+        {
+            tcs.TrySetResult(popup.Result);
+        };
+
+        await Navigation.PushModalAsync(popup);
+
+        var entry = await tcs.Task;
+        if (entry == null) return;
+
+        try
+        {
+            bool success = await _databaseService.SaveEntryAsync(entry);
+            if (success)
+            {
+                Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(200));
+                await LoadEntriesAsync();
+            }
+            else
+            {
+                await DisplayAlert("Error", "Failed to save entry. Please try again.", "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"Failed to save: {ex.Message}", "OK");
         }
     }
 }

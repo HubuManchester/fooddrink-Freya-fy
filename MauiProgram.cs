@@ -20,15 +20,13 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        // Register database service as singleton
         builder.Services.AddSingleton<DatabaseService>();
-
-        // Register pages with dependency injection
         builder.Services.AddTransient<HomePage>();
         builder.Services.AddTransient<ScannerPage>();
         builder.Services.AddTransient<DiaryPage>();
         builder.Services.AddTransient<NearbyPage>();
         builder.Services.AddTransient<SettingsPage>();
+        builder.Services.AddTransient<FoodDatabasePage>();
 
         return builder.Build();
     }

@@ -12,6 +12,8 @@ public partial class HomePage : ContentPage
     private int _targetWaterMl = 2000;
     private int _currentCalories = 0;
     private int _targetCalories = 2000;
+    private DateTime _lastShakeTime = DateTime.MinValue;
+    private AccelerometerData _lastAccelData;
 
     private readonly DatabaseService _databaseService;
 
@@ -81,14 +83,13 @@ public partial class HomePage : ContentPage
         {
             if (Accelerometer.Default.IsSupported)
             {
-                Accelerometer.Default.ShakeDetected += OnShakeDetected;
+                Accelerometer.Default.ReadingChanged += OnAccelerometerReadingChanged;
                 Accelerometer.Default.Start(SensorSpeed.Game);
             }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine(
-                $"Accelerometer error: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Accelerometer error: {ex.Message}");
         }
     }
 
@@ -102,37 +103,42 @@ public partial class HomePage : ContentPage
         {
             if (Accelerometer.Default.IsSupported)
             {
-                Accelerometer.Default.ShakeDetected -= OnShakeDetected;
+                Accelerometer.Default.ReadingChanged -= OnAccelerometerReadingChanged;
                 Accelerometer.Default.Stop();
             }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine(
-                $"Accelerometer stop error: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Accelerometer stop error: {ex.Message}");
         }
     }
 
     /// <summary>
     /// Handle shake gesture - show random meal suggestion
     /// </summary>
-    private async void OnShakeDetected(object? sender, EventArgs e)
+    private async void OnAccelerometerReadingChanged(object? sender, AccelerometerChangedEventArgs e)
     {
-        try
-        {
-            Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(300));
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine(
-                $"Vibration error: {ex.Message}");
-        }
+        var data = e.Reading;
 
-        await MainThread.InvokeOnMainThreadAsync(async () =>
+        double delta = Math.Abs(data.Acceleration.X - _lastAccelData.Acceleration.X)
+                     + Math.Abs(data.Acceleration.Y - _lastAccelData.Acceleration.Y)
+                     + Math.Abs(data.Acceleration.Z - _lastAccelData.Acceleration.Z);
+
+        _lastAccelData = data;
+
+        if (delta > 5.0 && (DateTime.Now - _lastShakeTime).TotalSeconds > 2)
         {
-            string meal = GetRandomMeal();
-            await DisplayAlert("🎲 Random Meal Suggestion", meal, "OK");
-        });
+            _lastShakeTime = DateTime.Now;
+
+            try { Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(300)); }
+            catch { }
+
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                string meal = GetRandomMeal();
+                await DisplayAlert("Random Meal Suggestion", meal, "OK");
+            });
+        }
     }
 
     /// <summary>

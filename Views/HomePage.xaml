@@ -2,166 +2,276 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NutriLens.Views.HomePage"
-             Title="Home">
+             Title="Home"
+             BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#121212}">
 
 	<ScrollView>
-		<VerticalStackLayout Padding="20" Spacing="15">
+		<VerticalStackLayout Spacing="0">
 
-			<!-- Header -->
-			<Label Text="NutriLens 🥗"
-                   FontSize="32"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"/>
+			<!-- Hero Header -->
+			<Grid HeightRequest="180"
+                  BackgroundColor="#4CAF50">
 
-			<Label Text="Your daily nutrition companion"
-                   FontSize="{DynamicResource GlobalFontSize}"
-                   HorizontalOptions="Center"
-                   TextColor="Gray"/>
-
-			<!-- Health Score Card -->
-			<Frame BackgroundColor="{AppThemeBinding Light=#E8F5E9, Dark=#1B5E20}"
-				   CornerRadius="15"
-				   Padding="20">
-				<VerticalStackLayout Spacing="8">
-					<Label Text="Today's Health Score"
-                           FontSize="{DynamicResource GlobalFontSize}"
-                           FontAttributes="Bold"/>
-					<Label x:Name="HealthScoreLabel"
-                           Text="- / 10"
-                           FontSize="36"
+				<VerticalStackLayout VerticalOptions="Center"
+                                     HorizontalOptions="Center"
+                                     Spacing="4">
+					<Label Text="NutriLens"
+                           FontSize="34"
                            FontAttributes="Bold"
-                           TextColor="Gray"
+                           TextColor="White"
                            HorizontalOptions="Center"/>
-					<Label x:Name="HealthAdviceLabel"
-                           Text="Start scanning food to get your score"
-                           FontSize="{DynamicResource GlobalFontSize}"
-                           TextColor="Gray"
+					<Label Text="Your daily nutrition companion 🥗"
+                           FontSize="14"
+                           TextColor="#C8E6C9"
                            HorizontalOptions="Center"/>
 				</VerticalStackLayout>
-			</Frame>
-
-			<!-- Calories Card -->
-			<Frame BackgroundColor="{AppThemeBinding Light=#E3F2FD, Dark=#0D47A1}"
-				   CornerRadius="15"
-				   Padding="20">
-				<VerticalStackLayout Spacing="8">
-					<Grid ColumnDefinitions="*,Auto">
-						<Label Grid.Column="0"
-                               Text="🔥 Calories"
-                               FontSize="{DynamicResource GlobalFontSize}"
-                               FontAttributes="Bold"/>
-						<Label Grid.Column="1"
-                               x:Name="CaloriesLabel"
-                               Text="0 / 2000 kcal"
-                               FontSize="{DynamicResource GlobalFontSize}"
-                               TextColor="Gray"/>
-					</Grid>
-					<ProgressBar x:Name="CaloriesProgress"
-                                 Progress="0"
-                                 ProgressColor="#2196F3"/>
-				</VerticalStackLayout>
-			</Frame>
-
-			<!-- Water Intake Card -->
-			<Frame BackgroundColor="{AppThemeBinding Light=#E1F5FE, Dark=#01579B}"
-				   CornerRadius="15"
-				   Padding="20">
-				<VerticalStackLayout Spacing="8">
-					<Grid ColumnDefinitions="*,Auto">
-						<Label Grid.Column="0"
-                               Text="💧 Water Intake"
-                               FontSize="{DynamicResource GlobalFontSize}"
-                               FontAttributes="Bold"/>
-						<Label Grid.Column="1"
-                               x:Name="WaterLabel"
-                               Text="0 / 2000 ml"
-                               FontSize="{DynamicResource GlobalFontSize}"
-                               TextColor="Gray"/>
-					</Grid>
-					<ProgressBar x:Name="WaterProgress"
-                                 Progress="0"
-                                 ProgressColor="#03A9F4"/>
-					<Button Text="+ 250ml"
-                            BackgroundColor="#03A9F4"
-                            TextColor="White"
-                            CornerRadius="10"
-                            Clicked="OnAddWaterClicked"/>
-				</VerticalStackLayout>
-			</Frame>
-
-			<!-- Today's Meals -->
-			<Label Text="Today's Meals"
-                   FontSize="18"
-                   FontAttributes="Bold"/>
-
-			<!-- Breakfast -->
-			<Frame CornerRadius="15" Padding="15">
-				<VerticalStackLayout Spacing="5">
-					<Label Text="🌅 Breakfast"
-                           FontSize="{DynamicResource GlobalFontSize}"
-                           FontAttributes="Bold"/>
-					<Label x:Name="BreakfastLabel"
-                           Text="No entries yet"
-                           TextColor="Gray"
-                           FontSize="{DynamicResource GlobalFontSize}"/>
-				</VerticalStackLayout>
-			</Frame>
-
-			<!-- Lunch -->
-			<Frame CornerRadius="15" Padding="15">
-				<VerticalStackLayout Spacing="5">
-					<Label Text="☀️ Lunch"
-                           FontSize="{DynamicResource GlobalFontSize}"
-                           FontAttributes="Bold"/>
-					<Label x:Name="LunchLabel"
-                           Text="No entries yet"
-                           TextColor="Gray"
-                           FontSize="{DynamicResource GlobalFontSize}"/>
-				</VerticalStackLayout>
-			</Frame>
-
-			<!-- Dinner -->
-			<Frame CornerRadius="15" Padding="15">
-				<VerticalStackLayout Spacing="5">
-					<Label Text="🌙 Dinner"
-                           FontSize="{DynamicResource GlobalFontSize}"
-                           FontAttributes="Bold"/>
-					<Label x:Name="DinnerLabel"
-                           Text="No entries yet"
-                           TextColor="Gray"
-                           FontSize="{DynamicResource GlobalFontSize}"/>
-				</VerticalStackLayout>
-			</Frame>
-
-			<!-- Quick Actions -->
-			<Label Text="Quick Actions"
-                   FontSize="18"
-                   FontAttributes="Bold"/>
-
-			<Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-				<Button Grid.Column="0"
-                        Text="📷 Scan Food"
-                        BackgroundColor="#4CAF50"
-                        TextColor="White"
-                        CornerRadius="10"
-                        Clicked="OnScanClicked"/>
-				<Button Grid.Column="1"
-                        Text="📅 View Diary"
-                        BackgroundColor="#2196F3"
-                        TextColor="White"
-                        CornerRadius="10"
-                        Clicked="OnDiaryClicked"/>
 			</Grid>
 
-			<!-- Shake Hint -->
-			<Frame BackgroundColor="{AppThemeBinding Light=#FFF3E0, Dark=#E65000}"
-				   CornerRadius="15"
-				   Padding="15">
-				<Label Text="🎲 Shake your phone for a random meal suggestion!"
-                       FontSize="{DynamicResource GlobalFontSize}"
-                       HorizontalOptions="Center"/>
-			</Frame>
+			<!-- Content -->
+			<VerticalStackLayout Padding="16" Spacing="14">
 
+				<!-- Health Score Card -->
+				<Frame BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E2E}"
+                       CornerRadius="20"
+                       Padding="20"
+                       HasShadow="True"
+                       BorderColor="Transparent">
+					<Grid ColumnDefinitions="*,Auto">
+						<VerticalStackLayout Grid.Column="0" Spacing="4">
+							<Label Text="Health Score"
+                                   FontSize="13"
+                                   TextColor="Gray"
+                                   FontAttributes="Bold"/>
+							<Label x:Name="HealthScoreLabel"
+                                   Text="- / 10"
+                                   FontSize="40"
+                                   FontAttributes="Bold"
+                                   TextColor="#4CAF50"/>
+							<Label x:Name="HealthAdviceLabel"
+                                   Text="Start scanning food"
+                                   FontSize="{DynamicResource GlobalFontSize}"
+                                   TextColor="Gray"/>
+						</VerticalStackLayout>
+						<Frame Grid.Column="1"
+                               BackgroundColor="#E8F5E9"
+                               CornerRadius="40"
+                               WidthRequest="80"
+                               HeightRequest="80"
+                               Padding="0"
+                               VerticalOptions="Center">
+							<Label Text="💪"
+                                   FontSize="36"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"/>
+						</Frame>
+					</Grid>
+				</Frame>
+
+				<!-- Calories + Water Row -->
+				<Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+
+					<!-- Calories Card -->
+					<Frame Grid.Column="0"
+                           BackgroundColor="{AppThemeBinding Light=#E3F2FD, Dark=#0D47A1}"
+                           CornerRadius="20"
+                           Padding="16"
+                           HasShadow="True"
+                           BorderColor="Transparent">
+						<VerticalStackLayout Spacing="8">
+							<Label Text="🔥"
+                                   FontSize="24"
+                                   HorizontalOptions="Start"/>
+							<Label Text="Calories"
+                                   FontSize="12"
+                                   TextColor="Gray"/>
+							<Label x:Name="CaloriesLabel"
+                                   Text="0 kcal"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="#2196F3"/>
+							<ProgressBar x:Name="CaloriesProgress"
+                                         Progress="0"
+                                         ProgressColor="#2196F3"
+                                         HeightRequest="6"/>
+						</VerticalStackLayout>
+					</Frame>
+
+					<!-- Water Card -->
+					<Frame Grid.Column="1"
+                           BackgroundColor="{AppThemeBinding Light=#E1F5FE, Dark=#01579B}"
+                           CornerRadius="20"
+                           Padding="16"
+                           HasShadow="True"
+                           BorderColor="Transparent">
+						<VerticalStackLayout Spacing="8">
+							<Label Text="💧"
+                                   FontSize="24"
+                                   HorizontalOptions="Start"/>
+							<Label Text="Water"
+                                   FontSize="12"
+                                   TextColor="Gray"/>
+							<Label x:Name="WaterLabel"
+                                   Text="0 ml"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="#03A9F4"/>
+							<ProgressBar x:Name="WaterProgress"
+                                         Progress="0"
+                                         ProgressColor="#03A9F4"
+                                         HeightRequest="6"/>
+							<Button Text="+ 250ml"
+                                    BackgroundColor="#03A9F4"
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    HeightRequest="34"
+                                    FontSize="12"
+                                    Padding="0"
+                                    Clicked="OnAddWaterClicked"/>
+						</VerticalStackLayout>
+					</Frame>
+
+				</Grid>
+
+				<!-- Quick Actions -->
+				<Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+					<Button Grid.Column="0"
+                            Text="📷 Scan Food"
+                            BackgroundColor="#4CAF50"
+                            TextColor="White"
+                            CornerRadius="16"
+                            HeightRequest="52"
+                            FontSize="15"
+                            FontAttributes="Bold"
+                            Clicked="OnScanClicked"/>
+					<Button Grid.Column="1"
+                            Text="📅 My Diary"
+                            BackgroundColor="#2196F3"
+                            TextColor="White"
+                            CornerRadius="16"
+                            HeightRequest="52"
+                            FontSize="15"
+                            FontAttributes="Bold"
+                            Clicked="OnDiaryClicked"/>
+				</Grid>
+
+				<!-- Today's Meals -->
+				<Label Text="Today's Meals"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       Margin="4,4,0,0"/>
+
+				<Frame BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E2E}"
+                       CornerRadius="20"
+                       Padding="16"
+                       HasShadow="True"
+                       BorderColor="Transparent">
+					<VerticalStackLayout Spacing="14">
+
+						<!-- Breakfast -->
+						<Grid ColumnDefinitions="Auto,*">
+							<Frame Grid.Column="0"
+                                   BackgroundColor="#FFF9C4"
+                                   CornerRadius="12"
+                                   WidthRequest="44"
+                                   HeightRequest="44"
+                                   Padding="0"
+                                   VerticalOptions="Center">
+								<Label Text="🌅"
+                                       FontSize="22"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"/>
+							</Frame>
+							<VerticalStackLayout Grid.Column="1"
+                                                 Margin="12,0,0,0"
+                                                 VerticalOptions="Center"
+                                                 Spacing="2">
+								<Label Text="Breakfast"
+                                       FontSize="14"
+                                       FontAttributes="Bold"/>
+								<Label x:Name="BreakfastLabel"
+                                       Text="No entries yet"
+                                       TextColor="Gray"
+                                       FontSize="{DynamicResource GlobalFontSize}"/>
+							</VerticalStackLayout>
+						</Grid>
+
+						<BoxView HeightRequest="1"
+                                 BackgroundColor="#F0F0F0"/>
+
+						<!-- Lunch -->
+						<Grid ColumnDefinitions="Auto,*">
+							<Frame Grid.Column="0"
+                                   BackgroundColor="#FFE0B2"
+                                   CornerRadius="12"
+                                   WidthRequest="44"
+                                   HeightRequest="44"
+                                   Padding="0"
+                                   VerticalOptions="Center">
+								<Label Text="☀️"
+                                       FontSize="22"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"/>
+							</Frame>
+							<VerticalStackLayout Grid.Column="1"
+                                                 Margin="12,0,0,0"
+                                                 VerticalOptions="Center"
+                                                 Spacing="2">
+								<Label Text="Lunch"
+                                       FontSize="14"
+                                       FontAttributes="Bold"/>
+								<Label x:Name="LunchLabel"
+                                       Text="No entries yet"
+                                       TextColor="Gray"
+                                       FontSize="{DynamicResource GlobalFontSize}"/>
+							</VerticalStackLayout>
+						</Grid>
+
+						<BoxView HeightRequest="1"
+                                 BackgroundColor="#F0F0F0"/>
+
+						<!-- Dinner -->
+						<Grid ColumnDefinitions="Auto,*">
+							<Frame Grid.Column="0"
+                                   BackgroundColor="#E8EAF6"
+                                   CornerRadius="12"
+                                   WidthRequest="44"
+                                   HeightRequest="44"
+                                   Padding="0"
+                                   VerticalOptions="Center">
+								<Label Text="🌙"
+                                       FontSize="22"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"/>
+							</Frame>
+							<VerticalStackLayout Grid.Column="1"
+                                                 Margin="12,0,0,0"
+                                                 VerticalOptions="Center"
+                                                 Spacing="2">
+								<Label Text="Dinner"
+                                       FontSize="14"
+                                       FontAttributes="Bold"/>
+								<Label x:Name="DinnerLabel"
+                                       Text="No entries yet"
+                                       TextColor="Gray"
+                                       FontSize="{DynamicResource GlobalFontSize}"/>
+							</VerticalStackLayout>
+						</Grid>
+
+					</VerticalStackLayout>
+				</Frame>
+
+				<!-- Shake Hint -->
+				<Frame BackgroundColor="{AppThemeBinding Light=#FFF3E0, Dark=#E65000}"
+                       CornerRadius="16"
+                       Padding="16"
+                       BorderColor="Transparent">
+					<Label Text="🎲 Shake your phone for a random meal suggestion!"
+                           FontSize="{DynamicResource GlobalFontSize}"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"/>
+				</Frame>
+
+			</VerticalStackLayout>
 		</VerticalStackLayout>
 	</ScrollView>
 
