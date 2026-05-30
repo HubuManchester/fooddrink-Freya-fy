@@ -2,101 +2,270 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NutriLens.Views.NearbyPage"
-             Title="Nearby">
+             Title="Nearby"
+             BackgroundColor="{AppThemeBinding Light=#F0F4F8, Dark=#0F0F1A}">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
+    <Grid RowDefinitions="Auto,*">
 
-            <Label Text="Nearby Healthy Places 📍"
-                   FontSize="28"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"/>
-
-            <Label Text="Find healthy restaurants near you"
-                   FontSize="{DynamicResource GlobalFontSize}"
-                   TextColor="Gray"
-                   HorizontalOptions="Center"/>
-
-            <!-- Location Card -->
-            <Frame BackgroundColor="#E3F2FD"
-                   CornerRadius="15"
-                   Padding="15">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="📍 Your Location"
-                           FontSize="{DynamicResource GlobalFontSize}"
-                           FontAttributes="Bold"/>
-                    <Label x:Name="LocationLabel"
-                           Text="Location not detected yet"
-                           FontSize="{DynamicResource GlobalFontSize}"
-                           TextColor="Gray"/>
-                    <Label x:Name="CoordinatesLabel"
-                           Text=""
-                           FontSize="{DynamicResource GlobalFontSize}"
-                           TextColor="Gray"/>
-                </VerticalStackLayout>
-            </Frame>
-
-            <!-- Find Button -->
-            <Button Text="📍 Find Nearby Healthy Restaurants"
-                    BackgroundColor="#4CAF50"
-                    TextColor="White"
-                    CornerRadius="10"
-                    FontSize="{DynamicResource GlobalFontSize}"
-                    Clicked="OnFindNearbyClicked"/>
-
-            <!-- Loading -->
-            <ActivityIndicator x:Name="LoadingIndicator"
-                               IsRunning="False"
-                               IsVisible="False"
-                               Color="#4CAF50"
-                               HorizontalOptions="Center"/>
-
-            <!-- Empty State -->
-            <VerticalStackLayout x:Name="EmptyState" Spacing="10">
-                <Label Text="🗺️"
-                       FontSize="48"
+        <!-- Header -->
+        <Grid Grid.Row="0" HeightRequest="130" BackgroundColor="#4CAF50">
+            <VerticalStackLayout VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 Spacing="4">
+                <Label Text="Nearby Healthy Places 📍"
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       TextColor="White"
                        HorizontalOptions="Center"/>
-                <Label Text="Tap the button to find nearby places"
+                <Label Text="Find healthy restaurants near you"
                        FontSize="{DynamicResource GlobalFontSize}"
-                       TextColor="Gray"
+                       TextColor="#C8E6C9"
                        HorizontalOptions="Center"/>
             </VerticalStackLayout>
+        </Grid>
 
-            <!-- Results List -->
-            <CollectionView x:Name="PlacesList">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Frame Margin="0,5" CornerRadius="10" Padding="15">
-                            <Frame.GestureRecognizers>
-                                <TapGestureRecognizer
-                                    Tapped="OnPlaceTapped"
-                                    CommandParameter="{Binding .}"/>
-                            </Frame.GestureRecognizers>
-                            <Grid ColumnDefinitions="Auto,*">
-                                <Label Grid.Column="0"
-                                       Text="🍃"
+        <RefreshView Grid.Row="1"
+                     x:Name="PageRefreshView"
+                     Refreshing="OnPageRefreshing">
+            <ScrollView>
+                <VerticalStackLayout Padding="16" Spacing="14">
+
+                    <!-- Location Card -->
+                    <Frame BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E2E}"
+                           CornerRadius="20"
+                           Padding="16"
+                           HasShadow="True"
+                           BorderColor="Transparent">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Frame Grid.Column="0"
+                                   BackgroundColor="#E8F5E9"
+                                   CornerRadius="24"
+                                   WidthRequest="48"
+                                   HeightRequest="48"
+                                   Padding="0"
+                                   BorderColor="Transparent"
+                                   VerticalOptions="Center">
+                                <Label Text="📍"
                                        FontSize="24"
-                                       VerticalOptions="Center"
-                                       Margin="0,0,10,0"/>
-                                <VerticalStackLayout Grid.Column="1"
-                                                     Spacing="3">
-                                    <Label Text="{Binding Name}"
-                                           FontAttributes="Bold"
-                                           FontSize="{DynamicResource GlobalFontSize}"/>
-                                    <Label Text="{Binding Address}"
-                                           TextColor="Gray"
-                                           FontSize="{DynamicResource GlobalFontSize}"/>
-                                    <Label Text="{Binding Distance}"
-                                           TextColor="#4CAF50"
-                                           FontSize="{DynamicResource GlobalFontSize}"/>
-                                </VerticalStackLayout>
-                            </Grid>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"/>
+                            </Frame>
+                            <VerticalStackLayout Grid.Column="1"
+                                                 VerticalOptions="Center"
+                                                 Spacing="2">
+                                <Label Text="Your Location"
+                                       FontSize="{DynamicResource GlobalFontSize}"
+                                       FontAttributes="Bold"
+                                       TextColor="Gray"/>
+                                <Label x:Name="LocationLabel"
+                                       Text="Not detected yet"
+                                       FontSize="{DynamicResource GlobalFontSize}"
+                                       FontAttributes="Bold"/>
+                                <Label x:Name="CoordinatesLabel"
+                                       Text=""
+                                       FontSize="13"
+                                       TextColor="Gray"/>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Frame>
 
-        </VerticalStackLayout>
-    </ScrollView>
+                    <!-- Search Controls -->
+                    <Frame BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E2E}"
+                           CornerRadius="20"
+                           Padding="16"
+                           HasShadow="True"
+                           BorderColor="Transparent">
+                        <VerticalStackLayout Spacing="12">
 
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="Search Keyword"
+                                       FontSize="{DynamicResource GlobalFontSize}"
+                                       FontAttributes="Bold"
+                                       TextColor="Gray"/>
+                                <Frame Padding="0"
+                                       CornerRadius="12"
+                                       BorderColor="#E0E0E0"
+                                       HasShadow="False">
+                                    <Entry x:Name="KeywordEntry"
+                                           Text="restaurant"
+                                           Placeholder="e.g. restaurant, salad, healthy..."
+                                           FontSize="{DynamicResource GlobalFontSize}"
+                                           Margin="12,8"/>
+                                </Frame>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="Search Radius"
+                                       FontSize="{DynamicResource GlobalFontSize}"
+                                       FontAttributes="Bold"
+                                       TextColor="Gray"/>
+                                <Frame Padding="0"
+                                       CornerRadius="12"
+                                       BorderColor="#E0E0E0"
+                                       HasShadow="False">
+                                    <Picker x:Name="RadiusPicker"
+                                            FontSize="{DynamicResource GlobalFontSize}"
+                                            Margin="12,8"
+                                            SelectedIndex="1">
+                                        <Picker.Items>
+                                            <x:String>500 m</x:String>
+                                            <x:String>1 km</x:String>
+                                            <x:String>2 km</x:String>
+                                            <x:String>5 km</x:String>
+                                        </Picker.Items>
+                                    </Picker>
+                                </Frame>
+                            </VerticalStackLayout>
+
+                            <Button Text="📍 Find Nearby Places"
+                                    BackgroundColor="#4CAF50"
+                                    TextColor="White"
+                                    CornerRadius="14"
+                                    HeightRequest="50"
+                                    FontSize="{DynamicResource GlobalFontSize}"
+                                    FontAttributes="Bold"
+                                    Clicked="OnFindNearbyClicked"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Loading -->
+                    <ActivityIndicator x:Name="LoadingIndicator"
+                                       IsRunning="False"
+                                       IsVisible="False"
+                                       Color="#4CAF50"
+                                       HorizontalOptions="Center"/>
+
+                    <!-- Stats Bar -->
+                    <Frame x:Name="StatsFrame"
+                           IsVisible="False"
+                           BackgroundColor="{AppThemeBinding Light=#E8F5E9, Dark=#1B5E20}"
+                           CornerRadius="16"
+                           Padding="16"
+                           BorderColor="Transparent">
+                        <Grid ColumnDefinitions="*,*,*">
+                            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
+                                <Label Text="Found" FontSize="{DynamicResource GlobalFontSize}" TextColor="Gray"
+                                       HorizontalOptions="Center"/>
+                                <Label x:Name="ResultCountLabel" Text="0"
+                                       FontSize="20" FontAttributes="Bold"
+                                       TextColor="#4CAF50" HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
+                                <Label Text="Nearest" FontSize="{DynamicResource GlobalFontSize}" TextColor="Gray"
+                                       HorizontalOptions="Center"/>
+                                <Label x:Name="NearestLabel" Text="-"
+                                       FontSize="20" FontAttributes="Bold"
+                                       TextColor="#2196F3" HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
+                                <Label Text="With Hours" FontSize="{DynamicResource GlobalFontSize}" TextColor="Gray"
+                                       HorizontalOptions="Center"/>
+                                <Label x:Name="OpenNowLabel" Text="-"
+                                       FontSize="20" FontAttributes="Bold"
+                                       TextColor="#FF9800" HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Frame>
+
+                    <!-- Empty State -->
+                    <VerticalStackLayout x:Name="EmptyState"
+                                         Spacing="10"
+                                         Padding="0,30">
+                        <Label Text="🗺️" FontSize="56" HorizontalOptions="Center"/>
+                        <Label Text="Tap the button to find nearby places"
+                               FontSize="{DynamicResource GlobalFontSize}" TextColor="Gray"
+                               HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center"/>
+                        <Label Text="Pull down to refresh after searching"
+                               FontSize="{DynamicResource GlobalFontSize}" TextColor="Gray"
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+
+                    <!-- Results -->
+                    <CollectionView x:Name="PlacesList">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Margin="0,5"
+                                       CornerRadius="18"
+                                       Padding="16"
+                                       HasShadow="True"
+                                       BorderColor="Transparent"
+                                       BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E2E}">
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Tapped="OnPlaceTapped"
+                                            CommandParameter="{Binding .}"/>
+                                    </Frame.GestureRecognizers>
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+
+                                        <Frame Grid.Column="0"
+                                               BackgroundColor="#E8F5E9"
+                                               CornerRadius="22"
+                                               WidthRequest="44"
+                                               HeightRequest="44"
+                                               Padding="0"
+                                               BorderColor="Transparent"
+                                               VerticalOptions="Center">
+                                            <Label Text="🍃" FontSize="22"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"/>
+                                        </Frame>
+
+                                        <VerticalStackLayout Grid.Column="1"
+                                                             Spacing="3"
+                                                             VerticalOptions="Center">
+                                            <Label Text="{Binding Name}"
+                                                   FontAttributes="Bold"
+                                                   FontSize="{DynamicResource GlobalFontSize}"/>
+                                            <Label Text="{Binding Address}"
+                                                   TextColor="Gray"
+                                                   FontSize="{DynamicResource GlobalFontSize}"
+                                                   LineBreakMode="TailTruncation"/>
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Frame BackgroundColor="#E8F5E9"
+                                                       CornerRadius="8"
+                                                       Padding="6,2"
+                                                       BorderColor="Transparent">
+                                                    <Label Text="{Binding Distance}"
+                                                           TextColor="#4CAF50"
+                                                           FontSize="{DynamicResource GlobalFontSize}"
+                                                           FontAttributes="Bold"/>
+                                                </Frame>
+                                                <Frame BackgroundColor="#FFF3E0"
+                                                       CornerRadius="8"
+                                                       Padding="6,2"
+                                                       BorderColor="Transparent"
+                                                       IsVisible="{Binding HasType}">
+                                                    <Label Text="{Binding Type}"
+                                                           TextColor="#FF9800"
+                                                           FontSize="{DynamicResource GlobalFontSize}"/>
+                                                </Frame>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+
+                                        <VerticalStackLayout Grid.Column="2"
+                                                             HorizontalOptions="End"
+                                                             VerticalOptions="Center"
+                                                             Spacing="2">
+                                            <Label Text="{Binding RatingStars}"
+                                                   FontSize="{DynamicResource GlobalFontSize}"
+                                                   HorizontalOptions="End"/>
+                                            <Label Text="{Binding Rating}"
+                                                   FontSize="{DynamicResource GlobalFontSize}"
+                                                   FontAttributes="Bold"
+                                                   TextColor="#FF9800"
+                                                   HorizontalOptions="End"/>
+                                        </VerticalStackLayout>
+
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+
+    </Grid>
 </ContentPage>

@@ -137,6 +137,6 @@ public partial class FoodDetailPage : ContentPage
     private async void OnCloseClicked(object sender, EventArgs e)
     {
         _cts?.Cancel();
-        await Navigation.PopModalAsync();
+        await Navigation.PopAsync();
     }
 }

@@ -1,330 +1,169 @@
 ﻿namespace NutriLens.Views;
 
-/// <summary>
-/// Settings page - manages app preferences, accessibility options,
-/// nutrition goals and allergen warnings.
-/// Follows WCAG 2.1 accessibility guidelines.
-/// </summary>
 public partial class SettingsPage : ContentPage
 {
-    // Water reminder timer
-    private System.Timers.Timer? _waterReminderTimer;
-
-    // Custom allergens list
-    private List<string> _customAllergens = new List<string>();
+    private List<string> _customAllergens = new();
+    private bool _isInitializing = true;
 
     public SettingsPage()
     {
         InitializeComponent();
         LoadSettings();
+        _isInitializing = false;
     }
 
-    /// <summary>
-    /// Load all saved settings from preferences on page load
-    /// </summary>
     private void LoadSettings()
     {
-        try
-        {
-            // Load dark mode
-            DarkModeSwitch.IsToggled =
-                Preferences.Default.Get("dark_mode", false);
+        // Theme
+        string theme = Preferences.Default.Get("app_theme", "System");
+        LightModeRadio.IsChecked = theme == "Light";
+        DarkModeRadio.IsChecked = theme == "Dark";
+        SystemModeRadio.IsChecked = theme == "System";
 
-            // Load TTS
-            TTSSwitch.IsToggled =
-                Preferences.Default.Get("tts_enabled", false);
+        // Font size
+        double fontSize = Preferences.Default.Get("font_size", 16.0);
+        FontSizeSlider.Value = fontSize;
+        FontSizeLabel.Text = $"{(int)fontSize}";
 
-            // Load water reminder
-            WaterReminderSwitch.IsToggled =
-                Preferences.Default.Get("water_reminder", false);
+        // Apply saved font size to global resource immediately
+        if (Application.Current?.Resources != null)
+            Application.Current.Resources["GlobalFontSize"] = fontSize;
 
-            // Load font size
-            double fontSize =
-                Preferences.Default.Get("font_size", 16.0);
-            FontSizeSlider.Value = fontSize;
-            FontSizeLabel.Text = ((int)fontSize).ToString();
+        // Goals
+        CalorieTargetEntry.Text = Preferences.Default.Get("calorie_target", "2000");
+        WaterTargetEntry.Text = Preferences.Default.Get("water_target", "2000");
 
-            // Load nutrition goals
-            CalorieTargetEntry.Text =
-                Preferences.Default.Get("calorie_target", "2000");
-            WaterTargetEntry.Text =
-                Preferences.Default.Get("water_target", "2000");
+        // Allergens
+        string saved = Preferences.Default.Get("custom_allergens", "");
+        _customAllergens = string.IsNullOrEmpty(saved)
+            ? new List<string>()
+            : saved.Split(',').Where(s => !string.IsNullOrEmpty(s)).ToList();
+        RefreshAllergenList();
 
-            // Load custom allergens
-            string saved =
-                Preferences.Default.Get("custom_allergens", "");
-            if (!string.IsNullOrEmpty(saved))
-            {
-                _customAllergens = saved.Split(',').ToList();
-                UpdateCustomAllergenList();
-            }
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine(
-                $"Error loading settings: {ex.Message}");
-        }
+        // Reminders
+        WaterReminderSwitch.IsToggled =
+            Preferences.Default.Get("water_reminder", false);
     }
 
-    /// <summary>
-    /// Toggle dark mode
-    /// Follows WCAG 1.4.3 contrast ratio guideline
-    /// </summary>
-    private void OnDarkModeToggled(object sender, ToggledEventArgs e)
+    // ── Theme ─────────────────────────────────────────────────────────────────
+
+    private void OnThemeChanged(object sender, CheckedChangedEventArgs e)
     {
-        try
-        {
-            Application.Current!.UserAppTheme = e.Value
-                ? AppTheme.Dark
-                : AppTheme.Light;
+        if (_isInitializing || !e.Value) return;
 
-            Preferences.Default.Set("dark_mode", e.Value);
-        }
-        catch (Exception ex)
+        if (sender == LightModeRadio)
         {
-            System.Diagnostics.Debug.WriteLine(
-                $"Dark mode error: {ex.Message}");
+            Application.Current!.UserAppTheme = AppTheme.Light;
+            Preferences.Default.Set("app_theme", "Light");
+        }
+        else if (sender == DarkModeRadio)
+        {
+            Application.Current!.UserAppTheme = AppTheme.Dark;
+            Preferences.Default.Set("app_theme", "Dark");
+        }
+        else if (sender == SystemModeRadio)
+        {
+            Application.Current!.UserAppTheme = AppTheme.Unspecified;
+            Preferences.Default.Set("app_theme", "System");
         }
     }
 
-    /// <summary>
-    /// Toggle text-to-speech
-    /// Follows WCAG 1.1.1 non-text content guideline
-    /// </summary>
-    private void OnTTSToggled(object sender, ToggledEventArgs e)
-    {
-        Preferences.Default.Set("tts_enabled", e.Value);
-    }
+    // ── Font Size ─────────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// Adjust font size for accessibility
-    /// Follows WCAG 1.4.4 resize text guideline
-    /// </summary>
     private void OnFontSizeChanged(object sender, ValueChangedEventArgs e)
     {
-        int size = (int)e.NewValue;
-        FontSizeLabel.Text = size.ToString();
-        Preferences.Default.Set("font_size", e.NewValue);
+        if (_isInitializing) return;
 
-        // Apply font size globally
+        double size = e.NewValue;
+
+        // Update display label
+        FontSizeLabel.Text = $"{(int)size}";
+
+        // Update global resource - all labels with DynamicResource will
+        // update automatically across the entire app
         if (Application.Current?.Resources != null)
-        {
-            Application.Current.Resources["GlobalFontSize"] = (double)size;
-        }
+            Application.Current.Resources["GlobalFontSize"] = size;
+
+        Preferences.Default.Set("font_size", size);
     }
 
-    /// <summary>
-    /// Save nutrition goals with full validation
-    /// </summary>
+    // ── Goals ─────────────────────────────────────────────────────────────────
+
     private async void OnSaveGoalsClicked(object sender, EventArgs e)
     {
-        try
+        if (!int.TryParse(CalorieTargetEntry.Text, out int cal)
+            || cal < 500 || cal > 9000)
         {
-            // Validate calorie target
-            string calorieText = CalorieTargetEntry.Text?.Trim() ?? "";
-            if (string.IsNullOrEmpty(calorieText))
-            {
-                await DisplayAlert("Validation Error",
-                    "Please enter a calorie target.", "OK");
-                Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(200));
-                return;
-            }
-
-            if (!int.TryParse(calorieText, out int calories) ||
-                calories < 500 || calories > 10000)
-            {
-                await DisplayAlert("Validation Error",
-                    "Calorie target must be between 500 and 10000 kcal.",
-                    "OK");
-                Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(200));
-                return;
-            }
-
-            // Validate water target
-            string waterText = WaterTargetEntry.Text?.Trim() ?? "";
-            if (string.IsNullOrEmpty(waterText))
-            {
-                await DisplayAlert("Validation Error",
-                    "Please enter a water target.", "OK");
-                Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(200));
-                return;
-            }
-
-            if (!int.TryParse(waterText, out int water) ||
-                water < 500 || water > 10000)
-            {
-                await DisplayAlert("Validation Error",
-                    "Water target must be between 500 and 10000 ml.", "OK");
-                Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(200));
-                return;
-            }
-
-            // Save valid goals
-            Preferences.Default.Set("calorie_target", calorieText);
-            Preferences.Default.Set("water_target", waterText);
-
-            await DisplayAlert("Saved ✅",
-                $"Goals saved!\nCalories: {calories} kcal\nWater: {water} ml",
-                "OK");
-
-            Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(200));
+            await DisplayAlert("Invalid",
+                "Please enter a valid calorie target (500-9000).", "OK");
+            return;
         }
-        catch (Exception ex)
+
+        if (!int.TryParse(WaterTargetEntry.Text, out int water)
+            || water < 500 || water > 10000)
         {
-            await DisplayAlert("Error",
-                $"Failed to save goals: {ex.Message}", "OK");
+            await DisplayAlert("Invalid",
+                "Please enter a valid water target (500-10000 ml).", "OK");
+            return;
         }
+
+        Preferences.Default.Set("calorie_target", cal.ToString());
+        Preferences.Default.Set("water_target", water.ToString());
+
+        await DisplayAlert("Saved", "Your nutrition goals have been saved.", "OK");
     }
 
-    /// <summary>
-    /// Add custom allergen to personal list
-    /// </summary>
+    // ── Allergens ─────────────────────────────────────────────────────────────
+
     private async void OnAddCustomAllergenClicked(object sender, EventArgs e)
     {
-        try
+        string allergen = CustomAllergenEntry.Text?.Trim() ?? "";
+        if (string.IsNullOrEmpty(allergen))
         {
-            string allergen = CustomAllergenEntry.Text?.Trim() ?? "";
-
-            // Validate input
-            if (string.IsNullOrEmpty(allergen))
-            {
-                await DisplayAlert("Validation Error",
-                    "Please enter an allergen name.", "OK");
-                return;
-            }
-
-            if (allergen.Length < 2)
-            {
-                await DisplayAlert("Validation Error",
-                    "Allergen name must be at least 2 characters.", "OK");
-                return;
-            }
-
-            // Check for duplicates
-            if (_customAllergens.Any(a =>
-                a.ToLower() == allergen.ToLower()))
-            {
-                await DisplayAlert("Already Added",
-                    $"{allergen} is already in your allergen list.", "OK");
-                return;
-            }
-
-            // Add allergen
-            _customAllergens.Add(allergen);
-            CustomAllergenEntry.Text = "";
-            UpdateCustomAllergenList();
-
-            // Save to preferences
-            Preferences.Default.Set("custom_allergens",
-                string.Join(",", _customAllergens));
-
-            Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(100));
+            await DisplayAlert("Empty", "Please enter an allergen name.", "OK");
+            return;
         }
-        catch (Exception ex)
+
+        if (_customAllergens.Contains(allergen, StringComparer.OrdinalIgnoreCase))
         {
-            await DisplayAlert("Error",
-                $"Failed to add allergen: {ex.Message}", "OK");
+            await DisplayAlert("Duplicate",
+                "This allergen is already in the list.", "OK");
+            return;
         }
+
+        _customAllergens.Add(allergen);
+        SaveAllergens();
+        RefreshAllergenList();
+        CustomAllergenEntry.Text = "";
     }
 
-    /// <summary>
-    /// Remove allergen on left swipe delete
-    /// </summary>
     private void OnRemoveAllergenClicked(object sender, EventArgs e)
     {
-        try
+        if (sender is SwipeItemView siv &&
+            siv.CommandParameter is string allergen)
         {
-            // Handle both SwipeItem and SwipeItemView
-            string? allergen = null;
-
-            if (sender is SwipeItemView swipeItemView)
-            {
-                allergen = swipeItemView.BindingContext as string;
-            }
-            else if (sender is SwipeItem swipeItem)
-            {
-                allergen = swipeItem.BindingContext as string;
-            }
-
-            if (allergen == null) return;
-
             _customAllergens.Remove(allergen);
-            UpdateCustomAllergenList();
-
-            Preferences.Default.Set("custom_allergens",
-                string.Join(",", _customAllergens));
-
-            try
-            {
-                Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(200));
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(
-                    $"Vibration error: {ex.Message}");
-            }
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine(
-                $"Error removing allergen: {ex.Message}");
+            SaveAllergens();
+            RefreshAllergenList();
         }
     }
 
-    /// <summary>
-    /// Refresh custom allergen list display
-    /// </summary>
-    private void UpdateCustomAllergenList()
+    private void SaveAllergens()
+    {
+        Preferences.Default.Set("custom_allergens",
+            string.Join(",", _customAllergens));
+    }
+
+    private void RefreshAllergenList()
     {
         CustomAllergenList.ItemsSource = null;
-        CustomAllergenList.ItemsSource = _customAllergens;
+        CustomAllergenList.ItemsSource = _customAllergens.ToList();
     }
 
-    /// <summary>
-    /// Toggle hourly water reminder vibration
-    /// </summary>
+    // ── Reminders ─────────────────────────────────────────────────────────────
+
     private void OnWaterReminderToggled(object sender, ToggledEventArgs e)
     {
         Preferences.Default.Set("water_reminder", e.Value);
-
-        if (e.Value)
-            StartWaterReminder();
-        else
-            StopWaterReminder();
-    }
-
-    /// <summary>
-    /// Start hourly water reminder timer
-    /// </summary>
-    private void StartWaterReminder()
-    {
-        _waterReminderTimer = new System.Timers.Timer(3600000);
-        _waterReminderTimer.Elapsed += async (s, e) =>
-        {
-            await MainThread.InvokeOnMainThreadAsync(() =>
-            {
-                try
-                {
-                    Vibration.Default.Vibrate(
-                        TimeSpan.FromMilliseconds(500));
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine(
-                        $"Vibration error: {ex.Message}");
-                }
-            });
-        };
-        _waterReminderTimer.Start();
-    }
-
-    /// <summary>
-    /// Stop and dispose water reminder timer
-    /// </summary>
-    private void StopWaterReminder()
-    {
-        _waterReminderTimer?.Stop();
-        _waterReminderTimer?.Dispose();
-        _waterReminderTimer = null;
     }
 }

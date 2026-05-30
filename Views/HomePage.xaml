@@ -21,7 +21,7 @@
                            TextColor="White"
                            HorizontalOptions="Center"/>
 					<Label Text="Your daily nutrition companion 🥗"
-                           FontSize="14"
+                           FontSize="{DynamicResource GlobalFontSize}"
                            TextColor="#C8E6C9"
                            HorizontalOptions="Center"/>
 				</VerticalStackLayout>
@@ -39,7 +39,7 @@
 					<Grid ColumnDefinitions="*,Auto">
 						<VerticalStackLayout Grid.Column="0" Spacing="4">
 							<Label Text="Health Score"
-                                   FontSize="13"
+                                   FontSize="{DynamicResource GlobalFontSize}"
                                    TextColor="Gray"
                                    FontAttributes="Bold"/>
 							<Label x:Name="HealthScoreLabel"
@@ -82,7 +82,7 @@
                                    FontSize="24"
                                    HorizontalOptions="Start"/>
 							<Label Text="Calories"
-                                   FontSize="12"
+                                   FontSize="{DynamicResource GlobalFontSize}"
                                    TextColor="Gray"/>
 							<Label x:Name="CaloriesLabel"
                                    Text="0 kcal"
@@ -108,7 +108,7 @@
                                    FontSize="24"
                                    HorizontalOptions="Start"/>
 							<Label Text="Water"
-                                   FontSize="12"
+                                   FontSize="{DynamicResource GlobalFontSize}"
                                    TextColor="Gray"/>
 							<Label x:Name="WaterLabel"
                                    Text="0 ml"
@@ -124,7 +124,7 @@
                                     TextColor="White"
                                     CornerRadius="8"
                                     HeightRequest="34"
-                                    FontSize="12"
+                                    FontSize="{DynamicResource GlobalFontSize}"
                                     Padding="0"
                                     Clicked="OnAddWaterClicked"/>
 						</VerticalStackLayout>
@@ -140,7 +140,7 @@
                             TextColor="White"
                             CornerRadius="16"
                             HeightRequest="52"
-                            FontSize="15"
+                            FontSize="{DynamicResource GlobalFontSize}"
                             FontAttributes="Bold"
                             Clicked="OnScanClicked"/>
 					<Button Grid.Column="1"
@@ -149,7 +149,7 @@
                             TextColor="White"
                             CornerRadius="16"
                             HeightRequest="52"
-                            FontSize="15"
+                            FontSize="{DynamicResource GlobalFontSize}"
                             FontAttributes="Bold"
                             Clicked="OnDiaryClicked"/>
 				</Grid>
@@ -186,7 +186,7 @@
                                                  VerticalOptions="Center"
                                                  Spacing="2">
 								<Label Text="Breakfast"
-                                       FontSize="14"
+                                       FontSize="{DynamicResource GlobalFontSize}"
                                        FontAttributes="Bold"/>
 								<Label x:Name="BreakfastLabel"
                                        Text="No entries yet"
@@ -217,7 +217,7 @@
                                                  VerticalOptions="Center"
                                                  Spacing="2">
 								<Label Text="Lunch"
-                                       FontSize="14"
+                                       FontSize="{DynamicResource GlobalFontSize}"
                                        FontAttributes="Bold"/>
 								<Label x:Name="LunchLabel"
                                        Text="No entries yet"
@@ -248,7 +248,7 @@
                                                  VerticalOptions="Center"
                                                  Spacing="2">
 								<Label Text="Dinner"
-                                       FontSize="14"
+                                       FontSize="{DynamicResource GlobalFontSize}"
                                        FontAttributes="Bold"/>
 								<Label x:Name="DinnerLabel"
                                        Text="No entries yet"
@@ -260,18 +260,54 @@
 					</VerticalStackLayout>
 				</Frame>
 
-				<!-- Shake Hint -->
-				<Frame BackgroundColor="{AppThemeBinding Light=#FFF3E0, Dark=#E65000}"
-                       CornerRadius="16"
-                       Padding="16"
-                       BorderColor="Transparent">
-					<Label Text="🎲 Shake your phone for a random meal suggestion!"
-                           FontSize="{DynamicResource GlobalFontSize}"
-                           HorizontalOptions="Center"
-                           HorizontalTextAlignment="Center"/>
-				</Frame>
+                <!-- Shake Hint -->
+                <Frame BackgroundColor="{AppThemeBinding Light=#F3E5F5, Dark=#2A1638}"
+       CornerRadius="20"
+       Padding="18,14"
+       BorderColor="Transparent"
+       HasShadow="True">
 
-			</VerticalStackLayout>
+                    <Grid ColumnDefinitions="Auto,*"
+          ColumnSpacing="12">
+
+                        <Frame Grid.Column="0"
+               BackgroundColor="{AppThemeBinding Light=#CE93D8, Dark=#6A1B9A}"
+               CornerRadius="12"
+               WidthRequest="44"
+               HeightRequest="44"
+               Padding="0"
+               BorderColor="Transparent"
+               VerticalOptions="Center">
+
+                            <Label Text="🎲"
+                   FontSize="22"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"/>
+                        </Frame>
+
+                        <VerticalStackLayout Grid.Column="1"
+                             VerticalOptions="Center"
+                             Spacing="2">
+
+                            <Label Text="Feeling stuck?"
+                   FontSize="{DynamicResource GlobalFontSize}"
+                   FontAttributes="Bold"
+                   TextColor="{AppThemeBinding Light=#6A1B9A, Dark=#E1BEE7}"/>
+
+                            <Label Text="Shake your phone for a random meal idea!"
+                   FontSize="{DynamicResource GlobalFontSize}"
+                   TextColor="{AppThemeBinding Light=#AB47BC, Dark=#CE93D8}"
+                   LineBreakMode="WordWrap"/>
+
+                        </VerticalStackLayout>
+
+                    </Grid>
+                </Frame>
+
+                <!-- Bottom spacing -->
+                <BoxView HeightRequest="8" BackgroundColor="Transparent"/>
+
+            </VerticalStackLayout>
 		</VerticalStackLayout>
 	</ScrollView>
 

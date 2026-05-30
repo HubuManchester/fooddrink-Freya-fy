@@ -11,7 +11,6 @@
         <Grid Grid.Row="0"
               HeightRequest="160"
               BackgroundColor="#2196F3">
-
             <VerticalStackLayout VerticalOptions="Center"
                                  Padding="20"
                                  Spacing="12">
@@ -19,7 +18,6 @@
                        FontSize="26"
                        FontAttributes="Bold"
                        TextColor="White"/>
-
                 <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
                     <Frame Grid.Column="0"
                            BackgroundColor="#1976D2"
@@ -83,15 +81,241 @@
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="16" Spacing="12">
 
-                <!-- Add Button -->
-                <Button Text="+ Add Food Entry"
-                        BackgroundColor="#4CAF50"
-                        TextColor="White"
-                        CornerRadius="16"
-                        HeightRequest="50"
-                        FontSize="16"
-                        FontAttributes="Bold"
-                        Clicked="OnAddEntryClicked"/>
+                <!-- Action Buttons -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Button Grid.Column="0"
+                            Text="📷 Scan Food"
+                            BackgroundColor="#4CAF50"
+                            TextColor="White"
+                            CornerRadius="16"
+                            HeightRequest="50"
+                            FontSize="15"
+                            FontAttributes="Bold"
+                            Clicked="OnScanFoodClicked"/>
+                    <Button Grid.Column="1"
+                            Text="+ Add Manually"
+                            BackgroundColor="#2196F3"
+                            TextColor="White"
+                            CornerRadius="16"
+                            HeightRequest="50"
+                            FontSize="15"
+                            FontAttributes="Bold"
+                            Clicked="OnAddEntryClicked"/>
+                </Grid>
+
+                <!-- Scanner Panel (hidden by default) -->
+                <Frame x:Name="ScannerPanel"
+                       IsVisible="False"
+                       CornerRadius="20"
+                       Padding="16"
+                       BorderColor="Transparent"
+                       BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E2E}">
+                    <VerticalStackLayout Spacing="12">
+
+                        <!-- Tab Switcher -->
+                        <Frame BackgroundColor="{AppThemeBinding Light=#EEEEEE, Dark=#2C2C2C}"
+                               CornerRadius="14"
+                               Padding="4"
+                               BorderColor="Transparent">
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="4">
+                                <Button x:Name="PhotoTabBtn"
+                                        Grid.Column="0"
+                                        Text="📷 Photo"
+                                        BackgroundColor="#4CAF50"
+                                        TextColor="White"
+                                        CornerRadius="10"
+                                        HeightRequest="40"
+                                        FontSize="13"
+                                        FontAttributes="Bold"
+                                        Clicked="OnPhotoTabClicked"/>
+                                <Button x:Name="BarcodeTabBtn"
+                                        Grid.Column="1"
+                                        Text="🔍 Barcode"
+                                        BackgroundColor="Transparent"
+                                        TextColor="Gray"
+                                        CornerRadius="10"
+                                        HeightRequest="40"
+                                        FontSize="13"
+                                        Clicked="OnBarcodeTabClicked"/>
+                            </Grid>
+                        </Frame>
+
+                        <!-- Photo Panel -->
+                        <VerticalStackLayout x:Name="PhotoPanel" Spacing="10">
+                            <Frame x:Name="PhotoPreviewFrame"
+                                   IsVisible="False"
+                                   CornerRadius="14"
+                                   Padding="0"
+                                   IsClippedToBounds="True"
+                                   HeightRequest="200"
+                                   BorderColor="Transparent">
+                                <Image x:Name="FoodImage"
+                                       HeightRequest="200"
+                                       Aspect="AspectFill"
+                                       HorizontalOptions="Fill"/>
+                            </Frame>
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                <Button Grid.Column="0"
+                                        Text="📷 Camera"
+                                        BackgroundColor="#4CAF50"
+                                        TextColor="White"
+                                        CornerRadius="12"
+                                        HeightRequest="46"
+                                        FontSize="13"
+                                        FontAttributes="Bold"
+                                        Clicked="OnTakePhotoClicked"/>
+                                <Button Grid.Column="1"
+                                        Text="🖼 Gallery"
+                                        BackgroundColor="#2196F3"
+                                        TextColor="White"
+                                        CornerRadius="12"
+                                        HeightRequest="46"
+                                        FontSize="13"
+                                        FontAttributes="Bold"
+                                        Clicked="OnPickPhotoClicked"/>
+                            </Grid>
+                        </VerticalStackLayout>
+
+                        <!-- Barcode Panel -->
+                        <VerticalStackLayout x:Name="BarcodePanel"
+                                             IsVisible="False"
+                                             Spacing="10">
+                            <Button Text="📷 Scan Barcode"
+                                    BackgroundColor="#2196F3"
+                                    TextColor="White"
+                                    CornerRadius="12"
+                                    HeightRequest="46"
+                                    FontSize="13"
+                                    FontAttributes="Bold"
+                                    Clicked="OnScanBarcodeClicked"/>
+                            <Frame BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#2C2C2C}"
+                                   CornerRadius="10"
+                                   Padding="4"
+                                   BorderColor="Transparent">
+                                <Entry x:Name="ManualBarcodeEntry"
+                                       Placeholder="Or enter barcode manually"
+                                       Keyboard="Numeric"
+                                       FontSize="14"
+                                       BackgroundColor="Transparent"
+                                       Margin="8,0"/>
+                            </Frame>
+                            <Button Text="🔎 Search"
+                                    BackgroundColor="#2196F3"
+                                    TextColor="White"
+                                    CornerRadius="12"
+                                    HeightRequest="44"
+                                    Clicked="OnManualBarcodeSearchClicked"/>
+                        </VerticalStackLayout>
+
+                        <!-- Loading -->
+                        <ActivityIndicator x:Name="ScanLoadingIndicator"
+                                           IsRunning="False"
+                                           IsVisible="False"
+                                           Color="#4CAF50"
+                                           HorizontalOptions="Center"/>
+
+                        <!-- Scan Result -->
+                        <Frame x:Name="ScanResultFrame"
+                               IsVisible="False"
+                               CornerRadius="14"
+                               Padding="16"
+                               BackgroundColor="{AppThemeBinding Light=#F9FFF9, Dark=#1A2A1A}"
+                               BorderColor="#4CAF50">
+                            <VerticalStackLayout Spacing="10">
+                                <Label x:Name="ScanFoodNameLabel"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="Center"
+                                       HorizontalTextAlignment="Center"/>
+                                <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="6">
+                                    <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
+                                        <Label Text="🔥" FontSize="16" HorizontalOptions="Center"/>
+                                        <Label x:Name="ScanCaloriesLabel"
+                                               FontSize="14" FontAttributes="Bold"
+                                               TextColor="#4CAF50" HorizontalOptions="Center"/>
+                                        <Label Text="kcal" FontSize="10" TextColor="Gray"
+                                               HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
+                                        <Label Text="💪" FontSize="16" HorizontalOptions="Center"/>
+                                        <Label x:Name="ScanProteinLabel"
+                                               FontSize="14" FontAttributes="Bold"
+                                               TextColor="#2196F3" HorizontalOptions="Center"/>
+                                        <Label Text="protein" FontSize="10" TextColor="Gray"
+                                               HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
+                                        <Label Text="🥑" FontSize="16" HorizontalOptions="Center"/>
+                                        <Label x:Name="ScanFatLabel"
+                                               FontSize="14" FontAttributes="Bold"
+                                               TextColor="#FF9800" HorizontalOptions="Center"/>
+                                        <Label Text="fat" FontSize="10" TextColor="Gray"
+                                               HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center">
+                                        <Label Text="🍬" FontSize="16" HorizontalOptions="Center"/>
+                                        <Label x:Name="ScanSugarLabel"
+                                               FontSize="14" FontAttributes="Bold"
+                                               TextColor="#E91E63" HorizontalOptions="Center"/>
+                                        <Label Text="sugar" FontSize="10" TextColor="Gray"
+                                               HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+
+                                <Label Text="Save to meal:"
+                                       FontSize="12"
+                                       TextColor="Gray"
+                                       HorizontalOptions="Center"/>
+
+                                <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="6">
+                                    <Button Grid.Column="0"
+                                            Text="🌅"
+                                            BackgroundColor="#FFF9C4"
+                                            TextColor="#F57F17"
+                                            CornerRadius="10"
+                                            HeightRequest="44"
+                                            FontSize="20"
+                                            Clicked="OnScanSaveBreakfastClicked"/>
+                                    <Button Grid.Column="1"
+                                            Text="☀️"
+                                            BackgroundColor="#FFE0B2"
+                                            TextColor="#E65100"
+                                            CornerRadius="10"
+                                            HeightRequest="44"
+                                            FontSize="20"
+                                            Clicked="OnScanSaveLunchClicked"/>
+                                    <Button Grid.Column="2"
+                                            Text="🌙"
+                                            BackgroundColor="#E8EAF6"
+                                            TextColor="#3949AB"
+                                            CornerRadius="10"
+                                            HeightRequest="44"
+                                            FontSize="20"
+                                            Clicked="OnScanSaveDinnerClicked"/>
+                                    <Button Grid.Column="3"
+                                            Text="🍎"
+                                            BackgroundColor="#FCE4EC"
+                                            TextColor="#C62828"
+                                            CornerRadius="10"
+                                            HeightRequest="44"
+                                            FontSize="20"
+                                            Clicked="OnScanSaveSnackClicked"/>
+                                </Grid>
+                                <Grid ColumnDefinitions="*,*,*,*">
+                                    <Label Grid.Column="0" Text="Breakfast" FontSize="10"
+                                           TextColor="Gray" HorizontalOptions="Center"/>
+                                    <Label Grid.Column="1" Text="Lunch" FontSize="10"
+                                           TextColor="Gray" HorizontalOptions="Center"/>
+                                    <Label Grid.Column="2" Text="Dinner" FontSize="10"
+                                           TextColor="Gray" HorizontalOptions="Center"/>
+                                    <Label Grid.Column="3" Text="Snack" FontSize="10"
+                                           TextColor="Gray" HorizontalOptions="Center"/>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Frame>
+
+                    </VerticalStackLayout>
+                </Frame>
 
                 <!-- Empty State -->
                 <VerticalStackLayout x:Name="EmptyState"
@@ -105,10 +329,11 @@
                            FontSize="18"
                            FontAttributes="Bold"
                            HorizontalOptions="Center"/>
-                    <Label Text="Tap + Add to record your meals"
+                    <Label Text="Tap Scan Food or Add Manually to get started"
                            FontSize="{DynamicResource GlobalFontSize}"
                            HorizontalOptions="Center"
-                           TextColor="Gray"/>
+                           TextColor="Gray"
+                           HorizontalTextAlignment="Center"/>
                 </VerticalStackLayout>
 
                 <!-- Diary List -->
@@ -117,13 +342,38 @@
                         <DataTemplate>
                             <SwipeView>
                                 <SwipeView.RightItems>
-                                    <SwipeItems>
-                                        <SwipeItem Text="Delete"
-                                                   BackgroundColor="#F44336"
-                                                   Clicked="OnDeleteSwipe"/>
+                                    <SwipeItems Mode="Reveal">
+
+                                        <SwipeItemView Invoked="OnDeleteSwipe">
+
+                                            <Frame BackgroundColor="#FF5252"
+                                                   WidthRequest="72"
+                                                   Padding="0"
+                                                   BorderColor="Transparent">
+
+                                                <VerticalStackLayout
+                                                    HorizontalOptions="Center"
+                                                    VerticalOptions="Center"
+                                                    Spacing="3">
+
+                                                    <Label Text="🗑️"
+                                                           FontSize="18"
+                                                           HorizontalOptions="Center"/>
+
+                                                    <Label Text="Delete"
+                                                           FontSize="11"
+                                                           FontAttributes="Bold"
+                                                           TextColor="White"
+                                                           HorizontalOptions="Center"/>
+
+                                                </VerticalStackLayout>
+
+                                            </Frame>
+
+                                        </SwipeItemView>
+
                                     </SwipeItems>
                                 </SwipeView.RightItems>
-
                                 <Frame Margin="0,4"
                                        CornerRadius="16"
                                        Padding="16"
@@ -132,20 +382,19 @@
                                        BorderColor="Transparent">
                                     <Grid ColumnDefinitions="Auto,*,Auto"
                                           ColumnSpacing="12">
-
                                         <Frame Grid.Column="0"
                                                BackgroundColor="#E8F5E9"
                                                CornerRadius="12"
                                                WidthRequest="46"
                                                HeightRequest="46"
                                                Padding="0"
-                                               VerticalOptions="Center">
+                                               VerticalOptions="Center"
+                                               BorderColor="Transparent">
                                             <Label Text="🍴"
                                                    FontSize="22"
                                                    HorizontalOptions="Center"
                                                    VerticalOptions="Center"/>
                                         </Frame>
-
                                         <VerticalStackLayout Grid.Column="1"
                                                              Spacing="2"
                                                              VerticalOptions="Center">
@@ -160,7 +409,6 @@
                                                    TextColor="Gray"
                                                    FontSize="12"/>
                                         </VerticalStackLayout>
-
                                         <VerticalStackLayout Grid.Column="2"
                                                              HorizontalOptions="End"
                                                              VerticalOptions="Center">
@@ -174,7 +422,6 @@
                                                    FontSize="11"
                                                    HorizontalOptions="End"/>
                                         </VerticalStackLayout>
-
                                     </Grid>
                                 </Frame>
                             </SwipeView>
@@ -186,5 +433,4 @@
         </ScrollView>
 
     </Grid>
-
 </ContentPage>

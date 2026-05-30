@@ -19,12 +19,6 @@
               Route="FoodDatabasePage"
               ContentTemplate="{DataTemplate views:FoodDatabasePage}"/>
 
-        <!-- Scanner Tab -->
-        <ShellContent Title="Scanner"
-                      Icon="scanner.png"
-                      Route="ScannerPage"
-                      ContentTemplate="{DataTemplate views:ScannerPage}"/>
-
         <!-- Diary Tab -->
         <ShellContent Title="Diary"
                       Icon="diary.png"

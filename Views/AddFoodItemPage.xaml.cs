@@ -21,14 +21,17 @@ public partial class AddFoodItemPage : ContentPage
             FatEntry.Text = existing.Fat.ToString("F1");
             SugarEntry.Text = existing.Sugar.ToString("F1");
 
-            var categories = new[] {
-                "Meat","Fish","Vegetables","Fruits",
-                "Dairy","Grains","Snacks","Drinks","Other" };
+            var categories = new[]
+            {
+                "Meat", "Fish", "Vegetables", "Fruits",
+                "Dairy", "Grains", "Snacks", "Drinks", "Other"
+            };
             int idx = Array.IndexOf(categories, existing.Category);
             if (idx >= 0) CategoryPicker.SelectedIndex = idx;
         }
         else
         {
+            TitleLabel.Text = "Add Food";
             CategoryPicker.SelectedIndex = 0;
         }
     }

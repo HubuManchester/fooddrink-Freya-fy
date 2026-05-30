@@ -2,231 +2,297 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NutriLens.Views.FoodDatabasePage"
-             Title="Food Database">
+             Title=""
+             BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#121212}">
 
-    <Grid RowDefinitions="Auto,Auto,*">
+    <Grid RowDefinitions="Auto,*">
 
         <!-- Header -->
         <VerticalStackLayout Grid.Row="0"
-                             Padding="20,20,20,10"
-                             Spacing="10">
-            <Label Text="Food Database 🍎"
-                   FontSize="28"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"/>
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                <SearchBar Grid.Column="0"
-                           x:Name="SearchBar"
-                           Placeholder="Search foods..."
-                           TextChanged="OnSearchTextChanged"
-                           FontSize="{DynamicResource GlobalFontSize}"/>
+                             BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                             Padding="16,16,16,12"
+                             Spacing="12">
+
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Grid.Column="0"
+                       Text="Food Database"
+                       FontSize="22"
+                       FontAttributes="Bold"
+                       VerticalOptions="Center"/>
                 <Button Grid.Column="1"
-                        Text="+ Add"
+                        Text="+ Add Food"
                         BackgroundColor="#4CAF50"
                         TextColor="White"
-                        CornerRadius="10"
+                        CornerRadius="20"
+                        HeightRequest="36"
+                        FontSize="{DynamicResource GlobalFontSize}"
+                        FontAttributes="Bold"
+                        Padding="12,0"
                         Clicked="OnAddFoodClicked"/>
             </Grid>
-        </VerticalStackLayout>
 
-        <!-- Stats Row -->
-        <Frame Grid.Row="1"
-               Margin="20,0"
-               CornerRadius="15"
-               Padding="15"
-               BackgroundColor="{AppThemeBinding Light=#E8F5E9, Dark=#1B5E20}">
-            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
-                <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
-                    <Label Text="Total Foods"
-                           FontSize="12"
-                           TextColor="Gray"
-                           HorizontalOptions="Center"/>
-                    <Label x:Name="TotalFoodsLabel"
-                           Text="0"
-                           FontSize="20"
-                           FontAttributes="Bold"
-                           TextColor="#4CAF50"
-                           HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
-                    <Label Text="Avg Calories"
-                           FontSize="12"
-                           TextColor="Gray"
-                           HorizontalOptions="Center"/>
-                    <Label x:Name="AvgCaloriesLabel"
-                           Text="0"
-                           FontSize="20"
-                           FontAttributes="Bold"
-                           TextColor="#2196F3"
-                           HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
-                    <Label Text="Categories"
-                           FontSize="12"
-                           TextColor="Gray"
-                           HorizontalOptions="Center"/>
-                    <Label x:Name="CategoriesLabel"
-                           Text="0"
-                           FontSize="20"
-                           FontAttributes="Bold"
-                           TextColor="#FF9800"
-                           HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-            </Grid>
-        </Frame>
+            <!-- Search Bar -->
+            <Frame BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#2C2C2C}"
+                   CornerRadius="20"
+                   Padding="12,0"
+                   HeightRequest="44"
+                   BorderColor="Transparent">
+                <Grid ColumnDefinitions="Auto,*">
+                    <SearchBar Grid.Column="1"
+                               x:Name="SearchBar"
+                               Placeholder="Search food name..."
+                               TextChanged="OnSearchTextChanged"
+                               FontSize="{DynamicResource GlobalFontSize}"
+                               BackgroundColor="Transparent"
+                               HeightRequest="44"/>
+                </Grid>
+            </Frame>
 
-        <!-- Food List grouped by category -->
-        <RefreshView Grid.Row="2"
-                     x:Name="RefreshView"
-                     Refreshing="OnRefreshing"
-                     Margin="20,10">
-            <CollectionView x:Name="FoodList"
-                            SelectionMode="None"
-                            IsGrouped="True">
-
-                <CollectionView.EmptyView>
-                    <VerticalStackLayout HorizontalOptions="Center"
-                                         VerticalOptions="Center"
-                                         Spacing="10"
-                                         Margin="0,50">
-                        <Label Text="🍽️"
-                               FontSize="48"
-                               HorizontalOptions="Center"/>
-                        <Label Text="No foods found"
-                               FontSize="18"
+            <!-- Stats Row -->
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                <Frame Grid.Column="0"
+                       BackgroundColor="#E8F5E9"
+                       CornerRadius="10"
+                       Padding="10,8"
+                       BorderColor="Transparent">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Total"
+                               FontSize="{DynamicResource GlobalFontSize}"
                                TextColor="Gray"
                                HorizontalOptions="Center"/>
-                        <Label Text="Tap + Add to add your first food"
-                               FontSize="14"
-                               TextColor="Gray"
+                        <Label x:Name="TotalFoodsLabel"
+                               Text="0"
+                               FontSize="{DynamicResource GlobalFontSize}"
+                               FontAttributes="Bold"
+                               TextColor="#4CAF50"
                                HorizontalOptions="Center"/>
                     </VerticalStackLayout>
-                </CollectionView.EmptyView>
+                </Frame>
+                <Frame Grid.Column="1"
+                       BackgroundColor="#E3F2FD"
+                       CornerRadius="10"
+                       Padding="10,8"
+                       BorderColor="Transparent">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Avg kcal"
+                               FontSize="{DynamicResource GlobalFontSize}"
+                               TextColor="Gray"
+                               HorizontalOptions="Center"/>
+                        <Label x:Name="AvgCaloriesLabel"
+                               Text="0"
+                               FontSize="{DynamicResource GlobalFontSize}"
+                               FontAttributes="Bold"
+                               TextColor="#2196F3"
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Column="2"
+                       BackgroundColor="#FFF3E0"
+                       CornerRadius="10"
+                       Padding="10,8"
+                       BorderColor="Transparent">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Categories"
+                               FontSize="{DynamicResource GlobalFontSize}"
+                               TextColor="Gray"
+                               HorizontalOptions="Center"/>
+                        <Label x:Name="CategoriesLabel"
+                               Text="0"
+                               FontSize="{DynamicResource GlobalFontSize}"
+                               FontAttributes="Bold"
+                               TextColor="#FF9800"
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Frame>
+            </Grid>
 
-                <!-- Group Header -->
-                <CollectionView.GroupHeaderTemplate>
-                    <DataTemplate>
-                        <Grid ColumnDefinitions="Auto,*,Auto"
-                              ColumnSpacing="10"
-                              Margin="0,12,0,4">
-                            <Frame Grid.Column="0"
-                                   BackgroundColor="{Binding HeaderColor}"
-                                   CornerRadius="10"
-                                   WidthRequest="36"
-                                   HeightRequest="36"
-                                   Padding="0"
-                                   VerticalOptions="Center"
-                                   BorderColor="Transparent">
-                                <Label Text="{Binding HeaderIcon}"
-                                       FontSize="18"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center"/>
-                            </Frame>
-                            <Label Grid.Column="1"
-                                   Text="{Binding Key}"
-                                   FontSize="16"
+        </VerticalStackLayout>
+
+        <!-- Body: Left Category Nav + Right Food List -->
+        <Grid Grid.Row="1" ColumnDefinitions="80,*">
+
+            <!-- Left Category Navigation -->
+            <ScrollView Grid.Column="0"
+                        BackgroundColor="{AppThemeBinding Light=#FAFAFA, Dark=#1A1A1A}">
+                <VerticalStackLayout x:Name="CategoryNav"
+                                     Spacing="0"
+                                     Padding="0,8"/>
+            </ScrollView>
+
+            <!-- Right Food List -->
+            <RefreshView Grid.Column="1"
+                         x:Name="RefreshView"
+                         Refreshing="OnRefreshing">
+                <CollectionView x:Name="FoodList"
+                                SelectionMode="None"
+                                IsGrouped="True"
+                                Margin="0">
+
+                    <CollectionView.GroupHeaderTemplate>
+                        <DataTemplate>
+                            <Grid Padding="12,14,12,6">
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label Text="{Binding HeaderIcon}"
+                                           FontSize="20"
+                                           VerticalOptions="Center"/>
+                                    <Label Text="{Binding Key}"
+                                           FontSize="{DynamicResource GlobalFontSize}"
+                                           FontAttributes="Bold"
+                                           TextColor="#4CAF50"
+                                           VerticalOptions="Center"/>
+                                    <Label Text="{Binding Count, StringFormat='({0})'}"
+                                           FontSize="{DynamicResource GlobalFontSize}"
+                                           TextColor="Gray"
+                                           VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.GroupHeaderTemplate>
+
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout HorizontalOptions="Center"
+                                             VerticalOptions="Center"
+                                             Spacing="10"
+                                             Margin="0,60">
+                            <Label Text="🍽️"
+                                   FontSize="48"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="No foods found"
+                                   FontSize="{DynamicResource GlobalFontSize}"
                                    FontAttributes="Bold"
-                                   VerticalOptions="Center"
-                                   TextColor="{AppThemeBinding Light=#333333, Dark=#FFFFFF}"/>
-                            <Label Grid.Column="2"
-                                   Text="{Binding Count, StringFormat='{0} items'}"
-                                   FontSize="12"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Tap + Add Food to get started"
+                                   FontSize="{DynamicResource GlobalFontSize}"
                                    TextColor="Gray"
-                                   VerticalOptions="Center"/>
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.GroupHeaderTemplate>
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
 
-                <!-- Item Template -->
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <SwipeView>
-                            <SwipeView.LeftItems>
-                                <SwipeItems>
-                                    <SwipeItem Text="Edit"
-                                               BackgroundColor="#2196F3"
-                                               Clicked="OnEditFoodSwiped"/>
-                                </SwipeItems>
-                            </SwipeView.LeftItems>
-                            <SwipeView.RightItems>
-                                <SwipeItems>
-                                    <SwipeItem Text="Delete"
-                                               BackgroundColor="Red"
-                                               Clicked="OnDeleteFoodSwiped"/>
-                                </SwipeItems>
-                            </SwipeView.RightItems>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <SwipeView Margin="8,2">
+                                <SwipeView.LeftItems>
+                                    <SwipeItems>
+                                        <SwipeItemView Invoked="OnEditFoodSwiped">
+                                            <Frame BackgroundColor="#2196F3"
+                                                   WidthRequest="72"
+                                                   Padding="0"
+                                                   BorderColor="Transparent">
+                                                <VerticalStackLayout
+                                                    HorizontalOptions="Center"
+                                                    VerticalOptions="Center"
+                                                    Spacing="3">
 
-                            <Frame Margin="0,3"
-                                   CornerRadius="15"
-                                   Padding="15"
-                                   HasShadow="True"
-                                   BorderColor="Transparent"
-                                   BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E2E}">
-                                <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                        Tapped="OnFoodTapped"
-                                        CommandParameter="{Binding .}"/>
-                                </Frame.GestureRecognizers>
+                                                    <Label Text="✏️"
+                                                           FontSize="18"
+                                                           HorizontalOptions="Center"/>
 
-                                <Grid ColumnDefinitions="Auto,*,Auto"
-                                      ColumnSpacing="12">
+                                                    <Label Text="Edit"
+                                                           FontSize="{DynamicResource GlobalFontSize}"
+                                                           FontAttributes="Bold"
+                                                           TextColor="White"
+                                                           HorizontalOptions="Center"/>
 
-                                    <Frame Grid.Column="0"
-                                           BackgroundColor="{Binding CategoryColor}"
-                                           CornerRadius="22"
-                                           WidthRequest="44"
-                                           HeightRequest="44"
-                                           Padding="0"
-                                           HorizontalOptions="Center"
-                                           VerticalOptions="Center"
-                                           BorderColor="Transparent">
-                                        <Label Text="{Binding CategoryIcon}"
-                                               FontSize="22"
-                                               HorizontalOptions="Center"
-                                               VerticalOptions="Center"/>
-                                    </Frame>
+                                                </VerticalStackLayout>
+                                            </Frame>
+                                        </SwipeItemView>
+                                    </SwipeItems>
+                                </SwipeView.LeftItems>
+                                <SwipeView.RightItems>
+                                    <SwipeItems>
+                                        <SwipeItemView Invoked="OnDeleteFoodSwiped">
+                                            <Frame BackgroundColor="#FF5252"
+                                                   WidthRequest="72"
+                                                   Padding="0"
+                                                   BorderColor="Transparent">
+                                                <VerticalStackLayout
+                                                    HorizontalOptions="Center"
+                                                    VerticalOptions="Center"
+                                                    Spacing="3">
+                                                    <Label Text="🗑️"
+                                                           FontSize="18"
+                                                           HorizontalOptions="Center"/>
+                                                    <Label Text="Delete"
+                                                           FontSize="{DynamicResource GlobalFontSize}"
+                                                           FontAttributes="Bold"
+                                                           TextColor="White"
+                                                           HorizontalOptions="Center"/>
+                                                </VerticalStackLayout>
+                                            </Frame>
+                                        </SwipeItemView>
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
 
-                                    <VerticalStackLayout Grid.Column="1"
-                                                         Spacing="3"
-                                                         VerticalOptions="Center">
-                                        <Label Text="{Binding Name}"
-                                               FontAttributes="Bold"
-                                               FontSize="{DynamicResource GlobalFontSize}"/>
-                                        <HorizontalStackLayout Spacing="10">
-                                            <Label Text="{Binding Protein, StringFormat='P: {0:F1}g'}"
-                                                   TextColor="#2196F3"
-                                                   FontSize="12"/>
-                                            <Label Text="{Binding Fat, StringFormat='F: {0:F1}g'}"
-                                                   TextColor="#FF9800"
-                                                   FontSize="12"/>
-                                            <Label Text="{Binding Sugar, StringFormat='S: {0:F1}g'}"
-                                                   TextColor="#E91E63"
-                                                   FontSize="12"/>
-                                        </HorizontalStackLayout>
-                                    </VerticalStackLayout>
+                                <Frame CornerRadius="12"
+                                       Padding="10,10"
+                                       HasShadow="False"
+                                       BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                                       BorderColor="Transparent">
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Tapped="OnFoodTapped"
+                                            CommandParameter="{Binding .}"/>
+                                    </Frame.GestureRecognizers>
 
-                                    <VerticalStackLayout Grid.Column="2"
-                                                         HorizontalOptions="End"
-                                                         VerticalOptions="Center">
-                                        <Label Text="{Binding Calories, StringFormat='{0:F0}'}"
-                                               FontAttributes="Bold"
-                                               FontSize="20"
-                                               TextColor="#4CAF50"
-                                               HorizontalOptions="End"/>
-                                        <Label Text="kcal"
-                                               TextColor="Gray"
-                                               FontSize="12"
-                                               HorizontalOptions="End"/>
-                                    </VerticalStackLayout>
+                                    <Grid ColumnDefinitions="Auto,*,Auto"
+                                          ColumnSpacing="10">
 
-                                </Grid>
-                            </Frame>
-                        </SwipeView>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
+                                        <!-- Icon -->
+                                        <Frame Grid.Column="0"
+                                               BackgroundColor="{Binding CategoryColor}"
+                                               CornerRadius="10"
+                                               WidthRequest="44"
+                                               HeightRequest="44"
+                                               Padding="0"
+                                               VerticalOptions="Center"
+                                               BorderColor="Transparent">
+                                            <Label Text="{Binding CategoryIcon}"
+                                                   FontSize="22"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"/>
+                                        </Frame>
 
-            </CollectionView>
-        </RefreshView>
+                                        <!-- Info -->
+                                        <VerticalStackLayout Grid.Column="1"
+                                                             Spacing="3"
+                                                             VerticalOptions="Center">
+                                            <Label Text="{Binding Name}"
+                                                   FontAttributes="Bold"
+                                                   FontSize="{DynamicResource GlobalFontSize}"/>
+                                            <Label Text="{Binding Calories, StringFormat='{0:F0} kcal / 100g'}"
+                                                   TextColor="#4CAF50"
+                                                   FontSize="{DynamicResource GlobalFontSize}"
+                                                   FontAttributes="Bold"/>
+                                            <HorizontalStackLayout Spacing="6">
+                                                <Label Text="{Binding Protein, StringFormat='P {0:F1}g'}"
+                                                       TextColor="#2196F3"
+                                                       FontSize="{DynamicResource GlobalFontSize}"/>
+                                                <Label Text="·"
+                                                       TextColor="Gray"
+                                                       FontSize="{DynamicResource GlobalFontSize}"/>
+                                                <Label Text="{Binding Fat, StringFormat='F {0:F1}g'}"
+                                                       TextColor="#FF9800"
+                                                       FontSize="{DynamicResource GlobalFontSize}"/>
+                                                <Label Text="·"
+                                                       TextColor="Gray"
+                                                       FontSize="{DynamicResource GlobalFontSize}"/>
+                                                <Label Text="{Binding Sugar, StringFormat='S {0:F1}g'}"
+                                                       TextColor="#E91E63"
+                                                       FontSize="{DynamicResource GlobalFontSize}"/>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+
+                                    </Grid>
+                                </Frame>
+                            </SwipeView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+
+                </CollectionView>
+            </RefreshView>
+
+        </Grid>
 
     </Grid>
+
 </ContentPage>

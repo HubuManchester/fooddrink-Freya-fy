@@ -3,9 +3,6 @@ using NutriLens.Services;
 
 namespace NutriLens.Views;
 
-/// <summary>
-/// Home page - displays daily summary, health score, water intake and quick actions
-/// </summary>
 public partial class HomePage : ContentPage
 {
     private int _currentWaterMl = 0;
@@ -21,14 +18,12 @@ public partial class HomePage : ContentPage
     {
         InitializeComponent();
         _databaseService = databaseService;
-        StartShakeDetection();
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
 
-        // Load targets from settings
         _targetCalories = int.Parse(
             Preferences.Default.Get("calorie_target", "2000"));
         _targetWaterMl = int.Parse(
@@ -36,6 +31,13 @@ public partial class HomePage : ContentPage
 
         await LoadTodayMealsAsync();
         UpdateWaterDisplay();
+        StartShakeDetection();
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        StopShakeDetection();
     }
 
     /// <summary>
@@ -69,43 +71,45 @@ public partial class HomePage : ContentPage
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine(
-                $"Error loading meals: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Error loading meals: {ex.Message}");
         }
     }
 
     /// <summary>
-    /// Start listening for shake gesture using accelerometer
+    /// Start accelerometer shake detection
     /// </summary>
     private void StartShakeDetection()
     {
         try
         {
-            if (Accelerometer.Default.IsSupported)
-            {
-                Accelerometer.Default.ReadingChanged += OnAccelerometerReadingChanged;
+            if (!Accelerometer.Default.IsSupported) return;
+
+            // Remove first to avoid duplicate handlers
+            Accelerometer.Default.ReadingChanged -= OnAccelerometerReadingChanged;
+            Accelerometer.Default.ReadingChanged += OnAccelerometerReadingChanged;
+
+            if (!Accelerometer.Default.IsMonitoring)
                 Accelerometer.Default.Start(SensorSpeed.Game);
-            }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Accelerometer error: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Accelerometer start error: {ex.Message}");
         }
     }
 
     /// <summary>
-    /// Stop accelerometer when page disappears to save battery
+    /// Stop accelerometer to save battery
     /// </summary>
-    protected override void OnDisappearing()
+    private void StopShakeDetection()
     {
-        base.OnDisappearing();
         try
         {
-            if (Accelerometer.Default.IsSupported)
-            {
-                Accelerometer.Default.ReadingChanged -= OnAccelerometerReadingChanged;
+            if (!Accelerometer.Default.IsSupported) return;
+
+            Accelerometer.Default.ReadingChanged -= OnAccelerometerReadingChanged;
+
+            if (Accelerometer.Default.IsMonitoring)
                 Accelerometer.Default.Stop();
-            }
         }
         catch (Exception ex)
         {
@@ -114,19 +118,21 @@ public partial class HomePage : ContentPage
     }
 
     /// <summary>
-    /// Handle shake gesture - show random meal suggestion
+    /// Detect shake by measuring acceleration delta
     /// </summary>
-    private async void OnAccelerometerReadingChanged(object? sender, AccelerometerChangedEventArgs e)
+    private async void OnAccelerometerReadingChanged(
+    object? sender, AccelerometerChangedEventArgs e)
     {
         var data = e.Reading;
 
-        double delta = Math.Abs(data.Acceleration.X - _lastAccelData.Acceleration.X)
-                     + Math.Abs(data.Acceleration.Y - _lastAccelData.Acceleration.Y)
-                     + Math.Abs(data.Acceleration.Z - _lastAccelData.Acceleration.Z);
+        double delta =
+            Math.Abs(data.Acceleration.X - _lastAccelData.Acceleration.X) +
+            Math.Abs(data.Acceleration.Y - _lastAccelData.Acceleration.Y) +
+            Math.Abs(data.Acceleration.Z - _lastAccelData.Acceleration.Z);
 
         _lastAccelData = data;
 
-        if (delta > 5.0 && (DateTime.Now - _lastShakeTime).TotalSeconds > 2)
+        if (delta > 3.5 && (DateTime.Now - _lastShakeTime).TotalSeconds > 2)
         {
             _lastShakeTime = DateTime.Now;
 
@@ -135,8 +141,8 @@ public partial class HomePage : ContentPage
 
             await MainThread.InvokeOnMainThreadAsync(async () =>
             {
-                string meal = GetRandomMeal();
-                await DisplayAlert("Random Meal Suggestion", meal, "OK");
+                var page = new MealSuggestionPage();
+                await Navigation.PushModalAsync(page);
             });
         }
     }
@@ -158,8 +164,7 @@ public partial class HomePage : ContentPage
             "🌮 Black bean tacos with fresh salsa - 410 kcal"
         };
 
-        var random = new Random();
-        return meals[random.Next(meals.Length)];
+        return meals[new Random().Next(meals.Length)];
     }
 
     /// <summary>
@@ -170,15 +175,8 @@ public partial class HomePage : ContentPage
         _currentWaterMl += 250;
         UpdateWaterDisplay();
 
-        try
-        {
-            Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(100));
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine(
-                $"Vibration error: {ex.Message}");
-        }
+        try { Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(100)); }
+        catch { }
 
         if (_currentWaterMl == _targetWaterMl)
         {
@@ -201,9 +199,8 @@ public partial class HomePage : ContentPage
     private void UpdateWaterDisplay()
     {
         WaterLabel.Text = $"{_currentWaterMl} / {_targetWaterMl} ml";
-        double progress = Math.Min(
+        WaterProgress.Progress = Math.Min(
             (double)_currentWaterMl / _targetWaterMl, 1.0);
-        WaterProgress.Progress = progress;
     }
 
     /// <summary>
@@ -212,65 +209,100 @@ public partial class HomePage : ContentPage
     private void UpdateCaloriesDisplay()
     {
         CaloriesLabel.Text = $"{_currentCalories} / {_targetCalories} kcal";
-        double progress = Math.Min(
+        CaloriesProgress.Progress = Math.Min(
             (double)_currentCalories / _targetCalories, 1.0);
-        CaloriesProgress.Progress = progress;
     }
 
     /// <summary>
-    /// Calculate and display health score based on nutrition intake
+    /// Calculate and display health score
     /// </summary>
     private void UpdateHealthScore()
     {
-        // No food logged yet
         if (_currentCalories == 0)
         {
             HealthScoreLabel.Text = "- / 10";
             HealthScoreLabel.TextColor = Colors.Gray;
-            HealthAdviceLabel.Text = "Start scanning food to get your score";
+            HealthAdviceLabel.Text = "Log your meals to get a health score";
             return;
         }
 
-        int score = 10;
-        string advice = "";
+        var advice = new List<string>();
 
-        if (_currentCalories > _targetCalories * 1.2)
-        {
-            score -= 2;
-            advice += "Calories too high. ";
-        }
+// ── Calorie score (0~7) ──────────────────────────────────────────
+double calRatio = (double)_currentCalories / _targetCalories;
 
-        if (_currentWaterMl < _targetWaterMl * 0.5)
-        {
-            score -= 2;
-            advice += "Drink more water. ";
-        }
+double calorieScore =
+    Math.Max(0,
+        7 - Math.Abs(calRatio - 1.0) * 7);
+
+if (calRatio < 0.5)
+{
+    advice.Add("Very few calories logged today");
+}
+else if (calRatio > 1.2)
+{
+    advice.Add("Calories above target");
+}
+
+// ── Water score (0~3) ────────────────────────────────────────────
+double waterRatio =
+    (double)_currentWaterMl / _targetWaterMl;
+
+double waterScore =
+    Math.Min(waterRatio, 1.0) * 3;
+
+if (waterRatio < 0.5)
+{
+    advice.Add("Drink more water");
+}
+else if (waterRatio < 1.0)
+{
+    advice.Add("Keep hydrating");
+}
+
+// ── Final score ──────────────────────────────────────────────────
+int score = (int)Math.Round(
+    calorieScore + waterScore);
+
+score = Math.Clamp(score, 0, 10);
 
         HealthScoreLabel.Text = $"{score} / 10";
 
-        if (score >= 8)
+        if (score >= 9)
         {
-            HealthScoreLabel.TextColor = Colors.Green;
-            HealthAdviceLabel.Text = "Great job! Keep it up 😊";
+            HealthScoreLabel.TextColor = Color.FromArgb("#2E7D32");
+            HealthAdviceLabel.Text = "Excellent! Perfect balance today 🏆";
+        }
+        else if (score >= 7)
+        {
+            HealthScoreLabel.TextColor = Color.FromArgb("#388E3C");
+            HealthAdviceLabel.Text = advice.Any()
+                ? string.Join(" · ", advice)
+                : "Good job! Keep it up 😊";
         }
         else if (score >= 5)
         {
             HealthScoreLabel.TextColor = Colors.Orange;
-            HealthAdviceLabel.Text = advice.Trim();
+            HealthAdviceLabel.Text = string.Join(" · ", advice);
+        }
+        else if (score >= 3)
+        {
+            HealthScoreLabel.TextColor = Color.FromArgb("#E65100");
+            HealthAdviceLabel.Text = string.Join(" · ", advice) + " 😟";
         }
         else
         {
             HealthScoreLabel.TextColor = Colors.Red;
-            HealthAdviceLabel.Text = advice.Trim() + " 😟";
+            HealthAdviceLabel.Text = string.Join(" · ", advice) + " 😰";
         }
     }
 
     /// <summary>
-    /// Navigate to Scanner page
+    /// Navigate to Diary page (scanner is now inside Diary)
     /// </summary>
     private async void OnScanClicked(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("//ScannerPage");
+        await Shell.Current.GoToAsync("//DiaryPage");
     }
 
     /// <summary>
