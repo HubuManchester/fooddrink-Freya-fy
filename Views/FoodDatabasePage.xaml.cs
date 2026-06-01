@@ -154,49 +154,70 @@ public partial class FoodDatabasePage : ContentPage
 
     private async Task SeedDefaultFoodsAsync()
     {
-        const string seededKey = "default_foods_seeded_v1";
+        const string seededKey = "default_foods_seeded_v2";
         if (Preferences.Default.Get(seededKey, false)) return;
 
         var defaults = new List<FoodItem>
-        {
-            new() { Name="Apple",           Category="Fruits",     Calories=52,  Protein=0.3,  Fat=0.2,  Sugar=10.4 },
-            new() { Name="Banana",          Category="Fruits",     Calories=89,  Protein=1.1,  Fat=0.3,  Sugar=12.2 },
-            new() { Name="Orange",          Category="Fruits",     Calories=47,  Protein=0.9,  Fat=0.1,  Sugar=9.4  },
-            new() { Name="Watermelon",      Category="Fruits",     Calories=30,  Protein=0.6,  Fat=0.2,  Sugar=6.2  },
-            new() { Name="Strawberry",      Category="Fruits",     Calories=32,  Protein=0.7,  Fat=0.3,  Sugar=4.9  },
-            new() { Name="Broccoli",        Category="Vegetables", Calories=34,  Protein=2.8,  Fat=0.4,  Sugar=1.7  },
-            new() { Name="Carrot",          Category="Vegetables", Calories=41,  Protein=0.9,  Fat=0.2,  Sugar=4.7  },
-            new() { Name="Spinach",         Category="Vegetables", Calories=23,  Protein=2.9,  Fat=0.4,  Sugar=0.4  },
-            new() { Name="Tomato",          Category="Vegetables", Calories=18,  Protein=0.9,  Fat=0.2,  Sugar=2.6  },
-            new() { Name="Cucumber",        Category="Vegetables", Calories=15,  Protein=0.7,  Fat=0.1,  Sugar=1.7  },
-            new() { Name="Chicken Breast",  Category="Meat",       Calories=165, Protein=31.0, Fat=3.6,  Sugar=0.0  },
-            new() { Name="Beef Steak",      Category="Meat",       Calories=250, Protein=26.0, Fat=15.0, Sugar=0.0  },
-            new() { Name="Pork Belly",      Category="Meat",       Calories=518, Protein=9.3,  Fat=53.0, Sugar=0.0  },
-            new() { Name="Lamb Chop",       Category="Meat",       Calories=294, Protein=25.0, Fat=21.0, Sugar=0.0  },
-            new() { Name="Salmon",          Category="Fish",       Calories=208, Protein=20.0, Fat=13.0, Sugar=0.0  },
-            new() { Name="Tuna",            Category="Fish",       Calories=132, Protein=28.0, Fat=1.0,  Sugar=0.0  },
-            new() { Name="Shrimp",          Category="Fish",       Calories=99,  Protein=24.0, Fat=0.3,  Sugar=0.0  },
-            new() { Name="Whole Milk",      Category="Dairy",      Calories=61,  Protein=3.2,  Fat=3.3,  Sugar=4.8  },
-            new() { Name="Egg",             Category="Dairy",      Calories=155, Protein=13.0, Fat=11.0, Sugar=1.1  },
-            new() { Name="Cheddar Cheese",  Category="Dairy",      Calories=402, Protein=25.0, Fat=33.0, Sugar=0.5  },
-            new() { Name="Greek Yogurt",    Category="Dairy",      Calories=59,  Protein=10.0, Fat=0.4,  Sugar=3.2  },
-            new() { Name="White Rice",      Category="Grains",     Calories=130, Protein=2.7,  Fat=0.3,  Sugar=0.0  },
-            new() { Name="Brown Rice",      Category="Grains",     Calories=112, Protein=2.6,  Fat=0.9,  Sugar=0.0  },
-            new() { Name="White Bread",     Category="Grains",     Calories=265, Protein=9.0,  Fat=3.2,  Sugar=5.0  },
-            new() { Name="Oats",            Category="Grains",     Calories=389, Protein=17.0, Fat=7.0,  Sugar=1.0  },
-            new() { Name="Pasta",           Category="Grains",     Calories=131, Protein=5.0,  Fat=1.1,  Sugar=0.6  },
-            new() { Name="Dark Chocolate",  Category="Snacks",     Calories=546, Protein=5.0,  Fat=31.0, Sugar=48.0 },
-            new() { Name="Potato Chips",    Category="Snacks",     Calories=536, Protein=7.0,  Fat=35.0, Sugar=0.4  },
-            new() { Name="Peanuts",         Category="Snacks",     Calories=567, Protein=26.0, Fat=49.0, Sugar=4.7  },
-            new() { Name="Almonds",         Category="Snacks",     Calories=579, Protein=21.0, Fat=50.0, Sugar=3.9  },
-            new() { Name="Orange Juice",    Category="Drinks",     Calories=45,  Protein=0.7,  Fat=0.2,  Sugar=8.4  },
-            new() { Name="Cola",            Category="Drinks",     Calories=42,  Protein=0.0,  Fat=0.0,  Sugar=10.6 },
-            new() { Name="Coffee (Black)",  Category="Drinks",     Calories=2,   Protein=0.3,  Fat=0.0,  Sugar=0.0  },
-            new() { Name="Green Tea",       Category="Drinks",     Calories=1,   Protein=0.2,  Fat=0.0,  Sugar=0.0  },
-            new() { Name="Fried Rice",      Category="Other",      Calories=163, Protein=4.5,  Fat=4.5,  Sugar=1.0  },
-            new() { Name="Dumplings",       Category="Other",      Calories=193, Protein=8.0,  Fat=7.0,  Sugar=2.0  },
-            new() { Name="Spring Rolls",    Category="Other",      Calories=209, Protein=5.0,  Fat=10.0, Sugar=3.0  },
-        };
+{
+        // Fruits
+        new() { Name="Apple",           Category="Fruits",     Calories=52,  Protein=0.3,  Fat=0.2,  Sugar=10.4, Ingredients="apple" },
+        new() { Name="Banana",          Category="Fruits",     Calories=89,  Protein=1.1,  Fat=0.3,  Sugar=12.2, Ingredients="banana" },
+        new() { Name="Orange",          Category="Fruits",     Calories=47,  Protein=0.9,  Fat=0.1,  Sugar=9.4,  Ingredients="orange" },
+        new() { Name="Watermelon",      Category="Fruits",     Calories=30,  Protein=0.6,  Fat=0.2,  Sugar=6.2,  Ingredients="watermelon" },
+        new() { Name="Strawberry",      Category="Fruits",     Calories=32,  Protein=0.7,  Fat=0.3,  Sugar=4.9,  Ingredients="strawberry" },
+        // Vegetables
+        new() { Name="Broccoli",        Category="Vegetables", Calories=34,  Protein=2.8,  Fat=0.4,  Sugar=1.7,  Ingredients="broccoli" },
+        new() { Name="Carrot",          Category="Vegetables", Calories=41,  Protein=0.9,  Fat=0.2,  Sugar=4.7,  Ingredients="carrot" },
+        new() { Name="Spinach",         Category="Vegetables", Calories=23,  Protein=2.9,  Fat=0.4,  Sugar=0.4,  Ingredients="spinach" },
+        new() { Name="Tomato",          Category="Vegetables", Calories=18,  Protein=0.9,  Fat=0.2,  Sugar=2.6,  Ingredients="tomato" },
+        new() { Name="Cucumber",        Category="Vegetables", Calories=15,  Protein=0.7,  Fat=0.1,  Sugar=1.7,  Ingredients="cucumber" },
+        // Meat
+        new() { Name="Chicken Breast",  Category="Meat",       Calories=165, Protein=31.0, Fat=3.6,  Sugar=0.0,  Ingredients="chicken, salt, pepper" },
+        new() { Name="Beef Steak",      Category="Meat",       Calories=250, Protein=26.0, Fat=15.0, Sugar=0.0,  Ingredients="beef, salt, butter, garlic" },
+        new() { Name="Pork Belly",      Category="Meat",       Calories=518, Protein=9.3,  Fat=53.0, Sugar=0.0,  Ingredients="pork, soy sauce, garlic, ginger" },
+        new() { Name="Lamb Chop",       Category="Meat",       Calories=294, Protein=25.0, Fat=21.0, Sugar=0.0,  Ingredients="lamb, rosemary, garlic, olive oil" },
+        // Fish
+        new() { Name="Salmon",          Category="Fish",       Calories=208, Protein=20.0, Fat=13.0, Sugar=0.0,  Ingredients="salmon, lemon, dill, butter" },
+        new() { Name="Tuna",            Category="Fish",       Calories=132, Protein=28.0, Fat=1.0,  Sugar=0.0,  Ingredients="tuna, salt" },
+        new() { Name="Shrimp",          Category="Fish",       Calories=99,  Protein=24.0, Fat=0.3,  Sugar=0.0,  Ingredients="shrimp, garlic, butter, lemon" },
+        // Dairy
+        new() { Name="Whole Milk",      Category="Dairy",      Calories=61,  Protein=3.2,  Fat=3.3,  Sugar=4.8,  Ingredients="milk" },
+        new() { Name="Egg",             Category="Dairy",      Calories=155, Protein=13.0, Fat=11.0, Sugar=1.1,  Ingredients="egg" },
+        new() { Name="Cheddar Cheese",  Category="Dairy",      Calories=402, Protein=25.0, Fat=33.0, Sugar=0.5,  Ingredients="milk, cheese culture, salt, enzymes" },
+        new() { Name="Greek Yogurt",    Category="Dairy",      Calories=59,  Protein=10.0, Fat=0.4,  Sugar=3.2,  Ingredients="milk, live cultures" },
+        // Grains
+        new() { Name="White Rice",      Category="Grains",     Calories=130, Protein=2.7,  Fat=0.3,  Sugar=0.0,  Ingredients="white rice" },
+        new() { Name="Brown Rice",      Category="Grains",     Calories=112, Protein=2.6,  Fat=0.9,  Sugar=0.0,  Ingredients="brown rice" },
+        new() { Name="White Bread",     Category="Grains",     Calories=265, Protein=9.0,  Fat=3.2,  Sugar=5.0,  Ingredients="wheat flour, water, yeast, salt, sugar" },
+        new() { Name="Oats",            Category="Grains",     Calories=389, Protein=17.0, Fat=7.0,  Sugar=1.0,  Ingredients="oats" },
+        new() { Name="Pasta",           Category="Grains",     Calories=131, Protein=5.0,  Fat=1.1,  Sugar=0.6,  Ingredients="wheat flour, water, egg" },
+        // Snacks
+        new() { Name="Dark Chocolate",  Category="Snacks",     Calories=546, Protein=5.0,  Fat=31.0, Sugar=48.0, Ingredients="cocoa, sugar, cocoa butter, vanilla" },
+        new() { Name="Potato Chips",    Category="Snacks",     Calories=536, Protein=7.0,  Fat=35.0, Sugar=0.4,  Ingredients="potato, vegetable oil, salt" },
+        new() { Name="Peanuts",         Category="Snacks",     Calories=567, Protein=26.0, Fat=49.0, Sugar=4.7,  Ingredients="peanut, salt" },
+        new() { Name="Almonds",         Category="Snacks",     Calories=579, Protein=21.0, Fat=50.0, Sugar=3.9,  Ingredients="almonds" },
+        // Drinks
+        new() { Name="Orange Juice",    Category="Drinks",     Calories=45,  Protein=0.7,  Fat=0.2,  Sugar=8.4,  Ingredients="orange" },
+        new() { Name="Cola",            Category="Drinks",     Calories=42,  Protein=0.0,  Fat=0.0,  Sugar=10.6, Ingredients="water, sugar, caramel color, phosphoric acid, natural flavors, caffeine" },
+        new() { Name="Coffee (Black)",  Category="Drinks",     Calories=2,   Protein=0.3,  Fat=0.0,  Sugar=0.0,  Ingredients="coffee, water" },
+        new() { Name="Green Tea",       Category="Drinks",     Calories=1,   Protein=0.2,  Fat=0.0,  Sugar=0.0,  Ingredients="green tea leaves, water" },
+        // New drinks
+        new() { Name="Coconut Latte",   Category="Drinks",     Calories=180, Protein=2.5,  Fat=8.0,  Sugar=22.0, Ingredients="espresso, coconut milk, sugar syrup, ice" },
+        new() { Name="Matcha Latte",    Category="Drinks",     Calories=160, Protein=3.0,  Fat=5.0,  Sugar=18.0, Ingredients="matcha powder, milk, sugar, water" },
+        new() { Name="Brown Sugar Milk Tea", Category="Drinks", Calories=280, Protein=3.5, Fat=6.0,  Sugar=38.0, Ingredients="black tea, milk, brown sugar, tapioca pearls" },
+        new() { Name="Lemon Tea",       Category="Drinks",     Calories=80,  Protein=0.2,  Fat=0.0,  Sugar=18.0, Ingredients="black tea, lemon, honey, water" },
+        // Chinese dishes
+        new() { Name="Fried Rice",      Category="Other",      Calories=163, Protein=4.5,  Fat=4.5,  Sugar=1.0,  Ingredients="white rice, egg, soy sauce, green onion, vegetable oil, salt" },
+        new() { Name="Dumplings",       Category="Other",      Calories=193, Protein=8.0,  Fat=7.0,  Sugar=2.0,  Ingredients="wheat flour, pork, cabbage, ginger, soy sauce, sesame oil" },
+        new() { Name="Spring Rolls",    Category="Other",      Calories=209, Protein=5.0,  Fat=10.0, Sugar=3.0,  Ingredients="wheat flour wrapper, pork, cabbage, carrot, vegetable oil" },
+        new() { Name="Steamed Egg with Shrimp", Category="Other", Calories=95, Protein=12.0, Fat=4.5, Sugar=0.5, Ingredients="egg, shrimp, soy sauce, sesame oil, green onion, water" },
+        new() { Name="Kung Pao Chicken", Category="Other",     Calories=175, Protein=14.0, Fat=9.0,  Sugar=5.0,  Ingredients="chicken, peanut, dried chili, soy sauce, vinegar, sugar, garlic, ginger" },
+        new() { Name="Mapo Tofu",       Category="Other",      Calories=98,  Protein=6.0,  Fat=6.0,  Sugar=1.0,  Ingredients="tofu, pork mince, doubanjiang, soy sauce, garlic, ginger, Sichuan pepper, green onion" },
+        new() { Name="Hot Dry Noodles", Category="Other",      Calories=152, Protein=5.0,  Fat=4.0,  Sugar=1.5,  Ingredients="wheat noodles, sesame paste, soy sauce, chili oil, green onion, garlic" },
+        new() { Name="Braised Pork",    Category="Other",      Calories=320, Protein=15.0, Fat=22.0, Sugar=8.0,  Ingredients="pork belly, soy sauce, sugar, rice wine, ginger, star anise, cinnamon" },
+        new() { Name="Egg Fried Rice",  Category="Other",      Calories=210, Protein=7.0,  Fat=8.0,  Sugar=1.0,  Ingredients="white rice, egg, green onion, soy sauce, vegetable oil, salt" },
+        new() { Name="Tom Yum Soup",    Category="Other",      Calories=80,  Protein=6.0,  Fat=3.0,  Sugar=2.0,  Ingredients="shrimp, lemongrass, galangal, kaffir lime leaves, chili, fish sauce, lime juice, mushroom" },
+    };
 
         foreach (var food in defaults)
             await _databaseService.SaveFoodAsync(food);

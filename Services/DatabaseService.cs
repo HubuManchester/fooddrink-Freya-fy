@@ -249,4 +249,15 @@ public class DatabaseService
             return false;
         }
     }
+
+
+    public async Task ResetFoodTableAsync()
+    {
+        await InitAsync();
+
+        await _database!.ExecuteAsync(
+            "DROP TABLE IF EXISTS FoodItems");
+
+        await _database.CreateTableAsync<FoodItem>();
+    }
 }

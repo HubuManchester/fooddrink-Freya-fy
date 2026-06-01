@@ -43,6 +43,7 @@ public partial class FoodDetailPage : ContentPage
 
     private void PopulateUI()
     {
+        // Hero
         string heroColor = HeroColors.TryGetValue(_food.Category, out var hc)
             ? hc : "#4CAF50";
         HeroGrid.BackgroundColor = Color.FromArgb(heroColor);
@@ -60,22 +61,144 @@ public partial class FoodDetailPage : ContentPage
         FatValueLabel.Text = $"{_food.Fat:F1}";
         SugarValueLabel.Text = $"{_food.Sugar:F1}";
         TtsPreviewLabel.Text = BuildSpeechText();
+
+        // Ingredients
+        BuildIngredientsView();
+    }
+
+    private void BuildIngredientsView()
+    {
+        if (string.IsNullOrWhiteSpace(_food.Ingredients))
+        {
+            IngredientsCard.IsVisible = false;
+            return;
+        }
+
+        IngredientsCard.IsVisible = true;
+        IngredientsLayout.Children.Clear();
+
+        // Load allergen settings
+        bool peanutAlert = Preferences.Default.Get("allergen_peanut", false);
+        bool glutenAlert = Preferences.Default.Get("allergen_gluten", false);
+        bool lactoseAlert = Preferences.Default.Get("allergen_lactose", false);
+        string savedCustom = Preferences.Default.Get("custom_allergens", "");
+        var customAllergens = string.IsNullOrEmpty(savedCustom)
+            ? new List<string>()
+            : savedCustom.Split(',').Where(s => !string.IsNullOrEmpty(s)).ToList();
+
+        bool hasAllergenMatch = false;
+
+        var ingredients = _food.Ingredients
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => s.Trim())
+            .Where(s => !string.IsNullOrEmpty(s));
+
+        foreach (var ingredient in ingredients)
+        {
+            bool isAllergen = CheckIngredientAllergen(
+                ingredient, peanutAlert, glutenAlert, lactoseAlert, customAllergens);
+
+            if (isAllergen) hasAllergenMatch = true;
+
+            var chip = new Frame
+            {
+                BackgroundColor = isAllergen
+                    ? Color.FromArgb("#FFEBEE")
+                    : Color.FromArgb("{AppThemeBinding Light=#F5F5F5, Dark=#2C2C2C}"),
+                CornerRadius = 16,
+                Padding = new Thickness(12, 6),
+                BorderColor = isAllergen
+                    ? Color.FromArgb("#FFCDD2")
+                    : Colors.Transparent,
+                Margin = new Thickness(4, 4),
+                HasShadow = false
+            };
+
+            // Simpler approach for theme compatibility
+            chip.BackgroundColor = isAllergen
+                ? Color.FromArgb("#FFEBEE")
+                : Color.FromArgb("#F0F0F0");
+
+            var stack = new HorizontalStackLayout { Spacing = 4 };
+
+            if (isAllergen)
+            {
+                stack.Add(new Label
+                {
+                    Text = "⚠️",
+                    FontSize = 12,
+                    VerticalOptions = LayoutOptions.Center
+                });
+            }
+
+            stack.Add(new Label
+            {
+                Text = ingredient,
+                FontSize = 13,
+                FontAttributes = isAllergen ? FontAttributes.Bold : FontAttributes.None,
+                TextColor = isAllergen
+                    ? Color.FromArgb("#D32F2F")
+                    : Color.FromArgb("#555555"),
+                VerticalOptions = LayoutOptions.Center
+            });
+
+            chip.Content = stack;
+            IngredientsLayout.Children.Add(chip);
+        }
+
+        AllergenHintLabel.IsVisible = hasAllergenMatch;
+    }
+
+    private static bool CheckIngredientAllergen(
+        string ingredient,
+        bool peanutAlert, bool glutenAlert, bool lactoseAlert,
+        List<string> customAllergens)
+    {
+        string lower = ingredient.ToLower();
+
+        if (peanutAlert &&
+            (lower.Contains("peanut") || lower.Contains("nut")))
+            return true;
+
+        if (glutenAlert &&
+            (lower.Contains("wheat") || lower.Contains("flour") ||
+             lower.Contains("bread") || lower.Contains("pasta") ||
+             lower.Contains("noodle") || lower.Contains("gluten")))
+            return true;
+
+        if (lactoseAlert &&
+            (lower.Contains("milk") || lower.Contains("cheese") ||
+             lower.Contains("cream") || lower.Contains("butter") ||
+             lower.Contains("dairy") || lower.Contains("yogurt") ||
+             lower.Contains("lactose")))
+            return true;
+
+        foreach (var allergen in customAllergens)
+            if (!string.IsNullOrEmpty(allergen) &&
+                lower.Contains(allergen.ToLower()))
+                return true;
+
+        return false;
     }
 
     private string BuildSpeechText()
     {
-        return $"{_food.Name}. Per 100 grams: " +
-               $"{_food.Calories:F0} calories, " +
-               $"{_food.Protein:F1} grams of protein, " +
-               $"{_food.Fat:F1} grams of fat, " +
-               $"and {_food.Sugar:F1} grams of sugar.";
+        string text = $"{_food.Name}. Per 100 grams: " +
+                      $"{_food.Calories:F0} calories, " +
+                      $"{_food.Protein:F1} grams of protein, " +
+                      $"{_food.Fat:F1} grams of fat, " +
+                      $"and {_food.Sugar:F1} grams of sugar.";
+
+        if (!string.IsNullOrWhiteSpace(_food.Ingredients))
+            text += $" Ingredients include: {_food.Ingredients}.";
+
+        return text;
     }
 
     private async void OnSpeakClicked(object sender, EventArgs e)
     {
         if (_isSpeaking) return;
 
-        // Create a new CancellationTokenSource for this session
         _cts?.Dispose();
         _cts = new CancellationTokenSource();
 
@@ -87,20 +210,11 @@ public partial class FoodDetailPage : ContentPage
 
         try
         {
-            // Pass CancellationToken via SpeechOptions overload
-            var options = new SpeechOptions
-            {
-                Volume = 1.0f,
-                Pitch = 1.0f
-            };
-
+            var options = new SpeechOptions { Volume = 1.0f, Pitch = 1.0f };
             await TextToSpeech.Default.SpeakAsync(
                 BuildSpeechText(), options, _cts.Token);
         }
-        catch (OperationCanceledException)
-        {
-            // Cancelled by user - expected, no error needed
-        }
+        catch (OperationCanceledException) { }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"TTS error: {ex.Message}");
@@ -113,7 +227,6 @@ public partial class FoodDetailPage : ContentPage
 
     private void OnStopClicked(object sender, EventArgs e)
     {
-        // Cancel the token - this stops SpeakAsync mid-speech
         _cts?.Cancel();
         ResetTtsButtons();
     }

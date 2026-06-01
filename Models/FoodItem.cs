@@ -18,6 +18,9 @@ public class FoodItem
     public double Fat { get; set; }
     public double Sugar { get; set; }
 
+    [Column("Ingredients")]
+    public string Ingredients { get; set; } = "";
+
     /// <summary>
     /// Returns emoji icon based on category
     /// </summary>

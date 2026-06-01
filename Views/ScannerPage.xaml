@@ -56,18 +56,13 @@
 
                 <!-- Photo Panel -->
                 <VerticalStackLayout x:Name="PhotoPanel" Spacing="12">
-                    <Frame CornerRadius="20"
-                           Padding="0"
-                           IsClippedToBounds="True"
-                           HeightRequest="250"
-                           IsVisible="{Binding Source={x:Reference FoodImage}, Path=IsVisible}"
-                           BorderColor="Transparent">
-                        <Image x:Name="FoodImage"
-                               HeightRequest="250"
-                               IsVisible="False"
-                               Aspect="AspectFit"
-                               HorizontalOptions="Fill"/>
-                    </Frame>
+                    <Image x:Name="FoodImage"
+                           IsVisible="False"
+                           Aspect="AspectFit"
+                           HorizontalOptions="Fill"
+                           MinimumHeightRequest="200"
+                           MaximumHeightRequest="600"
+                           Margin="0,0,0,8"/>
 
                     <!-- Photo Panel - replace the inner Frame content -->
                     <Frame BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E2E}"

@@ -197,13 +197,13 @@
 
                         <Grid ColumnDefinitions="*,*">
                             <Label Grid.Column="0"
-                                   Text="A  Small"
-                                   FontSize="12"
+                                   Text="Small"
+                                   FontSize="{DynamicResource GlobalFontSize}"
                                    TextColor="Gray"
                                    HorizontalOptions="Start"/>
                             <Label Grid.Column="1"
-                                   Text="Large  A"
-                                   FontSize="20"
+                                   Text="Large"
+                                   FontSize="{DynamicResource GlobalFontSize}"
                                    FontAttributes="Bold"
                                    TextColor="Gray"
                                    HorizontalOptions="End"/>

@@ -5,244 +5,210 @@
              Title="Food Detail"
              BackgroundColor="{AppThemeBinding Light=#F0F4F8, Dark=#0F0F1A}">
 
-	<ScrollView>
-		<VerticalStackLayout Spacing="0">
+    <ScrollView>
+        <VerticalStackLayout Spacing="0">
 
-			<!-- Hero Header -->
-			<Grid x:Name="HeroGrid" HeightRequest="200">
-				<VerticalStackLayout VerticalOptions="Center"
+            <!-- Hero Header -->
+            <Grid x:Name="HeroGrid" HeightRequest="200">
+                <VerticalStackLayout VerticalOptions="Center"
                                      HorizontalOptions="Center"
                                      Spacing="8">
-					<Frame x:Name="IconFrame"
+                    <Frame x:Name="IconFrame"
                            CornerRadius="50"
                            WidthRequest="90"
                            HeightRequest="90"
                            Padding="0"
                            HorizontalOptions="Center"
                            BorderColor="Transparent">
-						<Label x:Name="IconLabel"
+                        <Label x:Name="IconLabel"
                                FontSize="44"
                                HorizontalOptions="Center"
                                VerticalOptions="Center"/>
-					</Frame>
-					<Label x:Name="FoodNameLabel"
+                    </Frame>
+                    <Label x:Name="FoodNameLabel"
                            FontSize="26"
                            FontAttributes="Bold"
                            TextColor="White"
                            HorizontalOptions="Center"
                            HorizontalTextAlignment="Center"
                            Margin="20,0"/>
-					<Frame BackgroundColor="#00000033"
+                    <Frame BackgroundColor="#00000033"
                            CornerRadius="12"
                            Padding="12,4"
                            BorderColor="Transparent"
                            HorizontalOptions="Center">
-						<Label x:Name="CategoryLabel"
+                        <Label x:Name="CategoryLabel"
                                FontSize="13"
                                TextColor="White"
                                FontAttributes="Bold"
                                HorizontalOptions="Center"/>
-					</Frame>
-				</VerticalStackLayout>
-			</Grid>
+                    </Frame>
+                </VerticalStackLayout>
+            </Grid>
 
-			<!-- Calorie Highlight Card -->
-			<Frame Margin="16,-20,16,0"
+            <!-- Calorie Highlight Card -->
+            <Frame Margin="16,-20,16,0"
                    CornerRadius="20"
                    Padding="20"
                    HasShadow="True"
                    BorderColor="Transparent"
                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E2E}">
-				<Grid ColumnDefinitions="*,Auto,*">
-
-					<!-- Left: Calories -->
-					<VerticalStackLayout Grid.Column="0"
+                <Grid ColumnDefinitions="*,Auto,*">
+                    <VerticalStackLayout Grid.Column="0"
                                          HorizontalOptions="Center"
                                          Spacing="2">
-						<Label Text="🔥 Calories"
-                               FontSize="13"
-                               TextColor="Gray"
+                        <Label Text="🔥 Calories"
+                               FontSize="13" TextColor="Gray"
                                HorizontalOptions="Center"/>
-						<Label x:Name="CaloriesValueLabel"
-                               FontSize="36"
-                               FontAttributes="Bold"
+                        <Label x:Name="CaloriesValueLabel"
+                               FontSize="36" FontAttributes="Bold"
                                TextColor="#FF5722"
                                HorizontalOptions="Center"/>
-						<Label Text="kcal / 100g"
-                               FontSize="12"
-                               TextColor="Gray"
+                        <Label Text="kcal / 100g"
+                               FontSize="12" TextColor="Gray"
                                HorizontalOptions="Center"/>
-					</VerticalStackLayout>
-
-					<!-- Divider -->
-					<BoxView Grid.Column="1"
-                             WidthRequest="1"
-                             BackgroundColor="#EEEEEE"
-                             VerticalOptions="Fill"
-                             Margin="8,4"/>
-
-					<!-- Right: Energy in kJ -->
-					<VerticalStackLayout Grid.Column="2"
+                    </VerticalStackLayout>
+                    <BoxView Grid.Column="1"
+                             WidthRequest="1" BackgroundColor="#EEEEEE"
+                             VerticalOptions="Fill" Margin="8,4"/>
+                    <VerticalStackLayout Grid.Column="2"
                                          HorizontalOptions="Center"
                                          VerticalOptions="Center"
                                          Spacing="2">
-						<Label Text="⚡ Energy"
-                               FontSize="13"
-                               TextColor="Gray"
+                        <Label Text="⚡ Energy"
+                               FontSize="13" TextColor="Gray"
                                HorizontalOptions="Center"/>
-						<Label x:Name="KjLabel"
-                               FontSize="36"
-                               FontAttributes="Bold"
+                        <Label x:Name="KjLabel"
+                               FontSize="36" FontAttributes="Bold"
                                TextColor="#FF9800"
                                HorizontalOptions="Center"/>
-						<Label Text="kJ / 100g"
-                               FontSize="12"
-                               TextColor="Gray"
+                        <Label Text="kJ / 100g"
+                               FontSize="12" TextColor="Gray"
                                HorizontalOptions="Center"/>
-					</VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
 
-				</Grid>
-			</Frame>
-
-			<!-- Macros Grid -->
-			<Grid ColumnDefinitions="*,*,*"
+            <!-- Macros Grid -->
+            <Grid ColumnDefinitions="*,*,*"
                   ColumnSpacing="10"
                   Margin="16,14,16,0">
-
-				<!-- Protein -->
-				<Frame Grid.Column="0"
-                       CornerRadius="18"
-                       Padding="14"
-                       HasShadow="True"
+                <Frame Grid.Column="0"
+                       CornerRadius="18" Padding="14" HasShadow="True"
                        BorderColor="Transparent"
                        BackgroundColor="{AppThemeBinding Light=#E3F2FD, Dark=#0D2137}">
-					<VerticalStackLayout Spacing="4" HorizontalOptions="Center">
-						<Label Text="💪"
-                               FontSize="24"
+                    <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                        <Label Text="💪" FontSize="24" HorizontalOptions="Center"/>
+                        <Label x:Name="ProteinValueLabel"
+                               FontSize="20" FontAttributes="Bold"
+                               TextColor="#2196F3" HorizontalOptions="Center"/>
+                        <Label Text="g" FontSize="11" TextColor="#2196F3"
                                HorizontalOptions="Center"/>
-						<Label x:Name="ProteinValueLabel"
-                               FontSize="20"
-                               FontAttributes="Bold"
-                               TextColor="#2196F3"
+                        <Label Text="Protein" FontSize="11" TextColor="Gray"
                                HorizontalOptions="Center"/>
-						<Label Text="g"
-                               FontSize="11"
-                               TextColor="#2196F3"
-                               HorizontalOptions="Center"/>
-						<Label Text="Protein"
-                               FontSize="11"
-                               TextColor="Gray"
-                               HorizontalOptions="Center"/>
-					</VerticalStackLayout>
-				</Frame>
-
-				<!-- Fat -->
-				<Frame Grid.Column="1"
-                       CornerRadius="18"
-                       Padding="14"
-                       HasShadow="True"
+                    </VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Column="1"
+                       CornerRadius="18" Padding="14" HasShadow="True"
                        BorderColor="Transparent"
                        BackgroundColor="{AppThemeBinding Light=#FFF3E0, Dark=#2A1500}">
-					<VerticalStackLayout Spacing="4" HorizontalOptions="Center">
-						<Label Text="🥑"
-                               FontSize="24"
+                    <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                        <Label Text="🥑" FontSize="24" HorizontalOptions="Center"/>
+                        <Label x:Name="FatValueLabel"
+                               FontSize="20" FontAttributes="Bold"
+                               TextColor="#FF9800" HorizontalOptions="Center"/>
+                        <Label Text="g" FontSize="11" TextColor="#FF9800"
                                HorizontalOptions="Center"/>
-						<Label x:Name="FatValueLabel"
-                               FontSize="20"
-                               FontAttributes="Bold"
-                               TextColor="#FF9800"
+                        <Label Text="Fat" FontSize="11" TextColor="Gray"
                                HorizontalOptions="Center"/>
-						<Label Text="g"
-                               FontSize="11"
-                               TextColor="#FF9800"
-                               HorizontalOptions="Center"/>
-						<Label Text="Fat"
-                               FontSize="11"
-                               TextColor="Gray"
-                               HorizontalOptions="Center"/>
-					</VerticalStackLayout>
-				</Frame>
-
-				<!-- Sugar -->
-				<Frame Grid.Column="2"
-                       CornerRadius="18"
-                       Padding="14"
-                       HasShadow="True"
+                    </VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Column="2"
+                       CornerRadius="18" Padding="14" HasShadow="True"
                        BorderColor="Transparent"
                        BackgroundColor="{AppThemeBinding Light=#FCE4EC, Dark=#2A0014}">
-					<VerticalStackLayout Spacing="4" HorizontalOptions="Center">
-						<Label Text="🍬"
-                               FontSize="24"
+                    <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                        <Label Text="🍬" FontSize="24" HorizontalOptions="Center"/>
+                        <Label x:Name="SugarValueLabel"
+                               FontSize="20" FontAttributes="Bold"
+                               TextColor="#E91E63" HorizontalOptions="Center"/>
+                        <Label Text="g" FontSize="11" TextColor="#E91E63"
                                HorizontalOptions="Center"/>
-						<Label x:Name="SugarValueLabel"
-                               FontSize="20"
-                               FontAttributes="Bold"
-                               TextColor="#E91E63"
+                        <Label Text="Sugar" FontSize="11" TextColor="Gray"
                                HorizontalOptions="Center"/>
-						<Label Text="g"
-                               FontSize="11"
-                               TextColor="#E91E63"
-                               HorizontalOptions="Center"/>
-						<Label Text="Sugar"
-                               FontSize="11"
-                               TextColor="Gray"
-                               HorizontalOptions="Center"/>
-					</VerticalStackLayout>
-				</Frame>
+                    </VerticalStackLayout>
+                </Frame>
+            </Grid>
 
-			</Grid>
-
-			<!-- TTS Card -->
-			<Frame Margin="16,14,16,0"
+            <!-- Ingredients Card -->
+            <Frame x:Name="IngredientsCard"
+                   Margin="16,14,16,0"
                    CornerRadius="20"
                    Padding="20"
                    HasShadow="True"
                    BorderColor="Transparent"
                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E2E}">
-				<VerticalStackLayout Spacing="12">
-					<Label Text="Read Aloud"
-                           FontSize="15"
-                           FontAttributes="Bold"
-                           TextColor="Gray"/>
-					<Label x:Name="TtsPreviewLabel"
-                           FontSize="13"
+                <VerticalStackLayout Spacing="12">
+                    <HorizontalStackLayout Spacing="8">
+                        <Label Text="🧂" FontSize="18"/>
+                        <Label Text="Ingredients"
+                               FontSize="15" FontAttributes="Bold"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    <FlexLayout x:Name="IngredientsLayout"
+                                Wrap="Wrap"
+                                Direction="Row"
+                                JustifyContent="Start"
+                                AlignItems="Start"/>
+                    <Label Text="⚠️ Highlighted ingredients match your allergen settings"
+                           FontSize="11"
                            TextColor="Gray"
+                           x:Name="AllergenHintLabel"
+                           IsVisible="False"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- TTS Card -->
+            <Frame Margin="16,14,16,0"
+                   CornerRadius="20"
+                   Padding="20"
+                   HasShadow="True"
+                   BorderColor="Transparent"
+                   BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E2E}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Read Aloud"
+                           FontSize="15" FontAttributes="Bold" TextColor="Gray"/>
+                    <Label x:Name="TtsPreviewLabel"
+                           FontSize="13" TextColor="Gray"
                            LineBreakMode="WordWrap"/>
-					<Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-						<Button Grid.Column="0"
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Button Grid.Column="0"
                                 x:Name="SpeakButton"
                                 Text="🔊 Read Aloud"
-                                BackgroundColor="#FF9800"
-                                TextColor="White"
-                                CornerRadius="14"
-                                HeightRequest="48"
+                                BackgroundColor="#FF9800" TextColor="White"
+                                CornerRadius="14" HeightRequest="48"
                                 FontAttributes="Bold"
                                 Clicked="OnSpeakClicked"/>
-						<Button Grid.Column="1"
+                        <Button Grid.Column="1"
                                 x:Name="StopButton"
                                 Text="⏹ Stop"
-                                BackgroundColor="#9E9E9E"
-                                TextColor="White"
-                                CornerRadius="14"
-                                HeightRequest="48"
+                                BackgroundColor="#9E9E9E" TextColor="White"
+                                CornerRadius="14" HeightRequest="48"
                                 FontAttributes="Bold"
                                 IsEnabled="False"
                                 Clicked="OnStopClicked"/>
-					</Grid>
-				</VerticalStackLayout>
-			</Frame>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
 
-			<!-- Close Button -->
-			<Button Text="Close"
+            <!-- Close Button -->
+            <Button Text="Close"
                     Margin="16,14,16,28"
-                    BackgroundColor="#EEEEEE"
-                    TextColor="#555555"
-                    CornerRadius="16"
-                    HeightRequest="52"
-                    FontSize="15"
-                    FontAttributes="Bold"
+                    BackgroundColor="#EEEEEE" TextColor="#555555"
+                    CornerRadius="16" HeightRequest="52"
+                    FontSize="15" FontAttributes="Bold"
                     Clicked="OnCloseClicked"/>
 
-		</VerticalStackLayout>
-	</ScrollView>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

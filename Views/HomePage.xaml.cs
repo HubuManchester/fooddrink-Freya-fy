@@ -218,7 +218,7 @@ public partial class HomePage : ContentPage
     /// </summary>
     private void UpdateHealthScore()
     {
-        if (_currentCalories == 0)
+        if (_currentCalories == 0 && _currentWaterMl == 0)
         {
             HealthScoreLabel.Text = "- / 10";
             HealthScoreLabel.TextColor = Colors.Gray;
@@ -228,43 +228,37 @@ public partial class HomePage : ContentPage
 
         var advice = new List<string>();
 
-// ── Calorie score (0~7) ──────────────────────────────────────────
-double calRatio = (double)_currentCalories / _targetCalories;
+        // Calorie score (0~7)
+        double calorieScore = 0;
+        if (_currentCalories > 0)
+        {
+            double calRatio = (double)_currentCalories / _targetCalories;
+            calorieScore = Math.Max(0, 7 - Math.Abs(calRatio - 1.0) * 7);
 
-double calorieScore =
-    Math.Max(0,
-        7 - Math.Abs(calRatio - 1.0) * 7);
+            if (calRatio < 0.5)
+                advice.Add("Very few calories logged today");
+            else if (calRatio > 1.2)
+                advice.Add("Calories above target");
+        }
+        else
+        {
+            advice.Add("No meals logged yet");
+        }
 
-if (calRatio < 0.5)
-{
-    advice.Add("Very few calories logged today");
-}
-else if (calRatio > 1.2)
-{
-    advice.Add("Calories above target");
-}
+        // Water score (0~3)
+        double waterRatio = (double)_currentWaterMl / _targetWaterMl;
+        double waterScore = Math.Min(waterRatio, 1.0) * 3;
 
-// ── Water score (0~3) ────────────────────────────────────────────
-double waterRatio =
-    (double)_currentWaterMl / _targetWaterMl;
+        if (_currentWaterMl == 0)
+            advice.Add("Drink some water");
+        else if (waterRatio < 0.5)
+            advice.Add("Drink more water");
+        else if (waterRatio < 1.0)
+            advice.Add("Keep hydrating");
 
-double waterScore =
-    Math.Min(waterRatio, 1.0) * 3;
-
-if (waterRatio < 0.5)
-{
-    advice.Add("Drink more water");
-}
-else if (waterRatio < 1.0)
-{
-    advice.Add("Keep hydrating");
-}
-
-// ── Final score ──────────────────────────────────────────────────
-int score = (int)Math.Round(
-    calorieScore + waterScore);
-
-score = Math.Clamp(score, 0, 10);
+        // Final score
+        int score = (int)Math.Round(calorieScore + waterScore);
+        score = Math.Clamp(score, 0, 10);
 
         HealthScoreLabel.Text = $"{score} / 10";
 
@@ -298,7 +292,7 @@ score = Math.Clamp(score, 0, 10);
     }
 
     /// <summary>
-    /// Navigate to Diary page (scanner is now inside Diary)
+    /// Navigate to Diary page
     /// </summary>
     private async void OnScanClicked(object sender, EventArgs e)
     {

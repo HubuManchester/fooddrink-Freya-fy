@@ -128,6 +128,9 @@ public partial class ScannerPage : ContentPage
             FoodImage.Source = ImageSource.FromFile(photo.FullPath);
             FoodImage.IsVisible = true;
 
+            // Force layout update after image loads
+            FoodImage.SizeChanged += OnFoodImageSizeChanged;
+
             using var stream = await photo.OpenReadAsync();
             var bytes = new byte[stream.Length];
             await stream.ReadAsync(bytes, 0, (int)stream.Length);
@@ -152,6 +155,20 @@ public partial class ScannerPage : ContentPage
             LoadingIndicator.IsRunning = false;
         }
     }
+
+    private void OnFoodImageSizeChanged(object? sender, EventArgs e)
+    {
+        if (sender is not Image img) return;
+        img.SizeChanged -= OnFoodImageSizeChanged;
+
+        // Once image has actual size, remove any height constraints
+        // so it displays at full natural height
+        if (img.Height > 0)
+        {
+            FoodImage.HeightRequest = img.Height;
+        }
+    }
+
 
     /// <summary>
     /// Identify food from base64 image using Qwen Vision API

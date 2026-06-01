@@ -76,8 +76,14 @@ public partial class DiaryPage : ContentPage
 
     private async void OnDeleteSwipe(object sender, EventArgs e)
     {
-        if (sender is not SwipeItem swipeItem) return;
-        if (swipeItem.BindingContext is not DiaryEntry entry) return;
+        DiaryEntry? entry = null;
+
+        if (sender is SwipeItem swipeItem)
+            entry = swipeItem.BindingContext as DiaryEntry;
+        else if (sender is SwipeItemView swipeItemView)
+            entry = swipeItemView.BindingContext as DiaryEntry;
+
+        if (entry == null) return;
 
         bool confirm = await DisplayAlert("Delete Entry",
             $"Delete {entry.FoodName}?", "Delete", "Cancel");
@@ -226,18 +232,124 @@ public partial class DiaryPage : ContentPage
             await stream.ReadAsync(bytes, 0, (int)stream.Length);
             string base64 = Convert.ToBase64String(bytes);
 
+            // Step 1: identify food name
             string foodName = await IdentifyFoodAsync(base64);
 
             if (!string.IsNullOrEmpty(foodName) && foodName != "unknown")
-                await FetchNutritionDataAsync(foodName);
+            {
+                // Step 2: estimate nutrition WITH the image for accuracy
+                bool found = await TryQwenNutritionWithImageAsync(foodName, base64);
+                if (!found) await FetchNutritionDataAsync(foodName);
+            }
             else
+            {
                 await DisplayAlert("Not Recognised",
                     "Could not identify the food. Try again or use barcode.", "OK");
+            }
         }
         finally
         {
             ScanLoadingIndicator.IsVisible = false;
             ScanLoadingIndicator.IsRunning = false;
+        }
+    }
+
+    /// <summary>
+    /// Estimate nutrition using both food name AND the actual image
+    /// so AI can see portion size, cooking method, oil content etc.
+    /// </summary>
+    private async Task<bool> TryQwenNutritionWithImageAsync(
+        string foodName, string base64Image)
+    {
+        try
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Add(
+                "Authorization", $"Bearer {QwenApiKey}");
+
+            var body = new
+            {
+                model = "qwen-vl-plus",
+                input = new
+                {
+                    messages = new[]
+                    {
+                    new
+                    {
+                        role    = "user",
+                        content = new object[]
+                        {
+                            new { image = $"data:image/jpeg;base64,{base64Image}" },
+                            new
+                            {
+                                text =
+                                    $"This is a photo of: {foodName}\n" +
+                                    $"Please estimate the TOTAL nutrition for the entire " +
+                                    $"portion visible in this image.\n" +
+                                    $"Look carefully at:\n" +
+                                    $"- The actual quantity and portion size\n" +
+                                    $"- The cooking method (fried foods absorb significant oil)\n" +
+                                    $"- Any visible sauces, coatings or toppings\n" +
+                                    $"Be realistic - do not underestimate fried or oily foods.\n" +
+                                    $"Respond with ONLY this JSON, no markdown, no extra text:\n" +
+                                    $"{{\"name\":\"...\",\"serving_g\":0,\"calories\":0," +
+                                    $"\"protein\":0,\"fat\":0,\"sugar\":0}}"
+                            }
+                        }
+                    }
+                }
+                }
+            };
+
+            var response = await client.PostAsync(
+                "https://dashscope.aliyuncs.com/api/v1/services/aigc/" +
+                "multimodal-generation/generation",
+                new StringContent(JsonSerializer.Serialize(body),
+                    System.Text.Encoding.UTF8, "application/json"),
+                cts.Token);
+
+            if (!response.IsSuccessStatusCode) return false;
+
+            var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+
+            // Parse vision API response format
+            string text = doc.RootElement
+                .GetProperty("output")
+                .GetProperty("choices")[0]
+                .GetProperty("message")
+                .GetProperty("content")[0]
+                .GetProperty("text")
+                .GetString()?.Trim() ?? "";
+
+            if (text.StartsWith("```"))
+            {
+                int s = text.IndexOf('{'), en = text.LastIndexOf('}');
+                if (s >= 0 && en > s) text = text.Substring(s, en - s + 1);
+            }
+
+            var r = JsonDocument.Parse(text).RootElement;
+
+            string name = r.TryGetProperty("name", out var n) ? n.GetString() ?? foodName : foodName;
+            double calories = r.TryGetProperty("calories", out var c) ? c.GetDouble() : 0;
+            double protein = r.TryGetProperty("protein", out var p) ? p.GetDouble() : 0;
+            double fat = r.TryGetProperty("fat", out var f) ? f.GetDouble() : 0;
+            double sugar = r.TryGetProperty("sugar", out var sg) ? sg.GetDouble() : 0;
+            double serving = r.TryGetProperty("serving_g", out var sv) ? sv.GetDouble() : 0;
+
+            string displayName = serving > 0
+                ? $"{name} (~{serving:F0}g)"
+                : name;
+
+            ShowScanResult(displayName, calories, protein, fat, sugar);
+            Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(300));
+            return true;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine(
+                $"Qwen vision nutrition error: {ex.Message}");
+            return false;
         }
     }
 
@@ -415,7 +527,8 @@ public partial class DiaryPage : ContentPage
         {
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
             using var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {QwenApiKey}");
+            client.DefaultRequestHeaders.Add(
+                "Authorization", $"Bearer {QwenApiKey}");
 
             var body = new
             {
@@ -424,14 +537,34 @@ public partial class DiaryPage : ContentPage
                 {
                     messages = new[]
                     {
-                        new { role="system", content="You are a nutrition expert. Always respond in valid JSON only, no extra text." },
-                        new { role="user",   content=$"Estimate nutrition per 100g for: {foodName}\nRespond with ONLY this JSON:\n{{\"name\":\"...\",\"calories\":0,\"protein\":0,\"fat\":0,\"sugar\":0}}" }
+                    new
+                    {
+                        role = "system",
+                        content = "You are a nutrition expert. " +
+                                  "Always respond in valid JSON only, no extra text."
+                    },
+                    new
+                    {
+                        role = "user",
+                        content = $"Estimate the total nutrition for a typical " +
+                                  $"single serving portion of: {foodName}\n" +
+                                  $"Assume a realistic serving size a person would eat " +
+                                  $"in one meal (not per 100g).\n" +
+                                  $"Respond with ONLY this JSON, no markdown:\n" +
+                                  $"{{\"name\":\"{foodName}\"," +
+                                  $"\"serving_g\":0," +
+                                  $"\"calories\":0," +
+                                  $"\"protein\":0," +
+                                  $"\"fat\":0," +
+                                  $"\"sugar\":0}}"
                     }
+                }
                 }
             };
 
             var response = await client.PostAsync(
-                "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation",
+                "https://dashscope.aliyuncs.com/api/v1/services/aigc/" +
+                "text-generation/generation",
                 new StringContent(JsonSerializer.Serialize(body),
                     System.Text.Encoding.UTF8, "application/json"),
                 cts.Token);
@@ -439,8 +572,10 @@ public partial class DiaryPage : ContentPage
             if (!response.IsSuccessStatusCode) return false;
 
             var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-            string text = doc.RootElement.GetProperty("output").GetProperty("text")
-                             .GetString()?.Trim() ?? "";
+            string text = doc.RootElement
+                .GetProperty("output")
+                .GetProperty("text")
+                .GetString()?.Trim() ?? "";
 
             if (text.StartsWith("```"))
             {
@@ -449,15 +584,28 @@ public partial class DiaryPage : ContentPage
             }
 
             var r = JsonDocument.Parse(text).RootElement;
-            ShowScanResult(
-                r.TryGetProperty("name", out var n) ? n.GetString() ?? foodName : foodName,
-                r.TryGetProperty("calories", out var c) ? c.GetDouble() : 0,
-                r.TryGetProperty("protein", out var p) ? p.GetDouble() : 0,
-                r.TryGetProperty("fat", out var f) ? f.GetDouble() : 0,
-                r.TryGetProperty("sugar", out var sg) ? sg.GetDouble() : 0);
+
+            string name = r.TryGetProperty("name", out var n) ? n.GetString() ?? foodName : foodName;
+            double calories = r.TryGetProperty("calories", out var c) ? c.GetDouble() : 0;
+            double protein = r.TryGetProperty("protein", out var p) ? p.GetDouble() : 0;
+            double fat = r.TryGetProperty("fat", out var f) ? f.GetDouble() : 0;
+            double sugar = r.TryGetProperty("sugar", out var sg) ? sg.GetDouble() : 0;
+            double serving = r.TryGetProperty("serving_g", out var sv) ? sv.GetDouble() : 0;
+
+            // Show serving size in the food name if available
+            string displayName = serving > 0
+                ? $"{name} (~{serving:F0}g)"
+                : name;
+
+            ShowScanResult(displayName, calories, protein, fat, sugar);
+            Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(300));
             return true;
         }
-        catch { return false; }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Qwen nutrition error: {ex.Message}");
+            return false;
+        }
     }
 
     private async Task<bool> TryOpenFoodFactsSearchAsync(string foodName)
@@ -512,7 +660,7 @@ public partial class DiaryPage : ContentPage
     // ─── Show Scan Result ────────────────────────────────────────────────────
 
     private void ShowScanResult(string name, double calories,
-        double protein, double fat, double sugar)
+    double protein, double fat, double sugar)
     {
         _scanFoodName = name;
         _scanCalories = calories;
@@ -526,6 +674,9 @@ public partial class DiaryPage : ContentPage
         ScanFatLabel.Text = $"{fat:F1}g";
         ScanSugarLabel.Text = $"{sugar:F1}g";
         ScanResultFrame.IsVisible = true;
+
+        // Check allergens and show warning if needed
+        CheckAllergens(name);
 
         Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(300));
     }
@@ -612,6 +763,46 @@ public partial class DiaryPage : ContentPage
         catch (Exception ex)
         {
             await DisplayAlert("Error", $"Failed to save: {ex.Message}", "OK");
+        }
+    }
+
+    private void CheckAllergens(string foodName)
+    {
+        var warnings = new List<string>();
+        string nameLower = foodName.ToLower();
+
+        if (_peanutAlert &&
+            (nameLower.Contains("peanut") || nameLower.Contains("nut")))
+            warnings.Add("Contains Peanuts");
+
+        if (_glutenAlert &&
+            (nameLower.Contains("wheat") || nameLower.Contains("bread") ||
+             nameLower.Contains("pasta") || nameLower.Contains("flour") ||
+             nameLower.Contains("noodle") || nameLower.Contains("dumpling")))
+            warnings.Add("Contains Gluten");
+
+        if (_lactoseAlert &&
+            (nameLower.Contains("milk") || nameLower.Contains("cheese") ||
+             nameLower.Contains("dairy") || nameLower.Contains("yogurt") ||
+             nameLower.Contains("cream") || nameLower.Contains("butter")))
+            warnings.Add("Contains Lactose");
+
+        foreach (var allergen in _customAllergens)
+        {
+            if (!string.IsNullOrEmpty(allergen) &&
+                nameLower.Contains(allergen.ToLower()))
+                warnings.Add($"Contains {allergen}");
+        }
+
+        if (warnings.Count > 0)
+        {
+            AllergenWarningLabel.Text = string.Join("\n", warnings);
+            AllergenWarningFrame.IsVisible = true;
+            Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(800));
+        }
+        else
+        {
+            AllergenWarningFrame.IsVisible = false;
         }
     }
 }

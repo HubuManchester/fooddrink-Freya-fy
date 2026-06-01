@@ -20,6 +20,7 @@ public partial class AddFoodItemPage : ContentPage
             ProteinEntry.Text = existing.Protein.ToString("F1");
             FatEntry.Text = existing.Fat.ToString("F1");
             SugarEntry.Text = existing.Sugar.ToString("F1");
+            IngredientsEntry.Text = existing.Ingredients;
 
             var categories = new[]
             {
@@ -58,6 +59,7 @@ public partial class AddFoodItemPage : ContentPage
         double.TryParse(SugarEntry.Text, out double sugar);
 
         string category = CategoryPicker.SelectedItem?.ToString() ?? "Other";
+        string ingredients = IngredientsEntry.Text?.Trim() ?? "";
 
         Result = new FoodItem
         {
@@ -67,7 +69,8 @@ public partial class AddFoodItemPage : ContentPage
             Calories = calories,
             Protein = protein,
             Fat = fat,
-            Sugar = sugar
+            Sugar = sugar,
+            Ingredients = ingredients
         };
 
         await Navigation.PopModalAsync();

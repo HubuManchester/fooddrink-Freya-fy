@@ -146,13 +146,12 @@
                                    IsVisible="False"
                                    CornerRadius="14"
                                    Padding="0"
-                                   IsClippedToBounds="True"
-                                   HeightRequest="200"
+                                   IsClippedToBounds="False"
                                    BorderColor="Transparent">
                                 <Image x:Name="FoodImage"
-                                       HeightRequest="200"
-                                       Aspect="AspectFill"
-                                       HorizontalOptions="Fill"/>
+                                       Aspect="AspectFit"
+                                       HorizontalOptions="Fill"
+                                       MaximumHeightRequest="500"/>
                             </Frame>
                             <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                 <Button Grid.Column="0"
@@ -227,6 +226,27 @@
                                        FontAttributes="Bold"
                                        HorizontalOptions="Center"
                                        HorizontalTextAlignment="Center"/>
+
+                                <Frame x:Name="AllergenWarningFrame"
+                                       IsVisible="False"
+                                       BackgroundColor="#FFEBEE"
+                                       CornerRadius="12"
+                                       Padding="12"
+                                       BorderColor="#FFCDD2">           
+                                    <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                                        <Label Text="⚠️"
+                                               FontSize="16"
+                                               VerticalOptions="Center"/>
+                                        <Label x:Name="AllergenWarningLabel"
+                                               TextColor="#D32F2F"
+                                               FontAttributes="Bold"
+                                               FontSize="13"
+                                               VerticalOptions="Center"
+                                               HorizontalTextAlignment="Center"
+                                               LineBreakMode="WordWrap"/>
+                                    </HorizontalStackLayout>
+                                </Frame>
+                                
                                 <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="6">
                                     <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
                                         <Label Text="🔥" FontSize="16" HorizontalOptions="Center"/>
@@ -273,7 +293,7 @@
                                             BackgroundColor="#FFF9C4"
                                             TextColor="#F57F17"
                                             CornerRadius="10"
-                                            HeightRequest="44"
+                                            HeightRequest="52"
                                             FontSize="20"
                                             Clicked="OnScanSaveBreakfastClicked"/>
                                     <Button Grid.Column="1"
@@ -281,7 +301,7 @@
                                             BackgroundColor="#FFE0B2"
                                             TextColor="#E65100"
                                             CornerRadius="10"
-                                            HeightRequest="44"
+                                            HeightRequest="52"
                                             FontSize="20"
                                             Clicked="OnScanSaveLunchClicked"/>
                                     <Button Grid.Column="2"
@@ -289,15 +309,15 @@
                                             BackgroundColor="#E8EAF6"
                                             TextColor="#3949AB"
                                             CornerRadius="10"
-                                            HeightRequest="44"
+                                            HeightRequest="52"
                                             FontSize="20"
                                             Clicked="OnScanSaveDinnerClicked"/>
                                     <Button Grid.Column="3"
-                                            Text="🍎"
+                                            Text="🥨"
                                             BackgroundColor="#FCE4EC"
                                             TextColor="#C62828"
                                             CornerRadius="10"
-                                            HeightRequest="44"
+                                            HeightRequest="52"
                                             FontSize="20"
                                             Clicked="OnScanSaveSnackClicked"/>
                                 </Grid>
@@ -344,7 +364,8 @@
                                 <SwipeView.RightItems>
                                     <SwipeItems Mode="Reveal">
 
-                                        <SwipeItemView Invoked="OnDeleteSwipe">
+                                        <SwipeItemView Invoked="OnDeleteSwipe"
+                                                       CommandParameter="{Binding .}">
 
                                             <Frame BackgroundColor="#FF5252"
                                                    WidthRequest="72"
