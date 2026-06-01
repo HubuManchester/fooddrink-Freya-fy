@@ -21,6 +21,7 @@
                        VerticalOptions="Center"/>
                 <Button Grid.Column="1"
                         Text="+ Add Food"
+                        SemanticProperties.Hint="Add a new food item to the database"
                         BackgroundColor="#4CAF50"
                         TextColor="White"
                         CornerRadius="20"
@@ -40,6 +41,7 @@
                 <Grid ColumnDefinitions="Auto,*">
                     <SearchBar Grid.Column="1"
                                x:Name="SearchBar"
+                               SemanticProperties.Hint="Type to search foods by name or category"
                                Placeholder="Search food name..."
                                TextChanged="OnSearchTextChanged"
                                FontSize="{DynamicResource GlobalFontSize}"

@@ -1,4 +1,4 @@
-using ZXing.Net.Maui;
+﻿using ZXing.Net.Maui;
 
 namespace NutriLens.Views;
 
@@ -49,5 +49,46 @@ public partial class BarcodeScannerPage : ContentPage
         ScannedBarcode = null;
 
         await Navigation.PopModalAsync();
+    }
+
+    private bool _torchOn = false;
+
+    private void OnTorchClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            _torchOn = !_torchOn;
+            BarcodeReader.IsTorchOn = _torchOn;
+
+            TorchButton.Text = _torchOn ? "🔦 On" : "🔦 Torch";
+            TorchButton.BackgroundColor = _torchOn
+                ? Color.FromArgb("#FFC107")
+                : Color.FromArgb("#555555");
+            TorchButton.TextColor = _torchOn
+                ? Colors.Black
+                : Colors.White;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Torch error: {ex.Message}");
+        }
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        _scanned = false;
+        BarcodeReader.IsDetecting = false;
+
+        // Turn off torch when leaving
+        try
+        {
+            if (_torchOn)
+            {
+                BarcodeReader.IsTorchOn = false;
+                _torchOn = false;
+            }
+        }
+        catch { }
     }
 }

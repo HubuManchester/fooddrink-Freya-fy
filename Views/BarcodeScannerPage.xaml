@@ -47,6 +47,18 @@
             FontSize="16"
             Clicked="OnCancelClicked" />
 
+		<Button x:Name="TorchButton"
+            Grid.Column="1"
+            Text="🔦 Torch"
+            BackgroundColor="#555555"
+            TextColor="White"
+            CornerRadius="0"
+            HeightRequest="56"
+            WidthRequest="110"
+            FontSize="14"
+            SemanticProperties.Hint="Toggle flashlight for scanning in low light"
+            Clicked="OnTorchClicked"/>
+
 	</Grid>
 
 </ContentPage>

@@ -187,6 +187,8 @@
                         </Grid>
 
                         <Slider x:Name="FontSizeSlider"
+                                SemanticProperties.Description="Font size slider, drag to adjust text size"
+                                SemanticProperties.Hint="Current value shown to the right"
                                 Minimum="12"
                                 Maximum="24"
                                 Value="16"
@@ -317,6 +319,7 @@
                             </Frame>
                             <Button Grid.Column="1"
                                     Text="+ Add"
+                                    SemanticProperties.Hint="Add your allergens"
                                     BackgroundColor="#FF9800"
                                     TextColor="White"
                                     CornerRadius="12"
@@ -415,6 +418,8 @@
                         </VerticalStackLayout>
                         <Switch Grid.Column="2"
                                 x:Name="WaterReminderSwitch"
+                                SemanticProperties.Description="Water reminder toggle"
+                                SemanticProperties.Hint="When on, vibrates every hour if water target not met"
                                 Toggled="OnWaterReminderToggled"
                                 VerticalOptions="Center"
                                 OnColor="#4CAF50"/>

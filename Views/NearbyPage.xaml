@@ -18,6 +18,7 @@
                        TextColor="White"
                        HorizontalOptions="Center"/>
                 <Label Text="Find healthy restaurants near you"
+                       SemanticProperties.Hint="Use GPS to find healthy restaurants nearby"
                        FontSize="{DynamicResource GlobalFontSize}"
                        TextColor="#C8E6C9"
                        HorizontalOptions="Center"/>
@@ -87,6 +88,7 @@
                                        BorderColor="#E0E0E0"
                                        HasShadow="False">
                                     <Entry x:Name="KeywordEntry"
+                                           SemanticProperties.Hint="Enter search keyword such as restaurant or salad"
                                            Text="restaurant"
                                            Placeholder="e.g. restaurant, salad, healthy..."
                                            FontSize="{DynamicResource GlobalFontSize}"
@@ -104,6 +106,7 @@
                                        BorderColor="#E0E0E0"
                                        HasShadow="False">
                                     <Picker x:Name="RadiusPicker"
+                                            SemanticProperties.Hint="Enter search radius"
                                             FontSize="{DynamicResource GlobalFontSize}"
                                             Margin="12,8"
                                             SelectedIndex="1">

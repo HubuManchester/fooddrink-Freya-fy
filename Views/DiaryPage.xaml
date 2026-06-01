@@ -85,6 +85,7 @@
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                     <Button Grid.Column="0"
                             Text="📷 Scan Food"
+                            SemanticProperties.Hint="Open food scanner panel"
                             BackgroundColor="#4CAF50"
                             TextColor="White"
                             CornerRadius="16"
@@ -94,6 +95,7 @@
                             Clicked="OnScanFoodClicked"/>
                     <Button Grid.Column="1"
                             Text="+ Add Manually"
+                            SemanticProperties.Hint="Manually enter food nutrition information"
                             BackgroundColor="#2196F3"
                             TextColor="White"
                             CornerRadius="16"
@@ -121,6 +123,7 @@
                                 <Button x:Name="PhotoTabBtn"
                                         Grid.Column="0"
                                         Text="📷 Photo"
+                                        SemanticProperties.Hint="Open food scanner"
                                         BackgroundColor="#4CAF50"
                                         TextColor="White"
                                         CornerRadius="10"
@@ -131,6 +134,7 @@
                                 <Button x:Name="BarcodeTabBtn"
                                         Grid.Column="1"
                                         Text="🔍 Barcode"
+                                        SemanticProperties.Hint="Open barcode scanner"
                                         BackgroundColor="Transparent"
                                         TextColor="Gray"
                                         CornerRadius="10"
@@ -156,6 +160,7 @@
                             <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                 <Button Grid.Column="0"
                                         Text="📷 Camera"
+                                        SemanticProperties.Hint="Open food scanner camera"
                                         BackgroundColor="#4CAF50"
                                         TextColor="White"
                                         CornerRadius="12"
@@ -165,6 +170,7 @@
                                         Clicked="OnTakePhotoClicked"/>
                                 <Button Grid.Column="1"
                                         Text="🖼 Gallery"
+                                        SemanticProperties.Hint="Open gallery"
                                         BackgroundColor="#2196F3"
                                         TextColor="White"
                                         CornerRadius="12"
