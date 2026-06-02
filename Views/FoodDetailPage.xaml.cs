@@ -46,16 +46,38 @@ public partial class FoodDetailPage : ContentPage
     /// </summary>
     private void PopulateUI()
     {
-        // Hero
-        string heroColor = HeroColors.TryGetValue(_food.Category, out var hc)
-            ? hc : "#4CAF50";
-        HeroGrid.BackgroundColor = Color.FromArgb(heroColor);
+        // ── Hero background ───────────────────────────────────────────────
+        bool hasPhoto = !string.IsNullOrEmpty(_food.ImagePath)
+                        && File.Exists(_food.ImagePath);
 
-        var (bgColor, icon) = CategoryMap.TryGetValue(
-            _food.Category, out var cm) ? cm : ("#F5F5F5", "🍽️");
-        IconFrame.BackgroundColor = Color.FromArgb(bgColor);
-        IconLabel.Text = icon;
+        if (hasPhoto)
+        {
+            // Show the real food photo as the hero background
+            HeroImage.Source = ImageSource.FromFile(_food.ImagePath);
+            HeroImage.IsVisible = true;
 
+            // Keep a subtle tinted fallback colour in case image loads slowly
+            HeroGrid.BackgroundColor = Color.FromArgb("#333333");
+
+            // Hide the generic category icon — the photo is enough
+            IconFrame.IsVisible = false;
+        }
+        else
+        {
+            // No photo: use the coloured gradient hero with category icon
+            string heroColor = HeroColors.TryGetValue(_food.Category, out var hc)
+                ? hc : "#4CAF50";
+            HeroGrid.BackgroundColor = Color.FromArgb(heroColor);
+
+            var (bgColor, icon) = CategoryMap.TryGetValue(
+                _food.Category, out var cm) ? cm : ("#F5F5F5", "🍽️");
+            IconFrame.BackgroundColor = Color.FromArgb(bgColor);
+            IconLabel.Text = icon;
+            IconFrame.IsVisible = true;
+            HeroImage.IsVisible = false;
+        }
+
+        // ── Text / nutrition ──────────────────────────────────────────────
         FoodNameLabel.Text = _food.Name;
         CategoryLabel.Text = _food.Category;
         CaloriesValueLabel.Text = $"{_food.Calories:F0}";
@@ -65,7 +87,7 @@ public partial class FoodDetailPage : ContentPage
         SugarValueLabel.Text = $"{_food.Sugar:F1}";
         TtsPreviewLabel.Text = BuildSpeechText();
 
-        // Ingredients
+        // ── Ingredients ───────────────────────────────────────────────────
         BuildIngredientsView();
     }
 
@@ -83,7 +105,6 @@ public partial class FoodDetailPage : ContentPage
         IngredientsCard.IsVisible = true;
         IngredientsLayout.Children.Clear();
 
-        // Load allergen settings
         bool peanutAlert = Preferences.Default.Get("allergen_peanut", false);
         bool glutenAlert = Preferences.Default.Get("allergen_gluten", false);
         bool lactoseAlert = Preferences.Default.Get("allergen_lactose", false);
@@ -110,7 +131,7 @@ public partial class FoodDetailPage : ContentPage
             {
                 BackgroundColor = isAllergen
                     ? Color.FromArgb("#FFEBEE")
-                    : Color.FromArgb("{AppThemeBinding Light=#F5F5F5, Dark=#2C2C2C}"),
+                    : Color.FromArgb("#F0F0F0"),
                 CornerRadius = 16,
                 Padding = new Thickness(12, 6),
                 BorderColor = isAllergen
@@ -119,11 +140,6 @@ public partial class FoodDetailPage : ContentPage
                 Margin = new Thickness(4, 4),
                 HasShadow = false
             };
-
-            // Simpler approach for theme compatibility
-            chip.BackgroundColor = isAllergen
-                ? Color.FromArgb("#FFEBEE")
-                : Color.FromArgb("#F0F0F0");
 
             var stack = new HorizontalStackLayout { Spacing = 4 };
 

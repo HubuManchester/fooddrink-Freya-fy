@@ -20,6 +20,9 @@ public class FoodItem
 
     [Column("Ingredients")]
     public string Ingredients { get; set; } = "";
+    public string? ImagePath { get; set; }
+    public bool HasImage => !string.IsNullOrEmpty(ImagePath) && File.Exists(ImagePath);
+    public bool HasNoImage => !HasImage;
 
     /// <summary>
     /// Returns emoji icon based on category

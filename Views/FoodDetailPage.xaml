@@ -9,45 +9,106 @@
         <VerticalStackLayout Spacing="0">
 
             <!-- Hero Header -->
-            <Grid x:Name="HeroGrid" HeightRequest="200">
+            <Grid x:Name="HeroGrid"
+                  HeightRequest="260">
+
+                <!-- Background food image -->
+                <Image x:Name="HeroImage"
+                       Aspect="AspectFill"
+                       IsVisible="False"/>
+
+                <!-- Fallback icon when no image -->
                 <VerticalStackLayout VerticalOptions="Center"
-                                     HorizontalOptions="Center"
-                                     Spacing="8">
+                         HorizontalOptions="Center">
+
                     <Frame x:Name="IconFrame"
                            CornerRadius="50"
                            WidthRequest="90"
                            HeightRequest="90"
                            Padding="0"
-                           HorizontalOptions="Center"
                            BorderColor="Transparent">
+
                         <Label x:Name="IconLabel"
                                FontSize="44"
                                HorizontalOptions="Center"
                                VerticalOptions="Center"/>
+
                     </Frame>
-                    <Label x:Name="FoodNameLabel"
-                           FontSize="26"
-                           FontAttributes="Bold"
-                           TextColor="White"
-                           HorizontalOptions="Center"
-                           HorizontalTextAlignment="Center"
-                           Margin="20,0"/>
-                    <Frame BackgroundColor="#00000033"
-                           CornerRadius="12"
-                           Padding="12,4"
-                           BorderColor="Transparent"
-                           HorizontalOptions="Center">
-                        <Label x:Name="CategoryLabel"
-                               FontSize="13"
-                               TextColor="White"
-                               FontAttributes="Bold"
-                               HorizontalOptions="Center"/>
-                    </Frame>
+
                 </VerticalStackLayout>
+
             </Grid>
 
+            <!-- Food Info Card -->
+            <Frame Margin="16,-25,16,0"
+                   CornerRadius="28"
+                   Padding="22"
+                   HasShadow="True"
+                   BorderColor="Transparent">
+
+                <Frame.Background>
+                    <LinearGradientBrush StartPoint="0,0"
+                         EndPoint="1,1">
+
+                        <GradientStop Color="{AppThemeBinding Light=#E8F5E9, Dark=#1F2A24}"
+                      Offset="0.0"/>
+
+                        <GradientStop Color="{AppThemeBinding Light=#DCEFDF, Dark=#28362F}"
+                      Offset="1.0"/>
+
+                    </LinearGradientBrush>
+                </Frame.Background>
+
+                <VerticalStackLayout Spacing="12">
+
+                    <!-- Food Name -->
+                    <Label x:Name="FoodNameLabel"
+                           FontSize="30"
+                           FontAttributes="Bold"
+                           LineBreakMode="WordWrap"
+                           TextColor="{AppThemeBinding Light=#1A1A1A, Dark=#FFFFFF}"/>
+
+                    <!-- Category Badge -->
+                    <Frame Padding="12,5"
+                           CornerRadius="12"
+                           BorderColor="Transparent"
+                           HorizontalOptions="Start">
+
+                        <Frame.Background>
+                            <LinearGradientBrush StartPoint="0,0"
+                                     EndPoint="1,0">
+
+                                <GradientStop Color="{AppThemeBinding Light=#E8F5E9, Dark=#163020}"
+                                  Offset="0"/>
+
+                                <GradientStop Color="{AppThemeBinding Light=#C8E6C9, Dark=#23452E}"
+                                  Offset="1"/>
+
+                            </LinearGradientBrush>
+                        </Frame.Background>
+
+                        <HorizontalStackLayout Spacing="6">
+
+                            <Label Text="🏷"
+                       FontSize="12"
+                       VerticalOptions="Center"/>
+
+                            <Label x:Name="CategoryLabel"
+                       FontSize="12"
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light=#2E7D32, Dark=#A5D6A7}"
+                       VerticalOptions="Center"/>
+
+                        </HorizontalStackLayout>
+
+                    </Frame>
+
+                </VerticalStackLayout>
+
+            </Frame>
+            
             <!-- Calorie Highlight Card -->
-            <Frame Margin="16,-20,16,0"
+            <Frame Margin="16,14,16,0"
                    CornerRadius="20"
                    Padding="20"
                    HasShadow="True"

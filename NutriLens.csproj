@@ -55,6 +55,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <AndroidResource Remove="新文件夹1\**" />
+	  <AndroidResource Remove="新文件夹\**" />
+	  <Compile Remove="新文件夹1\**" />
+	  <Compile Remove="新文件夹\**" />
+	  <EmbeddedResource Remove="新文件夹1\**" />
+	  <EmbeddedResource Remove="新文件夹\**" />
+	  <MauiCss Remove="新文件夹1\**" />
+	  <MauiCss Remove="新文件夹\**" />
+	  <MauiXaml Remove="新文件夹1\**" />
+	  <MauiXaml Remove="新文件夹\**" />
+	  <None Remove="新文件夹1\**" />
+	  <None Remove="新文件夹\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />

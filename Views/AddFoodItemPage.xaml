@@ -4,151 +4,233 @@
              x:Class="NutriLens.Views.AddFoodItemPage"
              BackgroundColor="{AppThemeBinding Light=#F0F4F8, Dark=#0F0F1A}">
 
-	<ScrollView>
-		<VerticalStackLayout Spacing="0">
+    <ScrollView>
+        <VerticalStackLayout Spacing="0">
 
-			<Grid HeightRequest="110" BackgroundColor="#2196F3">
-				<VerticalStackLayout VerticalOptions="Center"
+            <!-- Header -->
+            <Grid HeightRequest="110" BackgroundColor="#2196F3">
+                <VerticalStackLayout VerticalOptions="Center"
                                      HorizontalOptions="Center"
                                      Spacing="4">
-					<Label Text="🥗" FontSize="32" HorizontalOptions="Center"/>
-					<Label x:Name="TitleLabel"
+                    <Label Text="🥗" FontSize="32" HorizontalOptions="Center"/>
+                    <Label x:Name="TitleLabel"
                            Text="Add Food"
                            FontSize="20"
                            FontAttributes="Bold"
                            TextColor="White"
                            HorizontalOptions="Center"/>
-				</VerticalStackLayout>
-			</Grid>
+                </VerticalStackLayout>
+            </Grid>
 
-			<Frame Margin="16,16,16,8"
+            <!-- Image Picker Card -->
+            <Frame Margin="16,16,16,0"
                    CornerRadius="20"
                    Padding="20"
                    HasShadow="True"
                    BorderColor="Transparent"
                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E2E}">
-				<VerticalStackLayout Spacing="16">
+                <VerticalStackLayout Spacing="12">
 
-					<!-- Name -->
-					<VerticalStackLayout Spacing="6">
-						<Label Text="Food Name *"
+                    <Label Text="📷 Food Photo"
+                           FontSize="13" FontAttributes="Bold" TextColor="#2196F3"/>
+
+                    <!-- Preview Image (shown after selection) -->
+                    <Frame x:Name="ImagePreviewFrame"
+                           CornerRadius="16"
+                           Padding="0"
+                           HasShadow="False"
+                           BorderColor="#E3F2FD"
+                           IsClippedToBounds="True"
+                           IsVisible="False">
+                        <Image x:Name="PreviewImage"
+                               Aspect="AspectFit"/>
+                    </Frame>
+
+                    <!-- Placeholder (shown before selection) -->
+                    <Frame x:Name="ImagePlaceholderFrame"
+                           CornerRadius="16"
+                           Padding="0"
+                           HasShadow="False"
+                           BorderColor="#E3F2FD"
+                           HeightRequest="180"
+                           BackgroundColor="{AppThemeBinding Light=#F5FBFF, Dark=#1A1A2A}">
+                        <VerticalStackLayout VerticalOptions="Center"
+                                             HorizontalOptions="Center"
+                                             Spacing="8">
+                            <Label Text="🍽️" FontSize="48" HorizontalOptions="Center"/>
+                            <Label Text="No photo selected"
+                                   FontSize="13" TextColor="Gray"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Buttons -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Button Grid.Column="0"
+                                Text="📷 Camera"
+                                BackgroundColor="#2196F3"
+                                TextColor="White"
+                                CornerRadius="14"
+                                HeightRequest="44"
+                                FontAttributes="Bold"
+                                FontSize="14"
+                                Clicked="OnTakePhotoClicked"/>
+                        <Button Grid.Column="1"
+                                Text="🖼️ Gallery"
+                                BackgroundColor="#4CAF50"
+                                TextColor="White"
+                                CornerRadius="14"
+                                HeightRequest="44"
+                                FontAttributes="Bold"
+                                FontSize="14"
+                                Clicked="OnPickPhotoClicked"/>
+                    </Grid>
+
+                    <!-- Remove photo button -->
+                    <Button x:Name="RemovePhotoButton"
+                            Text="✕ Remove Photo"
+                            BackgroundColor="#FFEBEE"
+                            TextColor="#D32F2F"
+                            CornerRadius="14"
+                            HeightRequest="40"
+                            FontSize="13"
+                            FontAttributes="Bold"
+                            IsVisible="False"
+                            Clicked="OnRemovePhotoClicked"/>
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Food Info Card -->
+            <Frame Margin="16,12,16,8"
+                   CornerRadius="20"
+                   Padding="20"
+                   HasShadow="True"
+                   BorderColor="Transparent"
+                   BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E2E}">
+                <VerticalStackLayout Spacing="16">
+
+                    <!-- Name -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Food Name *"
                                FontSize="13" FontAttributes="Bold" TextColor="#2196F3"/>
-						<Frame Padding="0" CornerRadius="12"
+                        <Frame Padding="0" CornerRadius="12"
                                BorderColor="#E3F2FD" HasShadow="False"
                                BackgroundColor="{AppThemeBinding Light=#F5FBFF, Dark=#1A1A2A}">
-							<Entry x:Name="NameEntry"
+                            <Entry x:Name="NameEntry"
                                    Placeholder="e.g. Steamed Egg with Shrimp..."
                                    FontSize="15" Margin="12,8"/>
-						</Frame>
-					</VerticalStackLayout>
+                        </Frame>
+                    </VerticalStackLayout>
 
-					<!-- Category -->
-					<VerticalStackLayout Spacing="6">
-						<Label Text="Category *"
+                    <!-- Category -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Category *"
                                FontSize="13" FontAttributes="Bold" TextColor="#2196F3"/>
-						<Frame Padding="0" CornerRadius="12"
+                        <Frame Padding="0" CornerRadius="12"
                                BorderColor="#E3F2FD" HasShadow="False"
                                BackgroundColor="{AppThemeBinding Light=#F5FBFF, Dark=#1A1A2A}">
-							<Picker x:Name="CategoryPicker" FontSize="15" Margin="12,8">
-								<Picker.Items>
-									<x:String>Meat</x:String>
-									<x:String>Fish</x:String>
-									<x:String>Vegetables</x:String>
-									<x:String>Fruits</x:String>
-									<x:String>Dairy</x:String>
-									<x:String>Grains</x:String>
-									<x:String>Snacks</x:String>
-									<x:String>Drinks</x:String>
-									<x:String>Other</x:String>
-								</Picker.Items>
-							</Picker>
-						</Frame>
-					</VerticalStackLayout>
+                            <Picker x:Name="CategoryPicker" FontSize="15" Margin="12,8">
+                                <Picker.Items>
+                                    <x:String>Meat</x:String>
+                                    <x:String>Fish</x:String>
+                                    <x:String>Vegetables</x:String>
+                                    <x:String>Fruits</x:String>
+                                    <x:String>Dairy</x:String>
+                                    <x:String>Grains</x:String>
+                                    <x:String>Snacks</x:String>
+                                    <x:String>Drinks</x:String>
+                                    <x:String>Other</x:String>
+                                </Picker.Items>
+                            </Picker>
+                        </Frame>
+                    </VerticalStackLayout>
 
-					<!-- Ingredients -->
-					<VerticalStackLayout Spacing="6">
-						<Label Text="🧂 Ingredients"
+                    <!-- Ingredients -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="🧂 Ingredients"
                                FontSize="13" FontAttributes="Bold" TextColor="#795548"/>
-						<Label Text="Separate with commas, e.g. shrimp, egg, soy sauce"
+                        <Label Text="Separate with commas, e.g. shrimp, egg, soy sauce"
                                FontSize="11" TextColor="Gray"/>
-						<Frame Padding="0" CornerRadius="12"
+                        <Frame Padding="0" CornerRadius="12"
                                BorderColor="#EFEBE9" HasShadow="False"
                                BackgroundColor="{AppThemeBinding Light=#FBF9F8, Dark=#1A1512}">
-							<Entry x:Name="IngredientsEntry"
+                            <Entry x:Name="IngredientsEntry"
                                    Placeholder="e.g. shrimp, egg, milk..."
                                    FontSize="15" Margin="12,8"/>
-						</Frame>
-					</VerticalStackLayout>
+                        </Frame>
+                    </VerticalStackLayout>
 
-					<!-- Calories -->
-					<VerticalStackLayout Spacing="6">
-						<Label Text="🔥 Calories (kcal / 100g) *"
+                    <!-- Calories -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="🔥 Calories (kcal / 100g) *"
                                FontSize="13" FontAttributes="Bold" TextColor="#FF5722"/>
-						<Frame Padding="0" CornerRadius="12"
+                        <Frame Padding="0" CornerRadius="12"
                                BorderColor="#FBE9E7" HasShadow="False"
                                BackgroundColor="{AppThemeBinding Light=#FFFAF9, Dark=#2A1A1A}">
-							<Entry x:Name="CaloriesEntry"
+                            <Entry x:Name="CaloriesEntry"
                                    Placeholder="e.g. 250"
                                    Keyboard="Numeric"
                                    FontSize="15" Margin="12,8"/>
-						</Frame>
-					</VerticalStackLayout>
+                        </Frame>
+                    </VerticalStackLayout>
 
-					<!-- Protein + Fat -->
-					<Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-						<VerticalStackLayout Grid.Column="0" Spacing="6">
-							<Label Text="💪 Protein (g)"
+                    <!-- Protein + Fat -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0" Spacing="6">
+                            <Label Text="💪 Protein (g)"
                                    FontSize="13" FontAttributes="Bold" TextColor="#2196F3"/>
-							<Frame Padding="0" CornerRadius="12"
+                            <Frame Padding="0" CornerRadius="12"
                                    BorderColor="#E3F2FD" HasShadow="False"
                                    BackgroundColor="{AppThemeBinding Light=#F5FBFF, Dark=#1A1A2A}">
-								<Entry x:Name="ProteinEntry"
+                                <Entry x:Name="ProteinEntry"
                                        Placeholder="0" Keyboard="Numeric"
                                        FontSize="15" Margin="12,8"/>
-							</Frame>
-						</VerticalStackLayout>
-						<VerticalStackLayout Grid.Column="1" Spacing="6">
-							<Label Text="🥑 Fat (g)"
+                            </Frame>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="6">
+                            <Label Text="🥑 Fat (g)"
                                    FontSize="13" FontAttributes="Bold" TextColor="#FF9800"/>
-							<Frame Padding="0" CornerRadius="12"
+                            <Frame Padding="0" CornerRadius="12"
                                    BorderColor="#FFF3E0" HasShadow="False"
                                    BackgroundColor="{AppThemeBinding Light=#FFFDF5, Dark=#2A1E0A}">
-								<Entry x:Name="FatEntry"
+                                <Entry x:Name="FatEntry"
                                        Placeholder="0" Keyboard="Numeric"
                                        FontSize="15" Margin="12,8"/>
-							</Frame>
-						</VerticalStackLayout>
-					</Grid>
+                            </Frame>
+                        </VerticalStackLayout>
+                    </Grid>
 
-					<!-- Sugar -->
-					<VerticalStackLayout Spacing="6">
-						<Label Text="🍬 Sugar (g)"
+                    <!-- Sugar -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="🍬 Sugar (g)"
                                FontSize="13" FontAttributes="Bold" TextColor="#E91E63"/>
-						<Frame Padding="0" CornerRadius="12"
+                        <Frame Padding="0" CornerRadius="12"
                                BorderColor="#FCE4EC" HasShadow="False"
                                BackgroundColor="{AppThemeBinding Light=#FFF5F8, Dark=#2A1A1E}">
-							<Entry x:Name="SugarEntry"
+                            <Entry x:Name="SugarEntry"
                                    Placeholder="0" Keyboard="Numeric"
                                    FontSize="15" Margin="12,8"/>
-						</Frame>
-					</VerticalStackLayout>
+                        </Frame>
+                    </VerticalStackLayout>
 
-				</VerticalStackLayout>
-			</Frame>
+                </VerticalStackLayout>
+            </Frame>
 
-			<Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="16,4,16,24">
-				<Button Grid.Column="0" Text="Cancel"
+            <!-- Action Buttons -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="16,4,16,24">
+                <Button Grid.Column="0" Text="Cancel"
                         BackgroundColor="#EEEEEE" TextColor="#555555"
                         CornerRadius="16" HeightRequest="52"
                         FontSize="15" FontAttributes="Bold"
                         Clicked="OnCancelClicked"/>
-				<Button Grid.Column="1" Text="Save Food"
+                <Button Grid.Column="1" Text="Save Food"
                         BackgroundColor="#2196F3" TextColor="White"
                         CornerRadius="16" HeightRequest="52"
                         FontSize="15" FontAttributes="Bold"
                         Clicked="OnSaveClicked"/>
-			</Grid>
+            </Grid>
 
-		</VerticalStackLayout>
-	</ScrollView>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
