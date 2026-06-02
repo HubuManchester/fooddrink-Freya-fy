@@ -7,22 +7,42 @@
 
     <Grid RowDefinitions="Auto,*">
 
-        <!-- Header -->
-        <Grid Grid.Row="0" HeightRequest="130" BackgroundColor="#4CAF50">
-            <VerticalStackLayout VerticalOptions="Center"
-                                 HorizontalOptions="Center"
-                                 Spacing="4">
-                <Label Text="Nearby Healthy Places 📍"
-                       FontSize="24"
-                       FontAttributes="Bold"
-                       TextColor="White"
-                       HorizontalOptions="Center"/>
-                <Label Text="Find healthy restaurants near you"
-                       SemanticProperties.Hint="Use GPS to find healthy restaurants nearby"
-                       FontSize="{DynamicResource GlobalFontSize}"
-                       TextColor="#C8E6C9"
-                       HorizontalOptions="Center"/>
-            </VerticalStackLayout>
+        <!-- Header Container -->
+        <Grid Grid.Row="0" Padding="16">
+
+            <Frame CornerRadius="18"
+                   Padding="18"
+                   HasShadow="True"
+                   BorderColor="Transparent">
+
+                <Frame.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="{AppThemeBinding Light=#F1F8E9, Dark=#121A16}" Offset="0.0"/>
+                        <GradientStop Color="{AppThemeBinding Light=#DCEDC8, Dark=#18231D}" Offset="0.5"/>
+                        <GradientStop Color="{AppThemeBinding Light=#C5E1A5, Dark=#1F2D25}" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Frame.Background>
+
+                <VerticalStackLayout Spacing="6"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Center">
+
+                    <Label Text="Nearby Healthy Places 📍"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=#1B5E20, Dark=#E8F5E9}"
+                           HorizontalTextAlignment="Center"/>
+
+                    <Label Text="Discover healthy restaurants around you"
+                           FontSize="{DynamicResource GlobalFontSize}"
+                           TextColor="{AppThemeBinding Light=#2E7D32, Dark=#C8E6C9}"
+                           Opacity="0.85"
+                           HorizontalTextAlignment="Center"/>
+
+                </VerticalStackLayout>
+
+            </Frame>
+
         </Grid>
 
         <RefreshView Grid.Row="1"
@@ -121,13 +141,24 @@
                             </VerticalStackLayout>
 
                             <Button Text="📍 Find Nearby Places"
-                                    BackgroundColor="#4CAF50"
-                                    TextColor="White"
-                                    CornerRadius="14"
-                                    HeightRequest="50"
+                                    TextColor="{AppThemeBinding Light=#111827, Dark=#F9FAFB}"
+                                    CornerRadius="16"
+                                    HeightRequest="52"
                                     FontSize="{DynamicResource GlobalFontSize}"
                                     FontAttributes="Bold"
-                                    Clicked="OnFindNearbyClicked"/>
+                                    Clicked="OnFindNearbyClicked">
+
+                                <Button.Background>
+                                    <AppThemeBinding Light="#F3F4F6" Dark="#2A2F36"/>
+                                </Button.Background>
+
+                                <Button.BorderColor>
+                                    <AppThemeBinding Light="#E5E7EB" Dark="#3A3F46"/>
+                                </Button.BorderColor>
+
+                                <Button.BorderWidth>1</Button.BorderWidth>
+
+                            </Button>
                         </VerticalStackLayout>
                     </Frame>
 
@@ -200,16 +231,18 @@
                                             CommandParameter="{Binding .}"/>
                                     </Frame.GestureRecognizers>
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-
                                         <Frame Grid.Column="0"
-                                               BackgroundColor="#E8F5E9"
-                                               CornerRadius="22"
+                                               BackgroundColor="{AppThemeBinding Light=#E8F5E9, Dark=#1B2E22}"
+                                               CornerRadius="14"
                                                WidthRequest="44"
                                                HeightRequest="44"
                                                Padding="0"
                                                BorderColor="Transparent"
                                                VerticalOptions="Center">
-                                            <Label Text="🍃" FontSize="22"
+
+                                            <Label Text="✓"
+                                                   FontSize="20"
+                                                   TextColor="{AppThemeBinding Light=#2E7D32, Dark=#A5D6A7}"
                                                    HorizontalOptions="Center"
                                                    VerticalOptions="Center"/>
                                         </Frame>

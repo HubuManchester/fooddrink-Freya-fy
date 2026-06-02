@@ -8,23 +8,62 @@
     <ScrollView>
         <VerticalStackLayout Spacing="0">
 
-            <!-- Header -->
-            <Grid HeightRequest="130" BackgroundColor="#607D8B">
-                <VerticalStackLayout VerticalOptions="Center"
-                                     HorizontalOptions="Center"
-                                     Spacing="4">
-                    <Label Text="⚙️ Settings"
-                           FontSize="26"
-                           FontAttributes="Bold"
-                           TextColor="White"
-                           HorizontalOptions="Center"/>
-                    <Label Text="Customize your experience"
-                           FontSize="{DynamicResource GlobalFontSize}"
-                           TextColor="#CFD8DC"
-                           HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-            </Grid>
+            <!-- Header Card -->
+            <Grid Padding="16">
 
+                <Frame CornerRadius="20"
+                       Padding="18"
+                       HasShadow="True"
+                       BorderColor="Transparent">
+
+                    <!-- Background -->
+                    <Frame.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+
+                            <GradientStop Offset="0.0">
+                                <GradientStop.Color>
+                                    <AppThemeBinding Light="#ECEFF1" Dark="#121417"/>
+                                </GradientStop.Color>
+                            </GradientStop>
+
+                            <GradientStop Offset="0.5">
+                                <GradientStop.Color>
+                                    <AppThemeBinding Light="#CFD8DC" Dark="#1C1F24"/>
+                                </GradientStop.Color>
+                            </GradientStop>
+
+                            <GradientStop Offset="1.0">
+                                <GradientStop.Color>
+                                    <AppThemeBinding Light="#B0BEC5" Dark="#2A2F36"/>
+                                </GradientStop.Color>
+                            </GradientStop>
+
+                        </LinearGradientBrush>
+                    </Frame.Background>
+
+                    <VerticalStackLayout VerticalOptions="Center"
+                                         HorizontalOptions="Center"
+                                         Spacing="6">
+
+                        <!-- Title -->
+                        <Label Text="⚙️ Settings"
+                               FontSize="26"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#263238, Dark=#ECEFF1}"
+                               HorizontalTextAlignment="Center"/>
+
+                        <!-- Subtitle -->
+                        <Label Text="Customize your experience"
+                               FontSize="{DynamicResource GlobalFontSize}"
+                               TextColor="{AppThemeBinding Light=#546E7A, Dark=#B0BEC5}"
+                               HorizontalTextAlignment="Center"
+                               Opacity="0.9"/>
+
+                    </VerticalStackLayout>
+
+                </Frame>
+
+            </Grid>
             <VerticalStackLayout Padding="16" Spacing="20">
 
                 <!-- ── Appearance ── -->
@@ -269,14 +308,31 @@
                             </Frame>
                         </VerticalStackLayout>
 
-                        <Button Text="Save Goals"
-                                BackgroundColor="#4CAF50"
-                                TextColor="White"
-                                CornerRadius="14"
-                                HeightRequest="50"
-                                FontSize="{DynamicResource GlobalFontSize}"
-                                FontAttributes="Bold"
-                                Clicked="OnSaveGoalsClicked"/>
+                        <Frame CornerRadius="16"
+                               Padding="0"
+                               HasShadow="True"
+                               BorderColor="Transparent">
+
+                            <Frame.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="{AppThemeBinding Light=#E8F5E9, Dark=#102418}" Offset="0.0"/>
+                                    <GradientStop Color="{AppThemeBinding Light=#C8E6C9, Dark=#163020}" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </Frame.Background>
+
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnSaveGoalsClicked"/>
+                            </Frame.GestureRecognizers>
+
+                            <Label Text="Save Goals"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   Padding="16"
+                                   FontSize="{DynamicResource GlobalFontSize}"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=#1B5E20, Dark=#A5D6A7}"/>
+
+                        </Frame>
 
                     </VerticalStackLayout>
                 </Frame>

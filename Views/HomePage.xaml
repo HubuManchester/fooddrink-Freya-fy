@@ -8,26 +8,55 @@
 	<ScrollView>
 		<VerticalStackLayout Spacing="0">
 
-			<!-- Hero Header -->
-			<Grid HeightRequest="180"
-                  BackgroundColor="#4CAF50">
+            <!-- Hero Header -->
+            <Frame HeightRequest="200"
+                   CornerRadius="25"
+                   HasShadow="True"
+                   BorderColor="Transparent"
+                   Padding="0"
+                   Margin="5,12,5,8">
 
-				<VerticalStackLayout VerticalOptions="Center"
-                                     HorizontalOptions="Center"
-                                     Spacing="4">
-					<Label Text="NutriLens"
-                           FontSize="34"
-                           FontAttributes="Bold"
-                           TextColor="White"
-                           HorizontalOptions="Center"/>
-					<Label Text="Your daily nutrition companion 🥗"
-                           FontSize="{DynamicResource GlobalFontSize}"
-                           TextColor="#C8E6C9"
-                           HorizontalOptions="Center"/>
-				</VerticalStackLayout>
-			</Grid>
+                <Frame.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#43A047" Offset="0.0"/>
+                        <GradientStop Color="#81C784" Offset="0.5"/>
+                        <GradientStop Color="#26A69A" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Frame.Background>
 
-			<!-- Content -->
+                <Grid>
+
+                    <BoxView BackgroundColor="Black"
+                             Opacity="0.15"/>
+
+                    <VerticalStackLayout VerticalOptions="Center"
+                                         HorizontalOptions="Center"
+                                         Spacing="8"
+                                         Padding="20,0">
+
+                        <Label Text="🌿 NutriLens"
+                               FontSize="40"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               HorizontalOptions="Center"
+                               CharacterSpacing="1.5"/>
+
+                        <Label Text="Your Daily Nutritional Companion 🥗"
+                               FontSize="17"
+                               TextColor="#E8F5E9"
+                               HorizontalOptions="Center"
+                               Opacity="0.95"/>
+
+                        <Label Text="Today, 2 June 2026"
+                               FontSize="14"
+                               TextColor="#C8E6C9"
+                               HorizontalOptions="Center"
+                               Opacity="0.85"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+
+            <!-- Content -->
 			<VerticalStackLayout Padding="16" Spacing="14">
 
 				<!-- Health Score Card -->
@@ -71,100 +100,170 @@
 				<!-- Calories + Water Row -->
 				<Grid ColumnDefinitions="*,*" ColumnSpacing="12">
 
-					<!-- Calories Card -->
-					<Frame Grid.Column="0"
-                           BackgroundColor="{AppThemeBinding Light=#E3F2FD, Dark=#0D47A1}"
+                    <!-- Calories Card -->
+                    <Frame Grid.Column="0"
                            CornerRadius="20"
                            Padding="16"
                            HasShadow="True"
                            BorderColor="Transparent">
-						<VerticalStackLayout Spacing="8">
-							<Label Text="🔥"
+
+                        <!-- Theme-aware Background -->
+                        <Frame.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{AppThemeBinding Light=#FFF3E0, Dark=#1A1412 }" Offset="0.0"/>
+                                <GradientStop Color="{AppThemeBinding Light=#FFE0B2, Dark=#2A1C18 }" Offset="0.5"/>
+                                <GradientStop Color="{AppThemeBinding Light=#FFCCBC, Dark=#3A241E}" Offset="1.0"/>
+
+                            </LinearGradientBrush>
+                        </Frame.Background>
+
+                        <VerticalStackLayout Spacing="8">
+
+                            <!-- Icon -->
+                            <Label Text="🔥"
                                    FontSize="24"
                                    HorizontalOptions="Start"/>
-							<Label Text="Calories"
+
+                            <!-- Title -->
+                            <Label Text="Calories"
                                    FontSize="{DynamicResource GlobalFontSize}"
-                                   TextColor="Gray"/>
-							<Label x:Name="CaloriesLabel"
+                                   TextColor="{AppThemeBinding Light=#6D6D6D, Dark=#B0BEC5}"/>
+
+                            <!-- Value -->
+                            <Label x:Name="CaloriesLabel"
                                    Text="0 kcal"
                                    FontSize="14"
                                    FontAttributes="Bold"
-                                   TextColor="#2196F3"/>
-							<ProgressBar x:Name="CaloriesProgress"
-                                         Progress="0"
-                                         ProgressColor="#2196F3"
-                                         HeightRequest="6"/>
-						</VerticalStackLayout>
-					</Frame>
+                                   TextColor="{AppThemeBinding Light=#E65100, Dark=#FFB74D}"/>
 
-					<!-- Water Card -->
-					<Frame Grid.Column="1"
-                           BackgroundColor="{AppThemeBinding Light=#E1F5FE, Dark=#01579B}"
+                            <!-- Progress -->
+                            <ProgressBar x:Name="CaloriesProgress"
+                                         Progress="0"
+                                         ProgressColor="{AppThemeBinding Light=#FF9800, Dark=#FFB74D}"
+                                         BackgroundColor="{AppThemeBinding Light=#33FF9800, Dark=#33FFFFFF}"
+                                         HeightRequest="6"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                    
+                    <!-- Water Card -->
+                    <Frame Grid.Column="1"
                            CornerRadius="20"
                            Padding="16"
                            HasShadow="True"
                            BorderColor="Transparent">
-						<VerticalStackLayout Spacing="8">
-							<Label Text="💧"
+
+                        <!-- Theme-aware Gradient -->
+                        <Frame.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+
+                                <GradientStop Color="{AppThemeBinding Light=#E0F7FA, Dark=#0F1C24}" Offset="0.0"/>
+                                <GradientStop Color="{AppThemeBinding Light=#B2EBF2, Dark=#152B3A}" Offset="0.5"/>
+                                <GradientStop Color="{AppThemeBinding Light=#80DEEA, Dark=#1C3A4A}" Offset="1.0"/>
+
+                            </LinearGradientBrush>
+                        </Frame.Background>
+
+                        <VerticalStackLayout Spacing="8">
+
+                            <!-- Icon -->
+                            <Label Text="💧"
                                    FontSize="24"
                                    HorizontalOptions="Start"/>
-							<Label Text="Water"
+
+                            <!-- Title -->
+                            <Label Text="Water"
                                    FontSize="{DynamicResource GlobalFontSize}"
-                                   TextColor="Gray"/>
-							<Label x:Name="WaterLabel"
+                                   TextColor="{AppThemeBinding Light=#607D8B, Dark=#B0BEC5}"/>
+
+                            <!-- Value -->
+                            <Label x:Name="WaterLabel"
                                    Text="0 ml"
                                    FontSize="14"
                                    FontAttributes="Bold"
-                                   TextColor="#03A9F4"/>
-							<ProgressBar x:Name="WaterProgress"
+                                   TextColor="{AppThemeBinding Light=#0288D1, Dark=#4FC3F7}"/>
+
+                            <!-- Progress -->
+                            <ProgressBar x:Name="WaterProgress"
                                          Progress="0"
-                                         ProgressColor="#03A9F4"
+                                         ProgressColor="{AppThemeBinding Light=#03A9F4, Dark=#4FC3F7}"
+                                         BackgroundColor="{AppThemeBinding Light=#3303A9F4, Dark=#33FFFFFF}"
                                          HeightRequest="6"/>
 
+                            <!-- Counter -->
                             <Label x:Name="VibrationCountLabel"
                                    Text="Vibrations: 0"
                                    FontSize="11"
-                                   TextColor="#03A9F4"
+                                   TextColor="{AppThemeBinding Light=#0288D1, Dark=#90CAF9}"
                                    HorizontalOptions="End"
                                    SemanticProperties.Description="Number of times water button has been pressed"/>
 
+                            <!-- Button -->
                             <Button Text="+ 250ml"
                                     SemanticProperties.Hint="Add 250 millilitres to your water intake"
-                                    BackgroundColor="#03A9F4"
                                     TextColor="White"
-                                    CornerRadius="8"
-                                    HeightRequest="34"
+                                    CornerRadius="10"
+                                    HeightRequest="36"
                                     FontSize="{DynamicResource GlobalFontSize}"
                                     Padding="0"
-                                    Clicked="OnAddWaterClicked"/>
-						</VerticalStackLayout>
-					</Frame>
+                                    Clicked="OnAddWaterClicked">
 
-				</Grid>
+                                <Button.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="{AppThemeBinding Light=#4FC3F7, Dark=#102A43}" Offset="0.0"/>
+                                        <GradientStop Color="{AppThemeBinding Light=#0288D1, Dark=#2F80ED}" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Button.Background>
+
+                            </Button>
+                        </VerticalStackLayout>
+
+                    </Frame>
+
+                </Grid>
 
 				<!-- Quick Actions -->
 				<Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-					<Button Grid.Column="0"
+                    <Button Grid.Column="0"
                             Text="📷 Scan Food"
                             SemanticProperties.Hint="Opens the food scanner to photograph or scan barcodes"
-                            BackgroundColor="#4CAF50"
                             TextColor="White"
                             CornerRadius="16"
                             HeightRequest="52"
                             FontSize="{DynamicResource GlobalFontSize}"
                             FontAttributes="Bold"
-                            Clicked="OnScanClicked"/>
-					<Button Grid.Column="1"
+                            Clicked="OnScanClicked">
+
+                        <Button.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+
+                                <GradientStop Color="{AppThemeBinding Light=#66BB6A, Dark=#1B5E20}" Offset="0.0"/>
+                                <GradientStop Color="{AppThemeBinding Light=#43A047, Dark=#2E7D32}" Offset="1.0"/>
+
+                            </LinearGradientBrush>
+                        </Button.Background>
+
+                    </Button>
+                    <Button Grid.Column="1"
                             Text="📅 My Diary"
                             SemanticProperties.Hint="Opens your food diary for today"
-                            BackgroundColor="#2196F3"
                             TextColor="White"
                             CornerRadius="16"
                             HeightRequest="52"
                             FontSize="{DynamicResource GlobalFontSize}"
                             FontAttributes="Bold"
-                            Clicked="OnDiaryClicked"/>
-				</Grid>
+                            Clicked="OnDiaryClicked">
+
+                        <Button.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+
+                                <GradientStop Color="{AppThemeBinding Light=#64B5F6, Dark=#1565C0}" Offset="0.0"/>
+                                <GradientStop Color="{AppThemeBinding Light=#1E88E5, Dark=#0D47A1}" Offset="1.0"/>
+
+                            </LinearGradientBrush>
+                        </Button.Background>
+
+                    </Button>
+                </Grid>
 
 				<!-- Today's Meals -->
 				<Label Text="Today's Meals"
@@ -272,44 +371,59 @@
 					</VerticalStackLayout>
 				</Frame>
 
-                <!-- Shake Hint -->
-                <Frame BackgroundColor="{AppThemeBinding Light=#F3E5F5, Dark=#2A1638}"
-                       SemanticProperties.Hint="Add 250 millilitres to your water intake"
-                       CornerRadius="20"
+                <!-- Shake Hint Card -->
+                <Frame CornerRadius="20"
                        Padding="18,14"
                        BorderColor="Transparent"
                        HasShadow="True">
 
+                    <Frame.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="{AppThemeBinding Light=#F3E5F5, Dark=#12101A}" Offset="0.0"/>
+                            <GradientStop Color="{AppThemeBinding Light=#E1BEE7, Dark=#1A1025}" Offset="0.5"/>
+                            <GradientStop Color="{AppThemeBinding Light=#CE93D8, Dark=#24102F}" Offset="1.0"/>
+                        </LinearGradientBrush>
+                    </Frame.Background>
+
                     <Grid ColumnDefinitions="Auto,*"
                           ColumnSpacing="12">
 
+                        <!-- Icon Container -->
                         <Frame Grid.Column="0"
-                               BackgroundColor="{AppThemeBinding Light=#CE93D8, Dark=#6A1B9A}"
-                               CornerRadius="12"
+                               CornerRadius="14"
                                WidthRequest="44"
                                HeightRequest="44"
                                Padding="0"
                                BorderColor="Transparent"
                                VerticalOptions="Center">
 
+                            <Frame.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="{AppThemeBinding Light=#BA68C8, Dark=#6A1B9A}" Offset="0.0"/>
+                                    <GradientStop Color="{AppThemeBinding Light=#8E24AA, Dark=#4A148C}" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </Frame.Background>
+
                             <Label Text="🎲"
-                                   FontSize="22"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center"/>
+                   FontSize="22"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"/>
                         </Frame>
+
+                        <!-- Text -->
 
                         <VerticalStackLayout Grid.Column="1"
                                              VerticalOptions="Center"
-                                             Spacing="2">
+                                             Spacing="4">
 
-                            <Label Text="Feeling stuck?"
+                            <Label Text="Need inspiration?"
                                    FontSize="{DynamicResource GlobalFontSize}"
                                    FontAttributes="Bold"
                                    TextColor="{AppThemeBinding Light=#6A1B9A, Dark=#E1BEE7}"/>
 
-                            <Label Text="Shake your phone for a random meal idea!"
+                            <Label Text="Shake your phone for a surprise healthy meal idea ✨"
                                    FontSize="{DynamicResource GlobalFontSize}"
-                                   TextColor="{AppThemeBinding Light=#AB47BC, Dark=#CE93D8}"
+                                   TextColor="{AppThemeBinding Light=#8E24AA, Dark=#CE93D8}"
                                    LineBreakMode="WordWrap"/>
 
                         </VerticalStackLayout>
