@@ -150,12 +150,16 @@
                                    IsVisible="False"
                                    CornerRadius="14"
                                    Padding="0"
-                                   IsClippedToBounds="False"
+                                   IsClippedToBounds="True"
                                    BorderColor="Transparent">
                                 <Image x:Name="FoodImage"
                                        Aspect="AspectFit"
                                        HorizontalOptions="Fill"
-                                       MaximumHeightRequest="500"/>
+                                       MaximumHeightRequest="500">
+                                    <Image.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnFoodImageTapped"/>
+                                    </Image.GestureRecognizers>
+                                </Image>
                             </Frame>
                             <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                 <Button Grid.Column="0"

@@ -12,6 +12,9 @@ public partial class AddFoodPopupPage : ContentPage
         MealTypePicker.SelectedIndex = 0;
     }
 
+    /// <summary>
+    /// Validate input fields and save a new diary entry
+    /// </summary>
     private async void OnSaveClicked(object sender, EventArgs e)
     {
         string foodName = FoodNameEntry.Text?.Trim() ?? "";
@@ -48,6 +51,9 @@ public partial class AddFoodPopupPage : ContentPage
         await Navigation.PopModalAsync();
     }
 
+    /// <summary>
+    /// Cancel food entry creation and close the popup
+    /// </summary>
     private async void OnCancelClicked(object sender, EventArgs e)
     {
         Result = null;

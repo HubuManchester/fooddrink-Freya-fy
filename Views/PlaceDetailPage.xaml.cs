@@ -1,5 +1,9 @@
 ﻿namespace NutriLens.Views;
 
+/// <summary>
+/// Displays detailed information about a selected nearby place,
+/// including contact details, opening hours, ratings, and text-to-speech support.
+/// </summary>
 public partial class PlaceDetailPage : ContentPage
 {
     private readonly NearbyPlace _place;
@@ -19,6 +23,10 @@ public partial class PlaceDetailPage : ContentPage
         PopulateUI(place);
     }
 
+    /// <summary>
+    /// Populates the page UI with information from the selected place.
+    /// </summary>
+    /// <param name="place">The place to display.</param>
     private void PopulateUI(NearbyPlace place)
     {
         int colorIndex = Math.Abs(place.Name.GetHashCode()) % HeroColors.Length;
@@ -82,6 +90,12 @@ public partial class PlaceDetailPage : ContentPage
         TtsPreviewLabel.Text = BuildSpeechText(place);
     }
 
+    /// <summary>
+    /// Builds a spoken description of the selected place
+    /// for text-to-speech playback.
+    /// </summary>
+    /// <param name="place">The place information.</param>
+    /// <returns>A formatted speech string.</returns>
     private static string BuildSpeechText(NearbyPlace place)
     {
         var parts = new List<string>();
@@ -108,8 +122,9 @@ public partial class PlaceDetailPage : ContentPage
         return string.Join(". ", parts) + ".";
     }
 
-    // ─── TTS ─────────────────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Starts text-to-speech playback of the place information.
+    /// </summary>
     private async void OnSpeakClicked(object sender, EventArgs e)
     {
         if (_isSpeaking) return;
@@ -125,11 +140,20 @@ public partial class PlaceDetailPage : ContentPage
 
         try
         {
-            var options = new SpeechOptions { Volume = 1.0f, Pitch = 1.0f };
+            var options = new SpeechOptions
+            {
+                Volume = 1.0f,
+                Pitch = 1.0f
+            };
+
             await TextToSpeech.Default.SpeakAsync(
-                BuildSpeechText(_place), options, _cts.Token);
+                BuildSpeechText(_place),
+                options,
+                _cts.Token);
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException)
+        {
+        }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"TTS error: {ex.Message}");
@@ -140,28 +164,44 @@ public partial class PlaceDetailPage : ContentPage
         }
     }
 
+    /// <summary>
+    /// Stops any active text-to-speech playback.
+    /// </summary>
     private void OnStopClicked(object sender, EventArgs e)
     {
         _cts?.Cancel();
         ResetTtsButtons();
     }
 
+    /// <summary>
+    /// Restores the text-to-speech button states
+    /// after playback finishes or is cancelled.
+    /// </summary>
     private void ResetTtsButtons()
     {
         _isSpeaking = false;
+
         SpeakButton.IsEnabled = true;
         SpeakButton.BackgroundColor = Color.FromArgb("#FF9800");
+
         StopButton.IsEnabled = false;
         StopButton.BackgroundColor = Color.FromArgb("#9E9E9E");
     }
 
+    /// <summary>
+    /// Cleans up text-to-speech resources when the page closes.
+    /// </summary>
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
+
         _cts?.Cancel();
         _cts?.Dispose();
     }
 
+    /// <summary>
+    /// Closes the detail page and stops any active speech playback.
+    /// </summary>
     private async void OnCloseClicked(object sender, EventArgs e)
     {
         _cts?.Cancel();

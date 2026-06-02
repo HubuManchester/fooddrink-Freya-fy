@@ -9,6 +9,7 @@ public partial class HomePage : ContentPage
     private int _targetWaterMl = 2000;
     private int _currentCalories = 0;
     private int _targetCalories = 2000;
+    private int _vibrationCount = 0;
     private DateTime _lastShakeTime = DateTime.MinValue;
     private AccelerometerData _lastAccelData;
 
@@ -175,7 +176,12 @@ public partial class HomePage : ContentPage
         _currentWaterMl += 250;
         UpdateWaterDisplay();
 
-        try { Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(100)); }
+        try
+        {
+            Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(100));
+            _vibrationCount++;
+            VibrationCountLabel.Text = $"Vibrations: {_vibrationCount}";
+        }
         catch { }
 
         if (_currentWaterMl == _targetWaterMl)

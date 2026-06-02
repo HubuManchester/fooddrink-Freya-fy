@@ -7,6 +7,7 @@ public partial class BarcodeScannerPage : ContentPage
     public string? ScannedBarcode { get; private set; }
 
     private bool _scanned = false;
+    private bool _torchOn = false;
 
     public BarcodeScannerPage()
     {
@@ -18,11 +19,14 @@ public partial class BarcodeScannerPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-
         _scanned = false;
+        BarcodeReader.IsDetecting = true;
     }
 
-    private async void OnBarcodesDetected(object sender, BarcodeDetectionEventArgs e)
+    /// <summary>
+    /// Handle barcode detection and return the scanned value
+    /// </summary>
+    private async void OnBarcodesDetected(object? sender, BarcodeDetectionEventArgs e)
     {
         if (_scanned)
             return;
@@ -33,40 +37,54 @@ public partial class BarcodeScannerPage : ContentPage
             return;
 
         _scanned = true;
-
         ScannedBarcode = result.Value;
 
         await MainThread.InvokeOnMainThreadAsync(async () =>
         {
             await DisplayAlert("Scanned Barcode", ScannedBarcode, "OK");
-
             await Navigation.PopModalAsync();
         });
     }
 
-    private async void OnCancelClicked(object sender, EventArgs e)
+    /// <summary>
+    /// Cancel barcode scanning and close the scanner page
+    /// </summary>
+    private async void OnCancelClicked(object? sender, EventArgs e)
     {
         ScannedBarcode = null;
-
         await Navigation.PopModalAsync();
     }
 
-    private bool _torchOn = false;
-
-    private void OnTorchClicked(object sender, EventArgs e)
+    /// <summary>
+    /// Toggle device flashlight for barcode scanning
+    /// </summary>
+    private void OnTorchClicked(object? sender, EventArgs e)
     {
         try
         {
             _torchOn = !_torchOn;
             BarcodeReader.IsTorchOn = _torchOn;
 
-            TorchButton.Text = _torchOn ? "🔦 On" : "🔦 Torch";
-            TorchButton.BackgroundColor = _torchOn
-                ? Color.FromArgb("#FFC107")
-                : Color.FromArgb("#555555");
-            TorchButton.TextColor = _torchOn
-                ? Colors.Black
-                : Colors.White;
+            if (_torchOn)
+            {
+                TorchButton.Text = "🔒 Torch Off";
+                TorchButton.BackgroundColor = Color.FromArgb("#FFC107");
+                TorchButton.TextColor = Colors.Black;
+                TorchButton.BorderColor = Colors.Transparent;
+                SemanticProperties.SetDescription(
+                    TorchButton,
+                    "Flashlight is currently on. Click to turn off.");
+            }
+            else
+            {
+                TorchButton.Text = "🔦 Torch On";
+                TorchButton.BackgroundColor = Color.FromArgb("#80000000");
+                TorchButton.TextColor = Colors.White;
+                TorchButton.BorderColor = Colors.White;
+                SemanticProperties.SetDescription(
+                    TorchButton,
+                    "Flashlight is currently off. Click to turn on.");
+            }
         }
         catch (Exception ex)
         {
@@ -74,13 +92,15 @@ public partial class BarcodeScannerPage : ContentPage
         }
     }
 
+    /// <summary>
+    /// Stop barcode detection and turn off flashlight when leaving page
+    /// </summary>
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
         _scanned = false;
         BarcodeReader.IsDetecting = false;
 
-        // Turn off torch when leaving
         try
         {
             if (_torchOn)

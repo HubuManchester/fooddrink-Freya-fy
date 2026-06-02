@@ -15,9 +15,7 @@ public partial class NearbyPage : ContentPage
 
     private static readonly int[] RadiusValues = { 500, 1000, 2000, 5000 };
 
-    // ── Amap keyword search map (English -> Chinese for API query) ────────────
-    // Chinese strings are intentionally isolated here as API parameters only.
-    // All user-facing output is translated back to English before display.
+    // Amap keyword search map
     #region API Query Mappings
     private static readonly Dictionary<string, string> KeywordQueryMap =
         new(StringComparer.OrdinalIgnoreCase)
@@ -119,8 +117,9 @@ public partial class NearbyPage : ContentPage
         InitializeComponent();
     }
 
-    // ─── Pull to refresh ──────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Handles pull-to-refresh action and refreshes nearby place data using cached translations when available.
+    /// </summary>
     private async void OnPageRefreshing(object sender, EventArgs e)
     {
         try
@@ -137,8 +136,9 @@ public partial class NearbyPage : ContentPage
         }
     }
 
-    // ─── Find Nearby ──────────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Retrieves the user's current location and initiates a nearby search.
+    /// </summary>
     private async void OnFindNearbyClicked(object sender, EventArgs e)
     {
         try
@@ -209,8 +209,13 @@ public partial class NearbyPage : ContentPage
         }
     }
 
-    // ─── Search ───────────────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Searches nearby places using the Amap API and updates the UI
+    /// with translated and formatted results.
+    /// </summary>
+    /// <param name="useCache">
+    /// Indicates whether cached translations should be reused.
+    /// </param>
     private async Task SearchNearbyAsync(bool useCache = false)
     {
         try
@@ -304,8 +309,6 @@ public partial class NearbyPage : ContentPage
             // Step 4: AI translate - use cache if refreshing
             if (!useCache)
             {
-                // Only show loading indicator for AI translation on first search
-                // Do NOT show it on pull-to-refresh (RefreshView already shows its own)
                 var uncachedItems = needsAI
                     .Where(s => !_translationCache.ContainsKey(s))
                     .ToList();
@@ -419,16 +422,18 @@ public partial class NearbyPage : ContentPage
         }
     }
 
-    // ─── Place tapped → PlaceDetailPage ──────────────────────────────────────
-
+    /// <summary>
+    /// Opens the detail page for the selected nearby place.
+    /// </summary>
     private async void OnPlaceTapped(object sender, TappedEventArgs e)
     {
         if (e.Parameter is not NearbyPlace place) return;
         await Navigation.PushAsync(new PlaceDetailPage(place));
     }
 
-    // ─── AI Batch Translation ─────────────────────────────────────────────────
-
+    /// <summary>
+    /// Translates a batch of Chinese text strings into English using the Qwen language model.
+    /// </summary>
     private async Task<Dictionary<string, string>> TranslateBatchAsync(
         List<string> texts)
     {
@@ -509,8 +514,9 @@ public partial class NearbyPage : ContentPage
         return result;
     }
 
-    // ─── Static helpers ───────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Determines whether a string contains Chinese characters.
+    /// </summary>
     private static bool HasChinese(string text) =>
         !string.IsNullOrEmpty(text) &&
         text.Any(c => c >= 0x4E00 && c <= 0x9FFF);
@@ -536,6 +542,9 @@ public partial class NearbyPage : ContentPage
         return HasChinese(raw) ? "" : raw;
     }
 
+    /// <summary>
+    /// Converts Chinese business-hour descriptions into English.
+    /// </summary>
     private static string TranslateOpenTime(string raw)
     {
         if (string.IsNullOrEmpty(raw)) return "";
@@ -546,6 +555,9 @@ public partial class NearbyPage : ContentPage
         return result.Trim();
     }
 
+    /// <summary>
+    /// Safely retrieves a property value from a JSON element and converts it to a string representation.
+    /// </summary>
     private static string SafeGetString(JsonElement element, string key)
     {
         if (!element.TryGetProperty(key, out var prop)) return "";

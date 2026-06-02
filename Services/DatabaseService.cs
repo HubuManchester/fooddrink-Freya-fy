@@ -1,4 +1,4 @@
-using SQLite;
+ï»¿using SQLite;
 using NutriLens.Models;
 
 namespace NutriLens.Services;
@@ -35,7 +35,7 @@ public class DatabaseService
         }
     }
 
-    // ©¤©¤©¤ Diary Entry Methods ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+    // Diary Entry Methods
 
     /// <summary>
     /// Save a new food entry to the diary
@@ -121,7 +121,7 @@ public class DatabaseService
         }
     }
 
-    // ©¤©¤©¤ User Settings Methods ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+    // User Settings Methods
 
     /// <summary>
     /// Get user settings, creates default if none exist
@@ -169,7 +169,7 @@ public class DatabaseService
         }
     }
 
-    // ©¤©¤©¤ Food Item Methods ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+    // Food Item Methods
 
     /// <summary>
     /// Get all food items from database

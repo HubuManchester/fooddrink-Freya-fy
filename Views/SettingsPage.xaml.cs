@@ -12,6 +12,10 @@ public partial class SettingsPage : ContentPage
         _isInitializing = false;
     }
 
+    /// <summary>
+    /// Loads all saved user settings including theme,
+    /// font size, nutrition goals, allergens, and reminders.
+    /// </summary>
     private void LoadSettings()
     {
         // Theme
@@ -45,8 +49,11 @@ public partial class SettingsPage : ContentPage
             Preferences.Default.Get("water_reminder", false);
     }
 
-    // ── Theme ─────────────────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Handles theme selection changes and applies the selected theme.
+    /// </summary>
+    /// <param name="sender">The radio button that triggered the event.</param>
+    /// <param name="e">Checked state information.</param>
     private void OnThemeChanged(object sender, CheckedChangedEventArgs e)
     {
         if (_isInitializing || !e.Value) return;
@@ -68,8 +75,11 @@ public partial class SettingsPage : ContentPage
         }
     }
 
-    // ── Font Size ─────────────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Updates the global application font size when the slider value changes.
+    /// </summary>
+    /// <param name="sender">The font size slider.</param>
+    /// <param name="e">Contains the new slider value.</param>
     private void OnFontSizeChanged(object sender, ValueChangedEventArgs e)
     {
         if (_isInitializing) return;
@@ -87,8 +97,11 @@ public partial class SettingsPage : ContentPage
         Preferences.Default.Set("font_size", size);
     }
 
-    // ── Goals ─────────────────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Validates and saves the user's calorie and water intake goals.
+    /// </summary>
+    /// <param name="sender">The save button.</param>
+    /// <param name="e">Event arguments.</param>
     private async void OnSaveGoalsClicked(object sender, EventArgs e)
     {
         if (!int.TryParse(CalorieTargetEntry.Text, out int cal)
@@ -113,8 +126,11 @@ public partial class SettingsPage : ContentPage
         await DisplayAlert("Saved", "Your nutrition goals have been saved.", "OK");
     }
 
-    // ── Allergens ─────────────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Adds a new custom allergen to the user's allergen list.
+    /// </summary>
+    /// <param name="sender">The add button.</param>
+    /// <param name="e">Event arguments.</param>
     private async void OnAddCustomAllergenClicked(object sender, EventArgs e)
     {
         string allergen = CustomAllergenEntry.Text?.Trim() ?? "";
@@ -137,6 +153,11 @@ public partial class SettingsPage : ContentPage
         CustomAllergenEntry.Text = "";
     }
 
+    /// <summary>
+    /// Removes a selected allergen from the custom allergen list.
+    /// </summary>
+    /// <param name="sender">The swipe action item.</param>
+    /// <param name="e">Event arguments.</param>
     private void OnRemoveAllergenClicked(object sender, EventArgs e)
     {
         if (sender is SwipeItemView siv &&
@@ -148,20 +169,29 @@ public partial class SettingsPage : ContentPage
         }
     }
 
+    /// <summary>
+    /// Saves the current custom allergen list to device preferences.
+    /// </summary>
     private void SaveAllergens()
     {
         Preferences.Default.Set("custom_allergens",
             string.Join(",", _customAllergens));
     }
 
+    /// <summary>
+    /// Refreshes the allergen list displayed in the user interface.
+    /// </summary>
     private void RefreshAllergenList()
     {
         CustomAllergenList.ItemsSource = null;
         CustomAllergenList.ItemsSource = _customAllergens.ToList();
     }
 
-    // ── Reminders ─────────────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Saves the user's water reminder preference.
+    /// </summary>
+    /// <param name="sender">The reminder switch.</param>
+    /// <param name="e">Contains the new toggle state.</param>
     private void OnWaterReminderToggled(object sender, ToggledEventArgs e)
     {
         Preferences.Default.Set("water_reminder", e.Value);

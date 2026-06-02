@@ -37,6 +37,9 @@ public partial class DiaryPage : ContentPage
         await LoadEntriesAsync();
     }
 
+    /// <summary>
+    /// Load saved allergen preferences from local storage.
+    /// </summary>
     private void LoadAllergenSettings()
     {
         _peanutAlert = Preferences.Default.Get("allergen_peanut", false);
@@ -47,8 +50,9 @@ public partial class DiaryPage : ContentPage
             _customAllergens = saved.Split(',').ToList();
     }
 
-    // ─── Diary Load / Totals ──────────────────────────────────────────────────
-
+    /// <summary>
+    /// Load today's diary entries from the database.
+    /// </summary>
     private async Task LoadEntriesAsync()
     {
         try
@@ -65,6 +69,9 @@ public partial class DiaryPage : ContentPage
         }
     }
 
+    /// <summary>
+    /// Update nutrition summary values displayed on the page.
+    /// </summary>
     private void UpdateTotals()
     {
         TotalCaloriesLabel.Text = $"{_entries.Sum(e => e.Calories):F0}";
@@ -72,8 +79,9 @@ public partial class DiaryPage : ContentPage
         TotalFatLabel.Text = $"{_entries.Sum(e => e.Fat):F1}g";
     }
 
-    // ─── Delete (fixed: no Task.Run, direct await) ────────────────────────────
-
+    /// <summary>
+    /// Delete a diary entry using swipe action.
+    /// </summary>
     private async void OnDeleteSwipe(object sender, EventArgs e)
     {
         DiaryEntry? entry = null;
@@ -108,8 +116,9 @@ public partial class DiaryPage : ContentPage
         }
     }
 
-    // ─── Manual Add ───────────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Open manual entry popup and save a new diary record.
+    /// </summary>
     private async void OnAddEntryClicked(object sender, EventArgs e)
     {
         // Hide scanner if open
@@ -143,8 +152,9 @@ public partial class DiaryPage : ContentPage
         }
     }
 
-    // ─── Scanner Panel Toggle ─────────────────────────────────────────────────
-
+    /// <summary>
+    /// Toggle visibility of the food scanning panel.
+    /// </summary>
     private void OnScanFoodClicked(object sender, EventArgs e)
     {
         ScannerPanel.IsVisible = !ScannerPanel.IsVisible;
@@ -160,6 +170,9 @@ public partial class DiaryPage : ContentPage
         BarcodeTabBtn.TextColor = Colors.Gray;
     }
 
+    /// <summary>
+    /// Switch scanner interface to photo recognition mode.
+    /// </summary>
     private void OnPhotoTabClicked(object sender, EventArgs e)
     {
         PhotoPanel.IsVisible = true;
@@ -170,6 +183,9 @@ public partial class DiaryPage : ContentPage
         BarcodeTabBtn.TextColor = Colors.Gray;
     }
 
+    /// <summary>
+    /// Switch scanner interface to barcode scanning mode.
+    /// </summary>
     private void OnBarcodeTabClicked(object sender, EventArgs e)
     {
         PhotoPanel.IsVisible = false;
@@ -180,8 +196,9 @@ public partial class DiaryPage : ContentPage
         PhotoTabBtn.TextColor = Colors.Gray;
     }
 
-    // ─── Photo / Gallery ──────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Capture a photo using the device camera.
+    /// </summary>
     private async void OnTakePhotoClicked(object sender, EventArgs e)
     {
         try
@@ -202,6 +219,9 @@ public partial class DiaryPage : ContentPage
         }
     }
 
+    /// <summary>
+    /// Select a food image from the device gallery.
+    /// </summary>
     private async void OnPickPhotoClicked(object sender, EventArgs e)
     {
         try
@@ -216,6 +236,9 @@ public partial class DiaryPage : ContentPage
         }
     }
 
+    /// <summary>
+    /// Process the selected food image and identify nutrition information.
+    /// </summary>
     private async Task ProcessPhotoAsync(FileResult photo)
     {
         ScanLoadingIndicator.IsVisible = true;
@@ -255,8 +278,7 @@ public partial class DiaryPage : ContentPage
     }
 
     /// <summary>
-    /// Estimate nutrition using both food name AND the actual image
-    /// so AI can see portion size, cooking method, oil content etc.
+    /// Estimate nutrition values using food image analysis with Qwen Vision.
     /// </summary>
     private async Task<bool> TryQwenNutritionWithImageAsync(
         string foodName, string base64Image)
@@ -353,8 +375,9 @@ public partial class DiaryPage : ContentPage
         }
     }
 
-    // ─── Barcode ──────────────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Launch barcode scanner and retrieve nutrition information.
+    /// </summary>
     private async void OnScanBarcodeClicked(object sender, EventArgs e)
     {
         var status = await Permissions.RequestAsync<Permissions.Camera>();
@@ -381,6 +404,9 @@ public partial class DiaryPage : ContentPage
         ScanLoadingIndicator.IsRunning = false;
     }
 
+    /// <summary>
+    /// Search nutrition information using a manually entered barcode.
+    /// </summary>
     private async void OnManualBarcodeSearchClicked(object sender, EventArgs e)
     {
         string barcode = ManualBarcodeEntry.Text?.Trim() ?? "";
@@ -402,8 +428,9 @@ public partial class DiaryPage : ContentPage
         ScanLoadingIndicator.IsRunning = false;
     }
 
-    // ─── Qwen Vision ─────────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Identify the food shown in an image using Qwen Vision.
+    /// </summary>
     private async Task<string> IdentifyFoodAsync(string base64Image)
     {
         try
@@ -449,8 +476,9 @@ public partial class DiaryPage : ContentPage
         catch { return ""; }
     }
 
-    // ─── Nutrition Fetch ─────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Retrieve nutrition information using food name lookup.
+    /// </summary>
     private async Task FetchNutritionDataAsync(string foodName)
     {
         if (await TryQwenNutritionAsync(foodName)) return;
@@ -462,6 +490,9 @@ public partial class DiaryPage : ContentPage
         if (manual) await ShowManualNutritionEntryAsync(foodName);
     }
 
+    /// <summary>
+    /// Retrieve nutrition information using a barcode lookup.
+    /// </summary>
     private async Task FetchNutritionByBarcodeAsync(string barcode)
     {
         try
@@ -482,6 +513,9 @@ public partial class DiaryPage : ContentPage
         }
     }
 
+    /// <summary>
+    /// Query Open Food Facts API and extract nutrition data.
+    /// </summary>
     private async Task<bool> TryOpenFoodFactsAsync(string url)
     {
         try
@@ -521,6 +555,9 @@ public partial class DiaryPage : ContentPage
         catch { return false; }
     }
 
+    /// <summary>
+    /// Estimate nutrition information using the Qwen language model.
+    /// </summary>
     private async Task<bool> TryQwenNutritionAsync(string foodName)
     {
         try
@@ -608,6 +645,9 @@ public partial class DiaryPage : ContentPage
         }
     }
 
+    /// <summary>
+    /// Search Open Food Facts database using a food name.
+    /// </summary>
     private async Task<bool> TryOpenFoodFactsSearchAsync(string foodName)
     {
         try
@@ -643,6 +683,9 @@ public partial class DiaryPage : ContentPage
         catch { return false; }
     }
 
+    /// <summary>
+    /// Safely extract a numeric value from JSON using one or more keys.
+    /// </summary>
     private double TryGetDouble(JsonElement element, params string[] keys)
     {
         foreach (var key in keys)
@@ -657,8 +700,9 @@ public partial class DiaryPage : ContentPage
         return 0;
     }
 
-    // ─── Show Scan Result ────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Display scanned food nutrition information on the page.
+    /// </summary>
     private void ShowScanResult(string name, double calories,
     double protein, double fat, double sugar)
     {
@@ -681,6 +725,20 @@ public partial class DiaryPage : ContentPage
         Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(300));
     }
 
+    /// <summary>
+    /// Open full screen image viewer when food photo is tapped
+    /// </summary>
+    private async void OnFoodImageTapped(object sender, TappedEventArgs e)
+    {
+        if (FoodImage.Source == null) return;
+
+        var fullScreenPage = new FullScreenImagePage(FoodImage.Source);
+        await Navigation.PushModalAsync(fullScreenPage, animated: true);
+    }
+
+    /// <summary>
+    /// Allow the user to manually enter nutrition information.
+    /// </summary>
     private async Task ShowManualNutritionEntryAsync(string productName)
     {
         string? name = await DisplayPromptAsync("Product Name",
@@ -714,7 +772,6 @@ public partial class DiaryPage : ContentPage
         ShowScanResult(name, calories, protein, fat, sugar);
     }
 
-    // ─── Save Scan Result ────────────────────────────────────────────────────
 
     private async void OnScanSaveBreakfastClicked(object sender, EventArgs e) =>
         await SaveScanEntry("Breakfast");
@@ -725,6 +782,9 @@ public partial class DiaryPage : ContentPage
     private async void OnScanSaveSnackClicked(object sender, EventArgs e) =>
         await SaveScanEntry("Snack");
 
+    /// <summary>
+    /// Save the current scanned food result to the selected meal category.
+    /// </summary>
     private async Task SaveScanEntry(string mealType)
     {
         if (string.IsNullOrEmpty(_scanFoodName))
@@ -766,6 +826,9 @@ public partial class DiaryPage : ContentPage
         }
     }
 
+    /// <summary>
+    /// Check scanned food against configured allergen preferences.
+    /// </summary>
     private void CheckAllergens(string foodName)
     {
         var warnings = new List<string>();

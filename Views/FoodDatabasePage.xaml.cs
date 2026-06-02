@@ -76,8 +76,9 @@ public partial class FoodDatabasePage : ContentPage
         BuildCategoryNav();
     }
 
-    // ─── Category Navigation ──────────────────────────────────────────────────
-
+    /// <summary>
+    /// Build the horizontal category navigation bar
+    /// </summary>
     private void BuildCategoryNav()
     {
         CategoryNav.Children.Clear();
@@ -132,6 +133,9 @@ public partial class FoodDatabasePage : ContentPage
         }
     }
 
+    /// <summary>
+    /// Filter foods when a category is selected
+    /// </summary>
     private void OnCategorySelected(string category)
     {
         _selectedCategory = category;
@@ -150,8 +154,9 @@ public partial class FoodDatabasePage : ContentPage
         FoodList.ItemsSource = BuildGroups(_filteredFoods);
     }
 
-    // ─── Seed / Load ──────────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Seed the database with default food records on first launch
+    /// </summary>
     private async Task SeedDefaultFoodsAsync()
     {
         const string seededKey = "default_foods_seeded_v2";
@@ -225,6 +230,9 @@ public partial class FoodDatabasePage : ContentPage
         Preferences.Default.Set(seededKey, true);
     }
 
+    /// <summary>
+    /// Load food records from the database and refresh the UI
+    /// </summary>
     private async Task LoadFoodsAsync()
     {
         try
@@ -243,6 +251,9 @@ public partial class FoodDatabasePage : ContentPage
         }
     }
 
+    /// <summary>
+    /// Update food statistics displayed on the page
+    /// </summary>
     private void UpdateStats()
     {
         TotalFoodsLabel.Text = _allFoods.Count.ToString();
@@ -252,6 +263,9 @@ public partial class FoodDatabasePage : ContentPage
             .Select(f => f.Category).Distinct().Count().ToString();
     }
 
+    /// <summary>
+    /// Group foods by category for CollectionView display
+    /// </summary>
     private List<FoodGroup> BuildGroups(List<FoodItem> foods)
     {
         var groups = new List<FoodGroup>();
@@ -276,8 +290,9 @@ public partial class FoodDatabasePage : ContentPage
         return groups;
     }
 
-    // ─── Search ───────────────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Filter foods based on the search text input
+    /// </summary>
     private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
     {
         string query = e.NewTextValue?.ToLower() ?? "";
@@ -293,8 +308,9 @@ public partial class FoodDatabasePage : ContentPage
         FoodList.ItemsSource = BuildGroups(_filteredFoods);
     }
 
-    // ─── Add ──────────────────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Open the add food page and save a new food item
+    /// </summary>
     private async void OnAddFoodClicked(object sender, EventArgs e)
     {
         var page = new AddFoodItemPage(null);
@@ -326,16 +342,18 @@ public partial class FoodDatabasePage : ContentPage
         }
     }
 
-    // ─── Tap → Detail ─────────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Navigate to the detail page of the selected food item
+    /// </summary>
     private async void OnFoodTapped(object sender, TappedEventArgs e)
     {
         if (e.Parameter is not FoodItem food) return;
         await Navigation.PushAsync(new FoodDetailPage(food));
     }
 
-    // ─── Edit swipe ───────────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Open the edit page and update an existing food item
+    /// </summary>
     private async void OnEditFoodSwiped(object sender, EventArgs e)
     {
         FoodItem? existing = null;
@@ -374,8 +392,9 @@ public partial class FoodDatabasePage : ContentPage
         }
     }
 
-    // ─── Delete swipe ─────────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Delete a food item after user confirmation
+    /// </summary>
     private async void OnDeleteFoodSwiped(object sender, EventArgs e)
     {
         FoodItem? food = null;
@@ -402,8 +421,9 @@ public partial class FoodDatabasePage : ContentPage
         }
     }
 
-    // ─── Pull to refresh ──────────────────────────────────────────────────────
-
+    /// <summary>
+    /// Refresh food data when pull-to-refresh is triggered
+    /// </summary>
     private async void OnRefreshing(object sender, EventArgs e)
     {
         try

@@ -41,6 +41,9 @@ public partial class FoodDetailPage : ContentPage
         PopulateUI();
     }
 
+    /// <summary>
+    /// Populate all UI elements with food information
+    /// </summary>
     private void PopulateUI()
     {
         // Hero
@@ -66,6 +69,9 @@ public partial class FoodDetailPage : ContentPage
         BuildIngredientsView();
     }
 
+    /// <summary>
+    /// Build ingredient chips and highlight allergens
+    /// </summary>
     private void BuildIngredientsView()
     {
         if (string.IsNullOrWhiteSpace(_food.Ingredients))
@@ -149,6 +155,9 @@ public partial class FoodDetailPage : ContentPage
         AllergenHintLabel.IsVisible = hasAllergenMatch;
     }
 
+    /// <summary>
+    /// Check whether an ingredient matches enabled allergen filters
+    /// </summary>
     private static bool CheckIngredientAllergen(
         string ingredient,
         bool peanutAlert, bool glutenAlert, bool lactoseAlert,
@@ -181,6 +190,9 @@ public partial class FoodDetailPage : ContentPage
         return false;
     }
 
+    /// <summary>
+    /// Build text-to-speech content for the current food item
+    /// </summary>
     private string BuildSpeechText()
     {
         string text = $"{_food.Name}. Per 100 grams: " +
@@ -195,6 +207,9 @@ public partial class FoodDetailPage : ContentPage
         return text;
     }
 
+    /// <summary>
+    /// Read food information aloud using text-to-speech
+    /// </summary>
     private async void OnSpeakClicked(object sender, EventArgs e)
     {
         if (_isSpeaking) return;
@@ -225,12 +240,18 @@ public partial class FoodDetailPage : ContentPage
         }
     }
 
+    /// <summary>
+    /// Stop the current text-to-speech playback
+    /// </summary>
     private void OnStopClicked(object sender, EventArgs e)
     {
         _cts?.Cancel();
         ResetTtsButtons();
     }
 
+    /// <summary>
+    /// Reset text-to-speech control button states
+    /// </summary>
     private void ResetTtsButtons()
     {
         _isSpeaking = false;
@@ -240,6 +261,9 @@ public partial class FoodDetailPage : ContentPage
         StopButton.BackgroundColor = Color.FromArgb("#9E9E9E");
     }
 
+    /// <summary>
+    /// Cancel speech resources when leaving the page
+    /// </summary>
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
@@ -247,6 +271,9 @@ public partial class FoodDetailPage : ContentPage
         _cts?.Dispose();
     }
 
+    /// <summary>
+    /// Close the detail page and stop any active speech
+    /// </summary>
     private async void OnCloseClicked(object sender, EventArgs e)
     {
         _cts?.Cancel();

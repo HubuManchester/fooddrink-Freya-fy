@@ -37,6 +37,9 @@ public partial class AddFoodItemPage : ContentPage
         }
     }
 
+    /// <summary>
+    /// Validate input fields and save a food item
+    /// </summary>
     private async void OnSaveClicked(object sender, EventArgs e)
     {
         string name = NameEntry.Text?.Trim() ?? "";
@@ -76,6 +79,9 @@ public partial class AddFoodItemPage : ContentPage
         await Navigation.PopModalAsync();
     }
 
+    /// <summary>
+    /// Cancel editing and close the food item page
+    /// </summary>
     private async void OnCancelClicked(object sender, EventArgs e)
     {
         Result = null;

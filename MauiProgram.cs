@@ -22,7 +22,6 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<DatabaseService>();
         builder.Services.AddTransient<HomePage>();
-        builder.Services.AddTransient<ScannerPage>();
         builder.Services.AddTransient<DiaryPage>();
         builder.Services.AddTransient<NearbyPage>();
         builder.Services.AddTransient<SettingsPage>();

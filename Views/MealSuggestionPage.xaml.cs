@@ -24,6 +24,9 @@ public partial class MealSuggestionPage : ContentPage
         UpdateDisplay();
     }
 
+    /// <summary>
+    /// Update the meal suggestion display with the current meal
+    /// </summary>
     private void UpdateDisplay()
     {
         var meal = Meals[_currentIndex];
@@ -34,6 +37,9 @@ public partial class MealSuggestionPage : ContentPage
         HeaderGrid.BackgroundColor = Color.FromArgb(meal.Color);
     }
 
+    /// <summary>
+    /// Randomly select and display a new meal suggestion
+    /// </summary>
     private void OnShuffleClicked(object sender, EventArgs e)
     {
         // Pick a different random meal
@@ -45,11 +51,17 @@ public partial class MealSuggestionPage : ContentPage
         UpdateDisplay();
     }
 
+    /// <summary>
+    /// Close the meal suggestion page
+    /// </summary>
     private async void OnGotItClicked(object sender, EventArgs e)
     {
         await Navigation.PopModalAsync();
     }
 
+    /// <summary>
+    /// Close the page when the background is tapped
+    /// </summary>
     private async void OnBackgroundTapped(object sender, TappedEventArgs e)
     {
         await Navigation.PopModalAsync();

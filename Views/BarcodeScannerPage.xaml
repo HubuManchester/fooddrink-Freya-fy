@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8" ?>
-
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -8,57 +7,65 @@
     Title="Scan Barcode"
     BackgroundColor="Black">
 
-	<Grid RowDefinitions="*,Auto">
-
-		<!-- Camera barcode reader -->
+	<Grid>
 		<zxing:CameraBarcodeReaderView
             x:Name="BarcodeReader"
-            Grid.Row="0"
-            BarcodesDetected="OnBarcodesDetected" />
+            IsDetecting="True" />
 
-		<!-- Overlay -->
-		<Grid Grid.Row="0" InputTransparent="True">
-
+		<Grid InputTransparent="True">
 			<Frame
-                Margin="60,160,60,160"
-                BorderColor="White"
+                Margin="50,120,50,220"
+                BorderColor="#4CAF50"
                 BackgroundColor="Transparent"
                 CornerRadius="16"
-                HasShadow="False" />
+                HasShadow="False"
+                HeightRequest="240"
+                WidthRequest="280"
+                HorizontalOptions="Center"
+                VerticalOptions="Center" />
 
 			<Label
-                Text="Align barcode within the frame"
-                TextColor="White"
+                Text="Align barcode within the green frame"
+                TextColor="#E0E0E0"
                 FontSize="14"
                 HorizontalOptions="Center"
-                VerticalOptions="End"
-                Margin="0,0,0,180" />
-
+                VerticalOptions="Center"
+                Margin="0,280,0,0" />
 		</Grid>
 
-		<!-- Cancel -->
-		<Button
-            Grid.Row="1"
-            Text="Cancel"
-            BackgroundColor="#333333"
-            TextColor="White"
-            CornerRadius="0"
-            HeightRequest="56"
-            FontSize="16"
-            Clicked="OnCancelClicked" />
+		<Grid VerticalOptions="End"
+              Padding="24,0,24,40"
+              ColumnDefinitions="*,*"
+              ColumnSpacing="16">
 
-		<Button x:Name="TorchButton"
-            Grid.Column="1"
-            Text="🔦 Torch"
-            BackgroundColor="#555555"
-            TextColor="White"
-            CornerRadius="0"
-            HeightRequest="56"
-            WidthRequest="110"
-            FontSize="14"
-            SemanticProperties.Hint="Toggle flashlight for scanning in low light"
-            Clicked="OnTorchClicked"/>
+			<Button
+                Grid.Column="0"
+                Text="Cancel"
+                BackgroundColor="#80000000"
+                TextColor="White"
+                BorderColor="White"
+                BorderWidth="1"
+                CornerRadius="24"
+                HeightRequest="54"
+                FontSize="15"
+                FontAttributes="Bold"
+                Clicked="OnCancelClicked"
+                SemanticProperties.Hint="Cancels barcode scanning and returns to the previous screen" />
 
+			<Button
+                x:Name="TorchButton"
+                Grid.Column="1"
+                Text="🔦 Torch On"
+                BackgroundColor="#80000000"
+                TextColor="White"
+                BorderColor="White"
+                BorderWidth="1"
+                CornerRadius="24"
+                HeightRequest="54"
+                FontSize="15"
+                FontAttributes="Bold"
+                Clicked="OnTorchClicked"
+                SemanticProperties.Hint="Toggles the device camera flashlight on or off" />
+		</Grid>
 	</Grid>
-
 </ContentPage>

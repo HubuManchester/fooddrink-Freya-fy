@@ -120,7 +120,15 @@
                                          Progress="0"
                                          ProgressColor="#03A9F4"
                                          HeightRequest="6"/>
-							<Button Text="+ 250ml"
+
+                            <Label x:Name="VibrationCountLabel"
+                                   Text="Vibrations: 0"
+                                   FontSize="11"
+                                   TextColor="#03A9F4"
+                                   HorizontalOptions="End"
+                                   SemanticProperties.Description="Number of times water button has been pressed"/>
+
+                            <Button Text="+ 250ml"
                                     SemanticProperties.Hint="Add 250 millilitres to your water intake"
                                     BackgroundColor="#03A9F4"
                                     TextColor="White"
