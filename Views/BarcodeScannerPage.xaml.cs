@@ -5,14 +5,12 @@ namespace NutriLens.Views;
 public partial class BarcodeScannerPage : ContentPage
 {
     public string? ScannedBarcode { get; private set; }
-
     private bool _scanned = false;
     private bool _torchOn = false;
 
     public BarcodeScannerPage()
     {
         InitializeComponent();
-
         BarcodeReader.BarcodesDetected += OnBarcodesDetected;
     }
 
@@ -26,22 +24,23 @@ public partial class BarcodeScannerPage : ContentPage
     /// <summary>
     /// Handle barcode detection and return the scanned value
     /// </summary>
-    private async void OnBarcodesDetected(object? sender, BarcodeDetectionEventArgs e)
+    private void OnBarcodesDetected(object? sender, BarcodeDetectionEventArgs e)
     {
-        if (_scanned)
-            return;
+        // Guard: only process the first successful scan
+        if (_scanned) return;
 
         var result = e.Results?.FirstOrDefault();
-
-        if (result == null)
-            return;
+        if (result == null || string.IsNullOrWhiteSpace(result.Value)) return;
 
         _scanned = true;
-        ScannedBarcode = result.Value;
+        BarcodeReader.IsDetecting = false;   // stop scanning immediately
 
-        await MainThread.InvokeOnMainThreadAsync(async () =>
+        string barcode = result.Value;
+        ScannedBarcode = barcode;
+
+        // Marshal back to UI thread — do NOT await DisplayAlert inside the callback
+        MainThread.BeginInvokeOnMainThread(async () =>
         {
-            await DisplayAlert("Scanned Barcode", ScannedBarcode, "OK");
             await Navigation.PopModalAsync();
         });
     }
@@ -67,13 +66,10 @@ public partial class BarcodeScannerPage : ContentPage
 
             if (_torchOn)
             {
-                TorchButton.Text = "🔒 Torch Off";
+                TorchButton.Text = "🔦 Torch Off";
                 TorchButton.BackgroundColor = Color.FromArgb("#FFC107");
                 TorchButton.TextColor = Colors.Black;
                 TorchButton.BorderColor = Colors.Transparent;
-                SemanticProperties.SetDescription(
-                    TorchButton,
-                    "Flashlight is currently on. Click to turn off.");
             }
             else
             {
@@ -81,9 +77,6 @@ public partial class BarcodeScannerPage : ContentPage
                 TorchButton.BackgroundColor = Color.FromArgb("#80000000");
                 TorchButton.TextColor = Colors.White;
                 TorchButton.BorderColor = Colors.White;
-                SemanticProperties.SetDescription(
-                    TorchButton,
-                    "Flashlight is currently off. Click to turn on.");
             }
         }
         catch (Exception ex)

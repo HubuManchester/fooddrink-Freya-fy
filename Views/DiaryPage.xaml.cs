@@ -7,7 +7,7 @@ namespace NutriLens.Views;
 public partial class DiaryPage : ContentPage
 {
     private readonly DatabaseService _databaseService;
-    private List<DiaryEntry> _entries = new();
+    private List<DiaryEntry> _entries = [];
 
     // Current scan result
     private string _scanFoodName = "";
@@ -22,7 +22,7 @@ public partial class DiaryPage : ContentPage
     private bool _peanutAlert = false;
     private bool _glutenAlert = false;
     private bool _lactoseAlert = false;
-    private List<string> _customAllergens = new();
+    private List<string> _customAllergens = [];
 
     public DiaryPage(DatabaseService databaseService)
     {
@@ -47,7 +47,7 @@ public partial class DiaryPage : ContentPage
         _lactoseAlert = Preferences.Default.Get("allergen_lactose", false);
         string saved = Preferences.Default.Get("custom_allergens", "");
         if (!string.IsNullOrEmpty(saved))
-            _customAllergens = saved.Split(',').ToList();
+            _customAllergens = [.. saved.Split(',', StringSplitOptions.RemoveEmptyEntries)];
     }
 
     /// <summary>
@@ -65,6 +65,7 @@ public partial class DiaryPage : ContentPage
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[DiaryPage] {ex.Message}");
             await DisplayAlert("Error", $"Failed to load diary: {ex.Message}", "OK");
         }
     }
@@ -112,6 +113,7 @@ public partial class DiaryPage : ContentPage
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[DiaryPage] {ex.Message}");
             await DisplayAlert("Error", $"Failed to delete: {ex.Message}", "OK");
         }
     }
@@ -148,6 +150,7 @@ public partial class DiaryPage : ContentPage
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[DiaryPage] {ex.Message}");
             await DisplayAlert("Error", $"Failed to save: {ex.Message}", "OK");
         }
     }
@@ -215,6 +218,7 @@ public partial class DiaryPage : ContentPage
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[DiaryPage] {ex.Message}");
             await DisplayAlert("Error", $"Camera error: {ex.Message}", "OK");
         }
     }
@@ -232,6 +236,7 @@ public partial class DiaryPage : ContentPage
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[DiaryPage] {ex.Message}");
             await DisplayAlert("Error", $"Gallery error: {ex.Message}", "OK");
         }
     }
@@ -252,7 +257,7 @@ public partial class DiaryPage : ContentPage
 
             using var stream = await photo.OpenReadAsync();
             var bytes = new byte[stream.Length];
-            await stream.ReadAsync(bytes, 0, (int)stream.Length);
+            await stream.ReadAsync(bytes.AsMemory(0, (int)stream.Length));
             string base64 = Convert.ToBase64String(bytes);
 
             // Step 1: identify food name
@@ -431,7 +436,7 @@ public partial class DiaryPage : ContentPage
     /// <summary>
     /// Identify the food shown in an image using Qwen Vision.
     /// </summary>
-    private async Task<string> IdentifyFoodAsync(string base64Image)
+    private static async Task<string> IdentifyFoodAsync(string base64Image)
     {
         try
         {
@@ -509,6 +514,7 @@ public partial class DiaryPage : ContentPage
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[DiaryPage] {ex.Message}");
             await DisplayAlert("Error", $"Network error: {ex.Message}", "OK");
         }
     }
@@ -686,7 +692,7 @@ public partial class DiaryPage : ContentPage
     /// <summary>
     /// Safely extract a numeric value from JSON using one or more keys.
     /// </summary>
-    private double TryGetDouble(JsonElement element, params string[] keys)
+    private static double TryGetDouble(JsonElement element, params string[] keys)
     {
         foreach (var key in keys)
         {
@@ -750,24 +756,46 @@ public partial class DiaryPage : ContentPage
             "Enter calories (kcal per 100g):",
             keyboard: Keyboard.Numeric, accept: "Next", cancel: "Cancel");
         if (calStr == null) return;
-        double.TryParse(calStr, out double calories);
+
+        if (!double.TryParse(calStr, out double calories))
+        {
+            await DisplayAlert("Invalid input", "Calories must be a number.", "OK");
+            return;
+        }
 
         string? proStr = await DisplayPromptAsync("Protein",
             "Enter protein (g per 100g):",
             keyboard: Keyboard.Numeric, accept: "Next", cancel: "Cancel");
         if (proStr == null) return;
-        double.TryParse(proStr, out double protein);
+
+        if (!double.TryParse(proStr, out double protein))
+        {
+            await DisplayAlert("Invalid input", "Protein must be a number.", "OK");
+            return;
+        }
 
         string? fatStr = await DisplayPromptAsync("Fat",
             "Enter fat (g per 100g):",
             keyboard: Keyboard.Numeric, accept: "Next", cancel: "Cancel");
         if (fatStr == null) return;
-        double.TryParse(fatStr, out double fat);
+
+        if (!double.TryParse(fatStr, out double fat))
+        {
+            await DisplayAlert("Invalid input", "Fat must be a number.", "OK");
+            return;
+        }
 
         string? sugStr = await DisplayPromptAsync("Sugar",
             "Enter sugar (g per 100g):",
             keyboard: Keyboard.Numeric, accept: "OK", cancel: "Skip");
-        double.TryParse(sugStr, out double sugar);
+
+        if (sugStr == null) return;
+
+        if (!double.TryParse(fatStr, out double sugar))
+        {
+            await DisplayAlert("Invalid input", "Fat must be a number.", "OK");
+            return;
+        }
 
         ShowScanResult(name, calories, protein, fat, sugar);
     }
@@ -853,8 +881,10 @@ public partial class DiaryPage : ContentPage
         foreach (var allergen in _customAllergens)
         {
             if (!string.IsNullOrEmpty(allergen) &&
-                nameLower.Contains(allergen.ToLower()))
+                nameLower.Contains(allergen, StringComparison.OrdinalIgnoreCase))
+            {
                 warnings.Add($"Contains {allergen}");
+            }
         }
 
         if (warnings.Count > 0)

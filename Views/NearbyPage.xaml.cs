@@ -7,13 +7,24 @@ public partial class NearbyPage : ContentPage
 {
     private double _currentLat = 0;
     private double _currentLng = 0;
-    private Dictionary<string, string> _translationCache = new();
-    private List<NearbyPlace> _lastPlaces = new();
+    private readonly Dictionary<string, string> _translationCache = [];
+    private List<NearbyPlace> _lastPlaces = [];
 
     private const string AmapApiKey = "ec1a12dd172e6945fe52a7067b0c4c26";
     private const string QwenApiKey = "sk-a34faf314c1744bd92dc2ddc3559de58";
 
-    private static readonly int[] RadiusValues = { 500, 1000, 2000, 5000 };
+    private static readonly int[] RadiusValues = [500, 1000, 2000, 5000];
+
+    private static partial class RegexCache
+    {
+        [GeneratedRegex(@"[\u4e00-\u9fff]")]
+        public static partial Regex ChineseRegex();
+    }
+    private static partial class RegexCache
+    {
+        [GeneratedRegex(@"^\d+\.\s*")]
+        public static partial Regex NumberPrefixRegex();
+    }
 
     // Amap keyword search map
     #region API Query Mappings
@@ -375,16 +386,18 @@ public partial class NearbyPage : ContentPage
                         ? $"{distM / 1000.0:F1} km"
                         : $"{distM} m";
 
-                double ratingVal = 0;
                 string stars = "";
-                if (double.TryParse(rawRatings[i], out ratingVal) && ratingVal > 0)
+
+                if (double.TryParse(rawRatings[i], out double ratingVal) && ratingVal > 0)
                 {
                     int full = (int)Math.Floor(ratingVal);
-                    stars = new string('★', Math.Clamp(full, 0, 5)) +
-                            new string('☆', Math.Clamp(5 - full, 0, 5));
+
+                    stars =
+                        new string('★', Math.Clamp(full, 0, 5)) +
+                        new string('☆', Math.Clamp(5 - full, 0, 5));
                 }
 
-                string tel = Regex.Replace(rawTels[i] ?? "", @"[\u4e00-\u9fff]", "");
+                string tel = RegexCache.ChineseRegex().Replace(rawTels[i] ?? "", "");
 
                 places.Add(new NearbyPlace
                 {
@@ -434,8 +447,7 @@ public partial class NearbyPage : ContentPage
     /// <summary>
     /// Translates a batch of Chinese text strings into English using the Qwen language model.
     /// </summary>
-    private async Task<Dictionary<string, string>> TranslateBatchAsync(
-        List<string> texts)
+    private static async Task<Dictionary<string, string>> TranslateBatchAsync(List<string> texts)
     {
         var result = new Dictionary<string, string>();
 
@@ -497,7 +509,7 @@ public partial class NearbyPage : ContentPage
 
             var lines = output
                 .Split('\n', StringSplitOptions.RemoveEmptyEntries)
-                .Select(l => Regex.Replace(l.Trim(), @"^\d+\.\s*", ""))
+                .Select(l => RegexCache.NumberPrefixRegex().Replace(l.Trim(), ""))
                 .ToList();
 
             for (int i = 0; i < Math.Min(toTranslate.Count, lines.Count); i++)
@@ -530,8 +542,7 @@ public partial class NearbyPage : ContentPage
     {
         if (string.IsNullOrEmpty(raw)) return "";
 
-        foreach (var seg in raw.Split(new[] { ';', '|' },
-            StringSplitOptions.RemoveEmptyEntries).Reverse())
+        foreach (var seg in raw.Split([';', '|'], StringSplitOptions.RemoveEmptyEntries).Reverse())
         {
             string s = seg.Trim();
             if (TypeMap.TryGetValue(s, out var en)) return en;

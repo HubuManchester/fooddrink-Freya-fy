@@ -11,10 +11,10 @@ public partial class PlaceDetailPage : ContentPage
     private CancellationTokenSource? _cts;
 
     private static readonly string[] HeroColors =
-    {
+    [
         "#4CAF50", "#2196F3", "#FF9800", "#E91E63",
-        "#9C27B0", "#00BCD4", "#FF5722", "#607D8B"
-    };
+    "#9C27B0", "#00BCD4", "#FF5722", "#607D8B"
+    ];
 
     public PlaceDetailPage(NearbyPlace place)
     {
@@ -98,7 +98,7 @@ public partial class PlaceDetailPage : ContentPage
     /// <returns>A formatted speech string.</returns>
     private static string BuildSpeechText(NearbyPlace place)
     {
-        var parts = new List<string>();
+        List<string> parts = [];
         parts.Add(place.Name);
 
         if (!string.IsNullOrEmpty(place.Type))

@@ -187,9 +187,23 @@ public partial class AddFoodItemPage : ContentPage
             return;
         }
 
-        double.TryParse(ProteinEntry.Text, out double protein);
-        double.TryParse(FatEntry.Text, out double fat);
-        double.TryParse(SugarEntry.Text, out double sugar);
+        if (!double.TryParse(ProteinEntry.Text, out double protein))
+        {
+            await DisplayAlert("Error", "Invalid protein value", "OK");
+            return;
+        }
+
+        if (!double.TryParse(FatEntry.Text, out double fat))
+        {
+            await DisplayAlert("Error", "Invalid fat value", "OK");
+            return;
+        }
+
+        if (!double.TryParse(SugarEntry.Text, out double sugar))
+        {
+            await DisplayAlert("Error", "Invalid sugar value", "OK");
+            return;
+        }
 
         string category = CategoryPicker.SelectedItem?.ToString() ?? "Other";
         string ingredients = IngredientsEntry.Text?.Trim() ?? "";

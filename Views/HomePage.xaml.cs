@@ -54,15 +54,15 @@ public partial class HomePage : ContentPage
             var lunch = entries.Where(e => e.MealType == "Lunch").ToList();
             var dinner = entries.Where(e => e.MealType == "Dinner").ToList();
 
-            BreakfastLabel.Text = breakfast.Any()
+            BreakfastLabel.Text = breakfast.Count > 0
                 ? string.Join(", ", breakfast.Select(e => e.FoodName))
                 : "No entries yet";
 
-            LunchLabel.Text = lunch.Any()
+            LunchLabel.Text = lunch.Count > 0
                 ? string.Join(", ", lunch.Select(e => e.FoodName))
                 : "No entries yet";
 
-            DinnerLabel.Text = dinner.Any()
+            DinnerLabel.Text = dinner.Count > 0
                 ? string.Join(", ", dinner.Select(e => e.FoodName))
                 : "No entries yet";
 
@@ -151,7 +151,7 @@ public partial class HomePage : ContentPage
     /// <summary>
     /// Returns a random healthy meal suggestion
     /// </summary>
-    private string GetRandomMeal()
+    private static string GetRandomMeal()
     {
         var meals = new[]
         {
@@ -276,7 +276,7 @@ public partial class HomePage : ContentPage
         else if (score >= 7)
         {
             HealthScoreLabel.TextColor = Color.FromArgb("#388E3C");
-            HealthAdviceLabel.Text = advice.Any()
+            HealthAdviceLabel.Text = advice.Count > 0
                 ? string.Join(" · ", advice)
                 : "Good job! Keep it up 😊";
         }

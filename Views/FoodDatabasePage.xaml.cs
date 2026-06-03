@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 namespace NutriLens.Views;
 
-public class FoodGroup : ObservableCollection<FoodItem>
+public partial class FoodGroup : ObservableCollection<FoodItem>
 {
     public string Key { get; }
     public string HeaderIcon { get; }
@@ -38,15 +38,15 @@ public class FoodGroup : ObservableCollection<FoodItem>
 public partial class FoodDatabasePage : ContentPage
 {
     private readonly DatabaseService _databaseService;
-    private List<FoodItem> _allFoods = new();
-    private List<FoodItem> _filteredFoods = new();
+    private List<FoodItem> _allFoods = [];
+    private List<FoodItem> _filteredFoods = [];
     private string _selectedCategory = "All";
 
-    private static readonly List<string> CategoryOrder = new()
-    {
+    private static readonly List<string> CategoryOrder =
+    [
         "All", "Meat", "Fish", "Vegetables", "Fruits",
         "Dairy", "Grains", "Snacks", "Drinks", "Other"
-    };
+    ];
 
     private static readonly Dictionary<string, string> CategoryIcons = new()
     {
@@ -143,16 +143,13 @@ public partial class FoodDatabasePage : ContentPage
 
         string query = SearchBar.Text?.ToLower() ?? "";
 
-        _filteredFoods = _allFoods
-            .Where(f =>
-                (category == "All" || f.Category == category) &&
-                (string.IsNullOrEmpty(query) ||
-                 f.Name.ToLower().Contains(query) ||
-                 f.Category.ToLower().Contains(query)))
-            .ToList();
-
-        FoodList.ItemsSource = BuildGroups(_filteredFoods);
-    }
+        _filteredFoods = [.. _allFoods.Where(f =>
+            (category == "All" || f.Category == category) &&
+            (string.IsNullOrEmpty(query) ||
+             f.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+             f.Category.Contains(query, StringComparison.OrdinalIgnoreCase)))];
+                FoodList.ItemsSource = BuildGroups(_filteredFoods);
+            }
 
     /// <summary>
     /// Seed the database with default food records on first launch
@@ -239,8 +236,8 @@ public partial class FoodDatabasePage : ContentPage
         {
             _allFoods = await _databaseService.GetAllFoodsAsync();
             _filteredFoods = _selectedCategory == "All"
-                ? _allFoods.ToList()
-                : _allFoods.Where(f => f.Category == _selectedCategory).ToList();
+                ? [.. _allFoods]
+                : [.. _allFoods.Where(f => f.Category == _selectedCategory)];
 
             FoodList.ItemsSource = BuildGroups(_filteredFoods);
             UpdateStats();
@@ -257,7 +254,7 @@ public partial class FoodDatabasePage : ContentPage
     private void UpdateStats()
     {
         TotalFoodsLabel.Text = _allFoods.Count.ToString();
-        AvgCaloriesLabel.Text = _allFoods.Any()
+        AvgCaloriesLabel.Text = _allFoods.Count > 0
             ? $"{_allFoods.Average(f => f.Calories):F0}" : "0";
         CategoriesLabel.Text = _allFoods
             .Select(f => f.Category).Distinct().Count().ToString();
@@ -266,7 +263,7 @@ public partial class FoodDatabasePage : ContentPage
     /// <summary>
     /// Group foods by category for CollectionView display
     /// </summary>
-    private List<FoodGroup> BuildGroups(List<FoodItem> foods)
+    private static List<FoodGroup> BuildGroups(List<FoodItem> foods)
     {
         var groups = new List<FoodGroup>();
         var knownCats = new HashSet<string>(CategoryOrder);
@@ -274,7 +271,7 @@ public partial class FoodDatabasePage : ContentPage
         foreach (var cat in CategoryOrder.Skip(1))
         {
             var items = foods.Where(f => f.Category == cat).ToList();
-            if (items.Any())
+            if (items.Count > 0)
                 groups.Add(new FoodGroup(cat, items));
         }
 
@@ -283,7 +280,7 @@ public partial class FoodDatabasePage : ContentPage
             .Where(c => !knownCats.Contains(c)))
         {
             var items = foods.Where(f => f.Category == cat).ToList();
-            if (items.Any())
+            if (items.Count > 0)
                 groups.Add(new FoodGroup(cat, items));
         }
 
@@ -297,13 +294,13 @@ public partial class FoodDatabasePage : ContentPage
     {
         string query = e.NewTextValue?.ToLower() ?? "";
 
-        _filteredFoods = _allFoods
-            .Where(f =>
-                (_selectedCategory == "All" || f.Category == _selectedCategory) &&
-                (string.IsNullOrEmpty(query) ||
-                 f.Name.ToLower().Contains(query) ||
-                 f.Category.ToLower().Contains(query)))
-            .ToList();
+        _filteredFoods = [
+            .. _allFoods.Where(f =>
+        (_selectedCategory == "All" || f.Category == _selectedCategory) &&
+        (string.IsNullOrEmpty(query) ||
+         f.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+         f.Category.Contains(query, StringComparison.OrdinalIgnoreCase)))
+        ];
 
         FoodList.ItemsSource = BuildGroups(_filteredFoods);
     }

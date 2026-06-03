@@ -76,7 +76,7 @@ public class DatabaseService
         {
             System.Diagnostics.Debug.WriteLine(
                 $"Get entries error: {ex.Message}");
-            return new List<DiaryEntry>();
+            return [];
         }
     }
 
@@ -98,7 +98,7 @@ public class DatabaseService
         {
             System.Diagnostics.Debug.WriteLine(
                 $"Get entries by date error: {ex.Message}");
-            return new List<DiaryEntry>();
+            return [];
         }
     }
 
@@ -188,7 +188,7 @@ public class DatabaseService
         {
             System.Diagnostics.Debug.WriteLine(
                 $"Get foods error: {ex.Message}");
-            return new List<FoodItem>();
+            return [];
         }
     }
 

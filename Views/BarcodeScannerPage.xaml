@@ -3,17 +3,24 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.Maui.Controls"
+    xmlns:zxingCore="clr-namespace:ZXing.Net.Maui;assembly=ZXing.Net.Maui"
     x:Class="NutriLens.Views.BarcodeScannerPage"
     Title="Scan Barcode"
     BackgroundColor="Black">
-
-	<Grid>
-		<zxing:CameraBarcodeReaderView
+    <Grid>
+        <zxing:CameraBarcodeReaderView
             x:Name="BarcodeReader"
-            IsDetecting="True" />
+            IsDetecting="True">
+            <zxing:CameraBarcodeReaderView.Options>
+                <zxingCore:BarcodeReaderOptions
+                    AutoRotate="True"
+                    Multiple="False"
+                    TryHarder="True"/>
+            </zxing:CameraBarcodeReaderView.Options>
+        </zxing:CameraBarcodeReaderView>
 
-		<Grid InputTransparent="True">
-			<Frame
+        <Grid InputTransparent="True">
+            <Frame
                 Margin="50,120,50,220"
                 BorderColor="#4CAF50"
                 BackgroundColor="Transparent"
@@ -23,22 +30,20 @@
                 WidthRequest="280"
                 HorizontalOptions="Center"
                 VerticalOptions="Center" />
-
-			<Label
+            <Label
                 Text="Align barcode within the green frame"
                 TextColor="#E0E0E0"
                 FontSize="14"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
                 Margin="0,280,0,0" />
-		</Grid>
+        </Grid>
 
-		<Grid VerticalOptions="End"
+        <Grid VerticalOptions="End"
               Padding="24,0,24,40"
               ColumnDefinitions="*,*"
               ColumnSpacing="16">
-
-			<Button
+            <Button
                 Grid.Column="0"
                 Text="Cancel"
                 BackgroundColor="#80000000"
@@ -49,10 +54,8 @@
                 HeightRequest="54"
                 FontSize="15"
                 FontAttributes="Bold"
-                Clicked="OnCancelClicked"
-                SemanticProperties.Hint="Cancels barcode scanning and returns to the previous screen" />
-
-			<Button
+                Clicked="OnCancelClicked"/>
+            <Button
                 x:Name="TorchButton"
                 Grid.Column="1"
                 Text="🔦 Torch On"
@@ -64,8 +67,7 @@
                 HeightRequest="54"
                 FontSize="15"
                 FontAttributes="Bold"
-                Clicked="OnTorchClicked"
-                SemanticProperties.Hint="Toggles the device camera flashlight on or off" />
-		</Grid>
-	</Grid>
+                Clicked="OnTorchClicked"/>
+        </Grid>
+    </Grid>
 </ContentPage>

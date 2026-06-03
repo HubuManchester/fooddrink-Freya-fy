@@ -2,7 +2,8 @@
 
 public partial class SettingsPage : ContentPage
 {
-    private List<string> _customAllergens = new();
+    private List<string> _customAllergens = [];
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0044:Make field readonly", Justification = "Must be modified after initialization")]
     private bool _isInitializing = true;
 
     public SettingsPage()
@@ -40,8 +41,8 @@ public partial class SettingsPage : ContentPage
         // Allergens
         string saved = Preferences.Default.Get("custom_allergens", "");
         _customAllergens = string.IsNullOrEmpty(saved)
-            ? new List<string>()
-            : saved.Split(',').Where(s => !string.IsNullOrEmpty(s)).ToList();
+        ? []
+        : [.. saved.Split(',', StringSplitOptions.RemoveEmptyEntries)];
         RefreshAllergenList();
 
         // Reminders

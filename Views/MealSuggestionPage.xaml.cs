@@ -4,7 +4,7 @@ public partial class MealSuggestionPage : ContentPage
 {
     // emoji, name, calories, header color
     private static readonly (string Emoji, string Name, string Calories, string Color)[] Meals =
-    {
+    [
         ("🥗", "Greek Salad with Grilled Chicken",   "350 kcal", "#4CAF50"),
         ("🍜", "Vegetable Stir Fry with Brown Rice", "420 kcal", "#FF9800"),
         ("🥙", "Wholemeal Wrap with Tuna & Salad",   "380 kcal", "#2196F3"),
@@ -13,7 +13,7 @@ public partial class MealSuggestionPage : ContentPage
         ("🍱", "Salmon with Broccoli & Quinoa",      "480 kcal", "#009688"),
         ("🥘", "Lentil Soup with Wholegrain Bread",  "390 kcal", "#795548"),
         ("🌮", "Black Bean Tacos with Fresh Salsa",  "410 kcal", "#FF5722"),
-    };
+    ];
 
     private int _currentIndex;
 

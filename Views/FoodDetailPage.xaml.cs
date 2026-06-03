@@ -110,7 +110,7 @@ public partial class FoodDetailPage : ContentPage
         bool lactoseAlert = Preferences.Default.Get("allergen_lactose", false);
         string savedCustom = Preferences.Default.Get("custom_allergens", "");
         var customAllergens = string.IsNullOrEmpty(savedCustom)
-            ? new List<string>()
+            ? []
             : savedCustom.Split(',').Where(s => !string.IsNullOrEmpty(s)).ToList();
 
         bool hasAllergenMatch = false;
@@ -175,33 +175,45 @@ public partial class FoodDetailPage : ContentPage
     /// Check whether an ingredient matches enabled allergen filters
     /// </summary>
     private static bool CheckIngredientAllergen(
-        string ingredient,
-        bool peanutAlert, bool glutenAlert, bool lactoseAlert,
-        List<string> customAllergens)
+    string ingredient,
+    bool peanutAlert, bool glutenAlert, bool lactoseAlert,
+    List<string> customAllergens)
     {
-        string lower = ingredient.ToLower();
+        if (string.IsNullOrWhiteSpace(ingredient))
+            return false;
+
+        customAllergens ??= [];
 
         if (peanutAlert &&
-            (lower.Contains("peanut") || lower.Contains("nut")))
+            (ingredient.Contains("peanut", StringComparison.OrdinalIgnoreCase) ||
+             ingredient.Contains("nut", StringComparison.OrdinalIgnoreCase)))
             return true;
 
         if (glutenAlert &&
-            (lower.Contains("wheat") || lower.Contains("flour") ||
-             lower.Contains("bread") || lower.Contains("pasta") ||
-             lower.Contains("noodle") || lower.Contains("gluten")))
+            (ingredient.Contains("wheat", StringComparison.OrdinalIgnoreCase) ||
+             ingredient.Contains("flour", StringComparison.OrdinalIgnoreCase) ||
+             ingredient.Contains("bread", StringComparison.OrdinalIgnoreCase) ||
+             ingredient.Contains("pasta", StringComparison.OrdinalIgnoreCase) ||
+             ingredient.Contains("noodle", StringComparison.OrdinalIgnoreCase) ||
+             ingredient.Contains("gluten", StringComparison.OrdinalIgnoreCase)))
             return true;
 
         if (lactoseAlert &&
-            (lower.Contains("milk") || lower.Contains("cheese") ||
-             lower.Contains("cream") || lower.Contains("butter") ||
-             lower.Contains("dairy") || lower.Contains("yogurt") ||
-             lower.Contains("lactose")))
+            (ingredient.Contains("milk", StringComparison.OrdinalIgnoreCase) ||
+             ingredient.Contains("cheese", StringComparison.OrdinalIgnoreCase) ||
+             ingredient.Contains("cream", StringComparison.OrdinalIgnoreCase) ||
+             ingredient.Contains("butter", StringComparison.OrdinalIgnoreCase) ||
+             ingredient.Contains("dairy", StringComparison.OrdinalIgnoreCase) ||
+             ingredient.Contains("yogurt", StringComparison.OrdinalIgnoreCase) ||
+             ingredient.Contains("lactose", StringComparison.OrdinalIgnoreCase)))
             return true;
 
         foreach (var allergen in customAllergens)
-            if (!string.IsNullOrEmpty(allergen) &&
-                lower.Contains(allergen.ToLower()))
+        {
+            if (!string.IsNullOrWhiteSpace(allergen) &&
+                ingredient.Contains(allergen, StringComparison.OrdinalIgnoreCase))
                 return true;
+        }
 
         return false;
     }
